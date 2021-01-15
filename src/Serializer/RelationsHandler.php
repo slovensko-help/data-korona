@@ -28,7 +28,6 @@ class RelationsHandler
 
     public function serializeRelation(JsonSerializationVisitor $visitor, $relation, array $type, Context $context)
     {
-//        dump($relation);die;
         if ($relation instanceof \Traversable) {
             $relation = iterator_to_array($relation);
         }
