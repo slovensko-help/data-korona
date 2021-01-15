@@ -29,7 +29,7 @@ class District
     private $title;
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string", unique=true, length=50)
      *
      * @var string
      */
