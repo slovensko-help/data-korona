@@ -88,7 +88,7 @@ class HospitalBedsController extends AbstractController
     }
 
     /**
-     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach súhrnne za okresy v časovej rade po dňoch od 30. apríla 2020
+     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach súhrnne po okresoch v časovej rade po dňoch od 30. apríla 2020
      *
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
@@ -97,7 +97,7 @@ class HospitalBedsController extends AbstractController
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach súhrnne za okresy po dňoch",
+     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach súhrnne po okresoch po dňoch",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
@@ -142,7 +142,7 @@ class HospitalBedsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/district-hospital-beds", methods={"GET"})
+     * @Route("/api/hospital-beds/by-district", methods={"GET"})
      *
      * @param DistrictHospitalBedsRepository $repository
      * @param Request $request
@@ -208,7 +208,7 @@ class HospitalBedsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/region-hospital-beds", methods={"GET"})
+     * @Route("/api/hospital-beds/by-region", methods={"GET"})
      *
      * @param RegionHospitalBedsRepository $repository
      * @param Request $request
@@ -274,7 +274,7 @@ class HospitalBedsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/slovakia-hospital-beds", methods={"GET"})
+     * @Route("/api/hospital-beds/in-slovakia", methods={"GET"})
      *
      * @param SlovakiaHospitalBedsRepository $repository
      * @param Request $request

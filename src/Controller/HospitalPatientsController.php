@@ -88,7 +88,7 @@ class HospitalPatientsController extends AbstractController
     }
 
     /**
-     * Počty pacientov v nemocniciach súhrnne za okresy v časovej rade po dňoch od 30. apríla 2020
+     * Počty pacientov v nemocniciach súhrnne po okresoch v časovej rade po dňoch od 30. apríla 2020
      *
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
@@ -97,7 +97,7 @@ class HospitalPatientsController extends AbstractController
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam počtov pacientov v nemocniciach súhrnne za okresy po dňoch",
+     *     description="Vráti stránkovaný zoznam počtov pacientov v nemocniciach súhrnne po okresoch po dňoch",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
@@ -142,7 +142,7 @@ class HospitalPatientsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/district-hospital-patients", methods={"GET"})
+     * @Route("/api/hospital-patients/by-district", methods={"GET"})
      *
      * @param DistrictHospitalPatientsRepository $repository
      * @param Request $request
@@ -208,7 +208,7 @@ class HospitalPatientsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/region-hospital-patients", methods={"GET"})
+     * @Route("/api/hospital-patients/by-region", methods={"GET"})
      *
      * @param RegionHospitalPatientsRepository $repository
      * @param Request $request
@@ -274,7 +274,7 @@ class HospitalPatientsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/slovakia-hospital-patients", methods={"GET"})
+     * @Route("/api/hospital-patients/in-slovakia", methods={"GET"})
      *
      * @param SlovakiaHospitalPatientsRepository $repository
      * @param Request $request
