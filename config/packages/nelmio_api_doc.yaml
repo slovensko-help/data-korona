@@ -2,7 +2,7 @@ nelmio_api_doc:
   documentation:
     info:
       title: Korona dáta zo Slovenska
-      description: 'API má za cieľ združovať dáta z rôznych zdrojov, dobre ich štrukturovať a dokumentovať.
+      description: 'Experimentálne API má za cieľ združovať dáta z rôznych zdrojov, dobre ich štrukturovať a dokumentovať. Pracuje primárne s dátami od <a href="https://github.com/Institut-Zdravotnych-Analyz/covid19-data">IZA</a>.
                     Ak máte pripomienky alebo otázky, tak prosím <a href="https://github.com/slovensko-help/data-korona/issues">vytvorte Issue</a>
                     alebo nám napíšte email na korona.gov@krizovystab.sk.
                     Celý projekt je open source, tak radi privítame aj pull requesty. <a href="https://github.com/slovensko-help/data-korona">GitHub</a>'
