@@ -8,5 +8,5 @@ use DateTimeImmutable;
 
 interface PaginableRepositoryInterface
 {
-    public function findOnePage(int $offsetId, ?DateTimeImmutable $updatedAfter = null, int $limit = 1000): array;
+    public function findOnePage(int $offsetId, ?DateTimeImmutable $updatedSince = null, int $limit = 1000): array;
 }

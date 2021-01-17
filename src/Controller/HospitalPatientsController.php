@@ -27,7 +27,7 @@ class HospitalPatientsController extends AbstractController
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
      * @OA\Parameter(name="offset", in="query", description="Stránkovanie po 1000 záznamov na stránku.")
-     * @OA\Parameter(name="updated_after", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
+     * @OA\Parameter(name="updated_since", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
      *
      * @OA\Response(
      *     response=200,
@@ -93,7 +93,7 @@ class HospitalPatientsController extends AbstractController
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
      * @OA\Parameter(name="offset", in="query", description="Stránkovanie po 1000 záznamov na stránku.")
-     * @OA\Parameter(name="updated_after", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
+     * @OA\Parameter(name="updated_since", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
      *
      * @OA\Response(
      *     response=200,
@@ -159,7 +159,7 @@ class HospitalPatientsController extends AbstractController
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
      * @OA\Parameter(name="offset", in="query", description="Stránkovanie po 1000 záznamov na stránku.")
-     * @OA\Parameter(name="updated_after", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
+     * @OA\Parameter(name="updated_since", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
      *
      * @OA\Response(
      *     response=200,
@@ -225,7 +225,7 @@ class HospitalPatientsController extends AbstractController
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
      * @OA\Parameter(name="offset", in="query", description="Stránkovanie po 1000 záznamov na stránku.")
-     * @OA\Parameter(name="updated_after", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
+     * @OA\Parameter(name="updated_since", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
      *
      * @OA\Response(
      *     response=200,

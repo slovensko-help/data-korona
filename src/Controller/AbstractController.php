@@ -13,14 +13,14 @@ class AbstractController extends AbstractFOSRestController
     protected function paginatedResponse(PaginableRepositoryInterface $repository, Request $request)
     {
         $offset = $request->get('offset', PHP_INT_MAX);
-        $rawUpdatedAfter = $request->get('updated_after', null);
-        $updatedAfter = null === $rawUpdatedAfter ? null : DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $rawUpdatedAfter);
+        $rawUpdatedSince = $request->get('updated_since', null);
+        $updatedSince = null === $rawUpdatedSince ? null : DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $rawUpdatedSince);
 
-        if (false === $updatedAfter) {
+        if (false === $updatedSince) {
             return $this->handleView($this->view([
                 'success' => false,
-                'code' => 'invalid_value_update_after',
-                'error' => 'Invalid value. Updated_after must be empty or properly formatted. Example: ' . date('Y-m-d H:i:s'),
+                'code' => 'invalid_value_updated_since',
+                'error' => 'Invalid value. Updated_since must be empty or properly formatted. Example: ' . date('Y-m-d H:i:s'),
             ], Response::HTTP_BAD_REQUEST));
         }
 
@@ -32,7 +32,7 @@ class AbstractController extends AbstractFOSRestController
             ], Response::HTTP_BAD_REQUEST));
         }
 
-        $result = $repository->findOnePage($offset, $updatedAfter);
+        $result = $repository->findOnePage($offset, $updatedSince);
 
         $nextOffset = count($result) > 0 ? $result[count($result) - 1]->getId() : null;
 
