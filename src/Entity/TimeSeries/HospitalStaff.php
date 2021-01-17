@@ -73,7 +73,7 @@ class HospitalStaff
     private $outOfWorkRatioNurse;
 
     /**
-     * Percentuálny podiel iných zdravotníckych pracovníkov, ktorí majú potvrdený COVID alebo sú v karanténe z počtu všetkých zdravotníckych pracovníkov
+     * Percentuálny podiel iných zdravotníckych pracovníkov, ktorí majú potvrdený COVID alebo sú v karanténe z počtu všetkých iných zdravotníckych pracovníkov
      *
      * @ORM\Column(type="float", nullable=true)
      *
