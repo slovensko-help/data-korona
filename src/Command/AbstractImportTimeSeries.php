@@ -14,6 +14,7 @@ use App\Repository\DistrictRepository;
 use App\Repository\HospitalBedsRepository;
 use App\Repository\HospitalPatientsRepository;
 use App\Repository\HospitalRepository;
+use App\Repository\HospitalStaffRepository;
 use App\Repository\RegionHospitalBedsRepository;
 use App\Repository\RegionHospitalPatientsRepository;
 use App\Repository\RegionRepository;
@@ -44,6 +45,7 @@ abstract class AbstractImportTimeSeries extends Command
     protected $districtHospitalPatientsRepository;
     protected $regionHospitalPatientsRepository;
     protected $slovakiaHospitalPatientsRepository;
+    protected $hospitalStaffRepository;
 
     public function __construct(
         EntityManagerInterface $managerRegistry,
@@ -60,6 +62,7 @@ abstract class AbstractImportTimeSeries extends Command
         DistrictHospitalPatientsRepository $districtHospitalPatientsRepository,
         RegionHospitalPatientsRepository $regionHospitalPatientsRepository,
         SlovakiaHospitalPatientsRepository $slovakiaHospitalPatientsRepository,
+        HospitalStaffRepository $hospitalStaffRepository,
         string $name = null
     )
     {
@@ -82,6 +85,7 @@ abstract class AbstractImportTimeSeries extends Command
         $this->districtHospitalPatientsRepository = $districtHospitalPatientsRepository;
         $this->regionHospitalPatientsRepository = $regionHospitalPatientsRepository;
         $this->slovakiaHospitalPatientsRepository = $slovakiaHospitalPatientsRepository;
+        $this->hospitalStaffRepository = $hospitalStaffRepository;
     }
 
     private function isValidCode($code) {
@@ -209,6 +213,11 @@ abstract class AbstractImportTimeSeries extends Command
     protected function nullOrInt($stringValue): ?int
     {
         return '' === $stringValue ? null : (int)$stringValue;
+    }
+
+    protected function nullOrFloat($stringValue): ?float
+    {
+        return '' === $stringValue ? null : round((float) str_replace(',', '.', $stringValue), 3);
     }
 
     protected function csvRecords($csvString): Generator

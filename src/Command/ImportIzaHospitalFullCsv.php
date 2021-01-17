@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\Hospital;
 use App\Entity\TimeSeries\HospitalBeds;
 use App\Entity\TimeSeries\HospitalPatients;
+use App\Entity\TimeSeries\HospitalStaff;
 use App\Entity\Traits\HospitalBedsData;
 use App\Entity\Traits\HospitalPatientsData;
 use App\Repository\AbstractRepository;
@@ -69,13 +70,14 @@ class ImportIzaHospitalFullCsv extends AbstractImportTimeSeries
 
             $this->hospitalBeds($record, $hospital);
             $this->hospitalPatients($record, $hospital);
+            $this->hospitalStaff($record, $hospital);
 
             if ($count % 1000 === 0) {
-                $this->commitChangesToDb([HospitalBeds::class, HospitalPatients::class]);
+                $this->commitChangesToDb([HospitalBeds::class, HospitalPatients::class, HospitalStaff::class]);
             }
         }
 
-        $this->commitChangesToDb([HospitalBeds::class, HospitalPatients::class]);
+        $this->commitChangesToDb([HospitalBeds::class, HospitalPatients::class, HospitalStaff::class]);
 
         $output->writeln($this->log('DONE.'));
 
@@ -296,11 +298,35 @@ class ImportIzaHospitalFullCsv extends AbstractImportTimeSeries
                     ->setHospital($hospital)
                     ->setPublishedOn($publishedOn)
                     ->setReportedAt($this->dateTimeFromString($record['DATUM_VYPL'], 'Y-m-d H:i:s'))
-                    ->setConfirmedCovid($record['ZAR_COVID'])
-                    ->setSuspectedCovid($record['ZAR_COVID_HYPOT'])
-                    ->setNonCovid($record['ZAR_OBSADENE'])
-                    ->setVentilatedCovid($record['POSTELE_COVID_PL']);
+                    ->setConfirmedCovid($this->nullOrInt($record['ZAR_COVID']))
+                    ->setSuspectedCovid($this->nullOrInt($record['ZAR_COVID_HYPOT']))
+                    ->setNonCovid($this->nullOrInt($record['ZAR_OBSADENE']))
+                    ->setVentilatedCovid($this->nullOrInt($record['POSTELE_COVID_PL']));
             }, $this->hospitalPatientsRepository, ['id' => $id], false);
+        }
+    }
+
+    private function hospitalStaff(array $record, ?Hospital $hospital)
+    {
+        if ($hospital instanceof Hospital) {
+            $publishedOn = $this->dateTimeFromString($record['DAT_SPRAC'], 'Y-m-d H:i:s', 'Y-m-d');
+            $id = $this->idFromDateTimeAndInt($publishedOn, $hospital->getId());
+
+            $this->updateOrCreate(function (?HospitalStaff $hospitalStaff) use ($record, $id, $publishedOn, $hospital) {
+                if (null === $hospitalStaff) {
+                    $hospitalStaff = new HospitalStaff();
+                }
+
+                return $hospitalStaff
+                    ->setId($id)
+                    ->setHospital($hospital)
+                    ->setPublishedOn($publishedOn)
+                    ->setReportedAt($this->dateTimeFromString($record['DATUM_VYPL'], 'Y-m-d H:i:s'))
+                    ->setOutOfWorkRatioDoctor($this->nullOrFloat($record['PERSONAL_LEKAR_PERC_PN']))
+                    ->setOutOfWorkRatioNurse($this->nullOrFloat($record['PERSONAL_SESTRA_PERC_PN']))
+                    ->setOutOfWorkRatioOther($this->nullOrFloat($record['PERSONAL_OSTATNI_PERC_PN']))
+                    ;
+            }, $this->hospitalStaffRepository, ['id' => $id], false);
         }
     }
 
