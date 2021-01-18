@@ -6,6 +6,20 @@ See https://symfony.com/blog/new-in-symfony-3-4-improved-the-overriding-of-templ
 #}
 {% extends '@!NelmioApiDoc/SwaggerUi/index.html.twig' %}
 
+{% block swagger_data %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMBNHEYBR5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-RMBNHEYBR5');
+    </script>
+
+    {{ parent() }}
+{% endblock swagger_data %}
+
 {% block header %}
     <style>
         header {
