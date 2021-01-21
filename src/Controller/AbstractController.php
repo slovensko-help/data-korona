@@ -14,7 +14,13 @@ class AbstractController extends AbstractFOSRestController
     {
         $offset = $request->get('offset', PHP_INT_MAX);
         $rawUpdatedSince = $request->get('updated_since', null);
+        $rawPublishedSince = $request->get('published_since', null);
         $updatedSince = null === $rawUpdatedSince ? null : DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $rawUpdatedSince);
+        $publishedSince = null === $rawPublishedSince ? null : DateTimeImmutable::createFromFormat('Y-m-d', $rawPublishedSince)->setTime(0, 0, 0);
+
+        if (false === $publishedSince) {
+            $publishedSince = null;
+        }
 
         if (false === $updatedSince) {
             return $this->handleView($this->view([
@@ -32,7 +38,7 @@ class AbstractController extends AbstractFOSRestController
             ], Response::HTTP_BAD_REQUEST));
         }
 
-        $result = $repository->findOnePage($offset, $updatedSince);
+        $result = $repository->findOnePage($offset, $updatedSince, $publishedSince);
 
         $nextOffset = count($result) > 0 ? $result[count($result) - 1]->getId() : null;
 

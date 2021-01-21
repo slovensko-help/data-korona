@@ -14,7 +14,7 @@ trait Paginable {
      * @param int $limit
      * @return array
      */
-    public function findOnePage(int $offsetId, ?DateTimeImmutable $updatedSince = null, int $limit = 1000): array
+    public function findOnePage(int $offsetId, ?DateTimeImmutable $updatedSince = null, ?DateTimeImmutable $publishedSince = null, int $limit = 1000): array
     {
         $qb = $this->createQueryBuilder('o')
             ->where('o.id < :offsetId')
@@ -25,6 +25,11 @@ trait Paginable {
         if ($updatedSince instanceof DateTimeImmutable) {
             $qb->andWhere('o.updatedAt >= :updatedSince')
                 ->setParameter('updatedSince', $updatedSince, Types::DATETIME_IMMUTABLE);
+        }
+
+        if ($publishedSince instanceof DateTimeImmutable) {
+            $qb->andWhere('o.publishedOn >= :publishedSince')
+                ->setParameter('publishedSince', $publishedSince, Types::DATETIME_IMMUTABLE);
         }
 
         return $qb->getQuery()->getResult();
