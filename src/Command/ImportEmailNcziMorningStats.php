@@ -3,15 +3,17 @@
 namespace App\Command;
 
 use App\Entity\NcziMorningEmail;
+use App\Entity\Notification;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class ImportEmailMorningStats extends AbstractImportTimeSeries
+class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
 {
     const ATTRIBUTE_PATTERNS = [
         // date since when the attributes were available in the email
@@ -51,7 +53,7 @@ class ImportEmailMorningStats extends AbstractImportTimeSeries
             ],
         ],
     ];
-    protected static $defaultName = 'app:import:email:morning-stats';
+    protected static $defaultName = 'app:import:email:nczi-morning-stats';
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -64,12 +66,11 @@ class ImportEmailMorningStats extends AbstractImportTimeSeries
         list($resolvedEmails, $errors, $notices) = $this->resolvedEmailsAndErrors($emails);
 
         foreach ($resolvedEmails as $record) {
-            $this->ncziMornignEmail($record);
+            $email = $this->ncziMornignEmail($record);
+            $emails[] = $email;
         }
 
-//        dump($resolvedEmails);
-        dump($errors);
-//        dump($notices);
+        $this->notifyErrors($errors);
 
         $output->writeln($this->log('DONE.'));
 
@@ -84,7 +85,7 @@ class ImportEmailMorningStats extends AbstractImportTimeSeries
             'password' => $this->parameterBag->get('korona_email_password'),
             'token' => $this->parameterBag->get('korona_email_proxy_token'),
             'subject' => 'Rann',
-            'since' => (new DateTimeImmutable('3 days ago'))->format('j F Y'),
+            'since' => (new DateTimeImmutable('2 days ago'))->format('j F Y'),
         ];
 
         $debug = false;
@@ -408,9 +409,8 @@ class ImportEmailMorningStats extends AbstractImportTimeSeries
                 } else {
                     if (mb_strpos($attributes[$attribute][0]['v1'], 'žiad') === 0) {
                         $result[$attribute] = 0;
-                    }
-                    else {
-                        $result[$attribute] = (int) $attributes[$attribute][0]['v1'];
+                    } else {
+                        $result[$attribute] = (int)$attributes[$attribute][0]['v1'];
                     }
                 }
             }
@@ -452,5 +452,59 @@ class ImportEmailMorningStats extends AbstractImportTimeSeries
 
             return $ncziMorningEmail;
         }, $this->ncziMorningEmailRepository, ['id' => $id], true);
+    }
+
+    private function notifyErrors(array $errors)
+    {
+        $errorsText = [];
+        foreach ($errors as $date => $errorsForDate) {
+            if (!$this->wasNotified(self::$defaultName . 'errors-on' . $date, $errorsForDate)) {
+                $errorsText[] = "Email zo dňa $date:";
+                $errorsText[] = "------------------------";
+
+                foreach ($errorsForDate as $error) {
+                    $errorsText[] = $error;
+                }
+
+                $errorsText[] = "";
+            }
+        }
+
+        if (!empty($errorsText)) {
+            $text = "Zdravím\n\n";
+            $text .= "je nutné skontrolovať email(y) z NCZI, pretože pri automatickom extrahovaní údajov došlo k nejakým chybám.\n\n";
+            $text .= implode("\n", $errorsText);
+            $text .= "\n\nS pozdravom,\n";
+            $text .= "Automat na data.korona.gov.sk\n";
+
+            $email = (new Email())
+                ->from('data.korona.gov.sk <filip@bratia.sk>')
+                ->to('korona.gov@krizovystab.sk')
+                ->subject('❗ Konverzia NCZI emailu do API si vyžaduje hýčkanie a opateru')
+                ->text($text);
+
+            $this->mailer->send($email);
+        }
+    }
+
+    private function wasNotified($rawObjectId, $content)
+    {
+        $id = md5($rawObjectId);
+
+        $entities = $this->updateOrCreate(function (?Notification $ncziMorningEmail) use ($id, $content) {
+            return ($ncziMorningEmail ?? new Notification())
+                ->setId($id)
+                ->setContentHash(md5(json_encode($content)))
+                ->setContent(json_encode($content));
+
+        }, $this->notificationRepository, ['id' => $id], true, true);
+
+        /** @var Notification $beforeUpdate */
+        $beforeUpdate = $entities['before'];
+
+        /** @var Notification $afterUpdate */
+        $afterUpdate = $entities['after'];
+
+        return null !== $beforeUpdate && $beforeUpdate->getContentHash() === $afterUpdate->getContentHash();
     }
 }

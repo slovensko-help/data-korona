@@ -15,6 +15,7 @@ use App\Repository\HospitalPatientsRepository;
 use App\Repository\HospitalRepository;
 use App\Repository\HospitalStaffRepository;
 use App\Repository\NcziMorningEmailRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\RegionHospitalBedsRepository;
 use App\Repository\RegionHospitalPatientsRepository;
 use App\Repository\RegionRepository;
@@ -28,6 +29,8 @@ use League\Csv\Reader;
 use League\Csv\Statement;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Notifier\ChatterInterface;
 
 abstract class AbstractImportTimeSeries extends Command
 {
@@ -48,10 +51,13 @@ abstract class AbstractImportTimeSeries extends Command
     protected $hospitalStaffRepository;
     protected $ncziMorningEmailRepository;
     protected $parameterBag;
+    protected $mailer;
+    protected $notificationRepository;
 
     public function __construct(
         EntityManagerInterface $managerRegistry,
         Connection $connection,
+        MailerInterface $mailer,
         HospitalRepository $hospitalRepository,
         CityRepository $cityRepository,
         DistrictRepository $districtRepository,
@@ -66,6 +72,7 @@ abstract class AbstractImportTimeSeries extends Command
         SlovakiaHospitalPatientsRepository $slovakiaHospitalPatientsRepository,
         HospitalStaffRepository $hospitalStaffRepository,
         NcziMorningEmailRepository $ncziMorningEmailRepository,
+        NotificationRepository $notificationRepository,
         ParameterBagInterface $parameterBag,
         string $name = null
     )
@@ -92,6 +99,8 @@ abstract class AbstractImportTimeSeries extends Command
         $this->hospitalStaffRepository = $hospitalStaffRepository;
         $this->parameterBag = $parameterBag;
         $this->ncziMorningEmailRepository = $ncziMorningEmailRepository;
+        $this->mailer = $mailer;
+        $this->notificationRepository = $notificationRepository;
     }
 
     protected function fileContent(string $filePathOrUrl, array $formData = null)
@@ -212,9 +221,20 @@ abstract class AbstractImportTimeSeries extends Command
         return null;
     }
 
-    protected function updateOrCreate(callable $updateEntityCallback, EntityRepository $repository, array $criteria, $flushAutomatically = false)
+    /**
+     * @param callable $updateEntityCallback
+     * @param EntityRepository $repository
+     * @param array $criteria
+     * @param false $flushAutomatically
+     * @param false $returnBeforeAndAfterUpdate
+     * @return mixed
+     */
+    protected function updateOrCreate(callable $updateEntityCallback, EntityRepository $repository, array $criteria, $flushAutomatically = false, $returnBeforeAndAfterUpdate = false)
     {
-        $entity = $updateEntityCallback($repository->findOneBy($criteria));
+        $entity = $repository->findOneBy($criteria);
+        $beforeEntity = null === $entity ? null : clone $entity;
+
+        $entity = $updateEntityCallback($entity);
 
         if (null !== $entity) {
             $this->entityManager->persist($entity);
@@ -224,7 +244,10 @@ abstract class AbstractImportTimeSeries extends Command
             }
         }
 
-        return $entity;
+        return $returnBeforeAndAfterUpdate ? [
+            'before' => $beforeEntity,
+            'after' => $entity,
+        ] : $entity;
     }
 
     protected function nullOrInt($stringValue): ?int
