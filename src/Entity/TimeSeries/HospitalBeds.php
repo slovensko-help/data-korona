@@ -28,6 +28,8 @@ class HospitalBeds
     use HospitalBedsData;
 
     /**
+     * Interné id záznamu
+     *
      * @ORM\Id
      * @ORM\Column(type="integer", options={"unsigned"=true})
      *
@@ -82,6 +84,8 @@ class HospitalBeds
     }
 
     /**
+     * Interné id nemocnice z /api/hospitals
+     *
      * @Serializer\VirtualProperty()
      * @Serializer\Type("int")
      */

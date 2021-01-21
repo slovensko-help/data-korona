@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Region
 {
     /**
+     * Interné id záznamu
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -33,6 +35,13 @@ class Region
      * @var string
      */
     private $code;
+
+    /**
+     * @ORM\Column(type="string", unique=true, length=2)
+     *
+     * @var string
+     */
+    private $abbreviation;
 
     public function getId(): ?int
     {
@@ -64,6 +73,17 @@ class Region
     public function setTitle(string $title): self
     {
         $this->title = $title;
+        return $this;
+    }
+
+    public function getAbbreviation(): string
+    {
+        return $this->abbreviation;
+    }
+
+    public function setAbbreviation(string $abbreviation): self
+    {
+        $this->abbreviation = $abbreviation;
         return $this;
     }
 }

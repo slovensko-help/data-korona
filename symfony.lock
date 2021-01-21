@@ -96,6 +96,9 @@
             "config/packages/fos_rest.yaml"
         ]
     },
+    "jamesiarmes/php-ntlm": {
+        "version": "1.0.0"
+    },
     "jms/metadata": {
         "version": "2.4.0"
     },
@@ -143,6 +146,9 @@
     },
     "php": {
         "version": "7.2"
+    },
+    "php-ews/php-ews": {
+        "version": "1.0.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.2.0"

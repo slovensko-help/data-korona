@@ -4,6 +4,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+  korona_email_proxy_url: '%env(resolve:KORONA_EMAIL_PROXY_URL)%'
+  korona_email_proxy_token: '%env(resolve:KORONA_EMAIL_PROXY_TOKEN)%'
+  korona_email_mailbox: '%env(resolve:KORONA_EMAIL_MAILBOX)%'
+  korona_email_user: '%env(resolve:KORONA_EMAIL_USER)%'
+  korona_email_password: '%env(resolve:KORONA_EMAIL_PASSWORD)%'
 
 services:
   # default configuration for services in *this* file

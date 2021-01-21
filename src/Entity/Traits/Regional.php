@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Entity\Aggregation;
+namespace App\Entity\Traits;
 
 use App\Entity\Region;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
-abstract class AbstractRegionData extends AbstractData
+trait Regional
 {
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Region")
@@ -29,6 +29,8 @@ abstract class AbstractRegionData extends AbstractData
     }
 
     /**
+     * Interné id regiónu z regiónov z /api/regions
+     *
      * @Serializer\VirtualProperty()
      * @Serializer\Type("int")
      */

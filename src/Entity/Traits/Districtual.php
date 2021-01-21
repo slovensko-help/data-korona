@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Entity\Aggregation;
+namespace App\Entity\Traits;
 
 use App\Entity\District;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
-abstract class AbstractDistrictData extends AbstractData
+trait Districtual
 {
-
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\District")
      *
@@ -30,6 +29,8 @@ abstract class AbstractDistrictData extends AbstractData
     }
 
     /**
+     * Interné id okresu z /api/districts
+     *
      * @Serializer\VirtualProperty()
      * @Serializer\Type("int")
      */

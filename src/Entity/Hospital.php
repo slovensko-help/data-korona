@@ -13,6 +13,8 @@ use JMS\Serializer\Annotation as Serializer;
 class Hospital
 {
     /**
+     * Interné id záznamu
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -76,6 +78,8 @@ class Hospital
     }
 
     /**
+     * Interné id obce z /api/cities
+     *
      * @Serializer\VirtualProperty()
      * @Serializer\Type("int")
      */

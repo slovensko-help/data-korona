@@ -18,6 +18,8 @@ class SlovakiaHospitalBeds extends AbstractData
     use Timestampable;
 
     /**
+     * Interné id záznamu
+     *
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      *

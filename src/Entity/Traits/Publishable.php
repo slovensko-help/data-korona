@@ -10,7 +10,7 @@ use OpenApi\Annotations\Property;
 trait Publishable
 {
     /**
-     * Deň, pre ktorý sú platné dáta záznamu
+     * Deň, pre ktorý sú dáta záznamu publikované pre potreby štatistík
      *
      * @ORM\Column(type="date_immutable")
      * @Serializer\Type("DateTimeImmutable<'Y-m-d'>")

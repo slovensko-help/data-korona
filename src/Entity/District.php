@@ -13,6 +13,8 @@ use JMS\Serializer\Annotation as Serializer;
 class District
 {
     /**
+     * Interné id záznamu
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -79,7 +81,8 @@ class District
     }
 
     /**
-     * @Serializer\Expose()
+     * Interné id kraja z /api/regions
+     *
      * @Serializer\VirtualProperty()
      * @Serializer\Type("int")
      */

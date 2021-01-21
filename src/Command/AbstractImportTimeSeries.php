@@ -6,7 +6,6 @@ use App\Entity\City;
 use App\Entity\District;
 use App\Entity\Hospital;
 use App\Entity\Region;
-use App\Entity\TimeSeries\HospitalPatients;
 use App\Repository\CityRepository;
 use App\Repository\DistrictHospitalBedsRepository;
 use App\Repository\DistrictHospitalPatientsRepository;
@@ -15,6 +14,7 @@ use App\Repository\HospitalBedsRepository;
 use App\Repository\HospitalPatientsRepository;
 use App\Repository\HospitalRepository;
 use App\Repository\HospitalStaffRepository;
+use App\Repository\NcziMorningEmailRepository;
 use App\Repository\RegionHospitalBedsRepository;
 use App\Repository\RegionHospitalPatientsRepository;
 use App\Repository\RegionRepository;
@@ -27,6 +27,7 @@ use Generator;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 abstract class AbstractImportTimeSeries extends Command
 {
@@ -38,7 +39,6 @@ abstract class AbstractImportTimeSeries extends Command
     protected $cityRepository;
     protected $hospitalPatientsRepository;
     protected $hospitalBedsRepository;
-    protected $latestHospitalPatientsRepository;
     protected $districtHospitalBedsRepository;
     protected $regionHospitalBedsRepository;
     protected $slovakiaHospitalBedsRepository;
@@ -46,6 +46,8 @@ abstract class AbstractImportTimeSeries extends Command
     protected $regionHospitalPatientsRepository;
     protected $slovakiaHospitalPatientsRepository;
     protected $hospitalStaffRepository;
+    protected $ncziMorningEmailRepository;
+    protected $parameterBag;
 
     public function __construct(
         EntityManagerInterface $managerRegistry,
@@ -63,6 +65,8 @@ abstract class AbstractImportTimeSeries extends Command
         RegionHospitalPatientsRepository $regionHospitalPatientsRepository,
         SlovakiaHospitalPatientsRepository $slovakiaHospitalPatientsRepository,
         HospitalStaffRepository $hospitalStaffRepository,
+        NcziMorningEmailRepository $ncziMorningEmailRepository,
+        ParameterBagInterface $parameterBag,
         string $name = null
     )
     {
@@ -86,10 +90,23 @@ abstract class AbstractImportTimeSeries extends Command
         $this->regionHospitalPatientsRepository = $regionHospitalPatientsRepository;
         $this->slovakiaHospitalPatientsRepository = $slovakiaHospitalPatientsRepository;
         $this->hospitalStaffRepository = $hospitalStaffRepository;
+        $this->parameterBag = $parameterBag;
+        $this->ncziMorningEmailRepository = $ncziMorningEmailRepository;
     }
 
-    private function isValidCode($code) {
-        return !empty($code) && $code !== 'NA';
+    protected function fileContent(string $filePathOrUrl, array $formData = null)
+    {
+        if (null === $formData) {
+            return file_get_contents(str_replace('@project_dir', $this->parameterBag->get('kernel.project_dir'), $filePathOrUrl));
+        }
+
+        return file_get_contents($filePathOrUrl, false, stream_context_create(['http' =>
+            [
+                'method' => 'POST',
+                'header' => 'Content-Type: application/x-www-form-urlencoded',
+                'content' => http_build_query($formData)
+            ]
+        ]));
     }
 
     protected function region(array $record): ?Region
@@ -217,7 +234,7 @@ abstract class AbstractImportTimeSeries extends Command
 
     protected function nullOrFloat($stringValue): ?float
     {
-        return '' === $stringValue ? null : round((float) str_replace(',', '.', $stringValue), 3);
+        return '' === $stringValue ? null : round((float)str_replace(',', '.', $stringValue), 3);
     }
 
     protected function csvRecords($csvString): Generator
@@ -232,5 +249,15 @@ abstract class AbstractImportTimeSeries extends Command
                 yield $record;
             }
         }
+    }
+
+    protected function log($message)
+    {
+        return '[' . date('Y-m-d H:i:s') . '] ' . $message;
+    }
+
+    private function isValidCode($code)
+    {
+        return !empty($code) && $code !== 'NA';
     }
 }

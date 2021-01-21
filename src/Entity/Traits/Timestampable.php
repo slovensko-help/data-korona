@@ -19,7 +19,7 @@ trait Timestampable {
     protected $createdAt;
 
     /**
-     * Čas poslednej aktualizácie záznamu
+     * Čas poslednej aktualizácie záznamu (čas poslednej zmeny hodnoty niektorého z atribútov záznamu)
      *
      * @ORM\Column(type="datetime_immutable")
      * @Serializer\Type("DateTimeImmutable<'Y-m-d H:i:s'>")
