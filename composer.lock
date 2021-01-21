@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d5664d70eeed7b08adfb791f3a5bce2c",
+    "content-hash": "7cee34d8312a1fd0c92723bf2f1dbf1d",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -325,16 +325,16 @@
         },
         {
             "name": "doctrine/common",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/common.git",
-                "reference": "9f3e3f3cc5399604c0325d5ffa92609d694d950d"
+                "reference": "2afde5a9844126bc311cd5f548b5475e75f800d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/common/zipball/9f3e3f3cc5399604c0325d5ffa92609d694d950d",
-                "reference": "9f3e3f3cc5399604c0325d5ffa92609d694d950d",
+                "url": "https://api.github.com/repos/doctrine/common/zipball/2afde5a9844126bc311cd5f548b5475e75f800d3",
+                "reference": "2afde5a9844126bc311cd5f548b5475e75f800d3",
                 "shasum": ""
             },
             "require": {
@@ -406,7 +406,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-12-03T21:02:31+00:00"
+            "time": "2021-01-20T19:58:05+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -1617,48 +1617,6 @@
             "time": "2020-12-10T20:14:08+00:00"
         },
         {
-            "name": "jamesiarmes/php-ntlm",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jamesiarmes/php-ntlm.git",
-                "reference": "08fa988af7506b8dc366737b06c86633ba8cecbc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jamesiarmes/php-ntlm/zipball/08fa988af7506b8dc366737b06c86633ba8cecbc",
-                "reference": "08fa988af7506b8dc366737b06c86633ba8cecbc",
-                "shasum": ""
-            },
-            "require": {
-                "ext-soap": "*",
-                "php": ">=5.3.9"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "jamesiarmes\\PhpNtlm\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Armes",
-                    "email": "jamesiarmes@gmail.com"
-                }
-            ],
-            "description": "Library for communicating with Microsoft services using NTLM authentication.",
-            "time": "2017-10-04T01:14:17+00:00"
-        },
-        {
             "name": "jms/metadata",
             "version": "2.4.0",
             "source": {
@@ -2232,53 +2190,6 @@
                 "rest"
             ],
             "time": "2020-12-27T18:14:14+00:00"
-        },
-        {
-            "name": "php-ews/php-ews",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jamesiarmes/php-ews.git",
-                "reference": "405f03cb679eff59c84f223962c9cadf14b38450"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jamesiarmes/php-ews/zipball/405f03cb679eff59c84f223962c9cadf14b38450",
-                "reference": "405f03cb679eff59c84f223962c9cadf14b38450",
-                "shasum": ""
-            },
-            "require": {
-                "ext-soap": "*",
-                "jamesiarmes/php-ntlm": "~1.0",
-                "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "mustache/mustache": "~2.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "jamesiarmes\\PhpEws\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Armes",
-                    "email": "jamesiarmes@gmail.com"
-                }
-            ],
-            "description": "Library for communicating with Exchange Web Services.",
-            "homepage": "http://jamesarmes.com/php-ews/",
-            "time": "2017-10-04T01:18:36+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -6193,12 +6104,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
