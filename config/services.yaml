@@ -9,6 +9,7 @@ parameters:
   korona_email_mailbox: '%env(resolve:KORONA_EMAIL_MAILBOX)%'
   korona_email_user: '%env(resolve:KORONA_EMAIL_USER)%'
   korona_email_password: '%env(resolve:KORONA_EMAIL_PASSWORD)%'
+  korona_email_valid_senders: '%env(resolve:KORONA_EMAIL_VALID_SENDERS)%'
 
 services:
   # default configuration for services in *this* file

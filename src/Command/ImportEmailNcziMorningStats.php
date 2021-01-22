@@ -15,6 +15,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
 {
+    const SPF_PASS_PATTERN = '/^authentication-results: spf=pass(\n|.)*?smtp\.mailfrom=nczisk\.sk(\n|.)*?compauth=pass/im';
     const ATTRIBUTE_PATTERNS = [
         // date since when the attributes were available in the email
         '2020-01-01' => [
@@ -53,7 +54,10 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
             ],
         ],
     ];
+
     protected static $defaultName = 'app:import:email:nczi-morning-stats';
+
+    private $debug = true;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -70,7 +74,9 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
             $emails[] = $email;
         }
 
-        $this->notifyErrors($errors);
+        if (!$this->debug) {
+            $this->notifyErrors($errors);
+        }
 
         $output->writeln($this->log('DONE.'));
 
@@ -88,9 +94,7 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
             'since' => (new DateTimeImmutable('2 days ago'))->format('j F Y'),
         ];
 
-        $debug = false;
-
-        if ($debug) {
+        if ($this->debug) {
             $filename = 'mailbox-' . md5(json_encode($formData)) . '.json';
 
             if (!is_file($filename)) {
@@ -138,11 +142,10 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
 
         $emailsWithResolvedDates = [];
 
-        // first pass - resolve dates
+        // first pass - validate sender and resolve dates
         foreach ($emails as $index => $email) {
             try {
-                if (strpos($email['from'], 'reporting.covid@nczisk.sk') === false &&
-                    strpos($email['from'], 'Natalia.Masikova@nczisk.sk') === false) {
+                if (!$this->isValidSender($email)) {
                     continue 1;
                 }
 
@@ -243,6 +246,23 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
         }
 
         return [$resolvedEmails, $errors, $notices];
+    }
+
+    private function isValidSender(array $email)
+    {
+        $validSenders = explode(',', $this->parameterBag->get('korona_email_valid_senders'));
+
+        $spfPassed = preg_match(self::SPF_PASS_PATTERN, $email['raw_headers']);
+        $isValidSender = false;
+
+        while (!$isValidSender && $sender = current($email['headers']['sender'])) {
+            if (in_array($sender['mailbox'] . '@' . $sender['host'], $validSenders)) {
+                $isValidSender = true;
+            }
+            next($email['headers']['sender']);
+        }
+
+        return $spfPassed && $isValidSender;
     }
 
     private function datetimeFromEmailDate(string $emailDate): DateTimeImmutable
