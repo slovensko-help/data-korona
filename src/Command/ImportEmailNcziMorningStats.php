@@ -145,21 +145,19 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
         // first pass - validate sender and resolve dates
         foreach ($emails as $index => $email) {
             try {
-                if (!$this->isValidSender($email)) {
-                    continue 1;
+                if ($this->isValidSender($email)) {
+                    $email['reported_at'] = $this->datetimeFromEmailDate($email['headers']['date']);
+
+                    try {
+                        $email['published_on'] = $this->datetimeFromEmailSubject($email['headers']['subject'], $email['reported_at']);
+                    } catch (Exception $exception) {
+                        $email['published_on'] = $email['reported_at']->sub(new DateInterval('P1D'));
+                        $this->updateErrors($errors, $email, $exception->getMessage());
+                        $this->updateErrors($errors, $email, 'NOTICE: published_on was calculated as one day before reported_at time ' . $email['headers']['date'] . '. You can ignore previous error.');
+                    }
+
+                    $emailsWithResolvedDates[] = $email;
                 }
-
-                $email['reported_at'] = $this->datetimeFromEmailDate($email['headers']['date']);
-
-                try {
-                    $email['published_on'] = $this->datetimeFromEmailSubject($email['headers']['subject'], $email['reported_at']);
-                } catch (Exception $exception) {
-                    $email['published_on'] = $email['reported_at']->sub(new DateInterval('P1D'));
-                    $this->updateErrors($errors, $email, $exception->getMessage());
-                    $this->updateErrors($errors, $email, 'NOTICE: published_on was calculated as one day before reported_at time ' . $email['headers']['date'] . '. You can ignore previous error.');
-                }
-
-                $emailsWithResolvedDates[] = $email;
             } catch (Exception $exception) {
                 $this->updateErrors($errors, $email, $exception->getMessage());
             }
