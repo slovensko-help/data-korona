@@ -248,19 +248,19 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
 
     private function isValidSender(array $email)
     {
-        $validSenders = explode(',', $this->parameterBag->get('korona_email_valid_senders'));
-
-        $spfPassed = preg_match(self::SPF_PASS_PATTERN, $email['raw_headers']);
-        $isValidSender = false;
-
-        while (!$isValidSender && $sender = current($email['headers']['sender'])) {
-            if (in_array($sender['mailbox'] . '@' . $sender['host'], $validSenders)) {
-                $isValidSender = true;
-            }
-            next($email['headers']['sender']);
+        if (!preg_match(self::SPF_PASS_PATTERN, $email['raw_headers'])) {
+            return false;
         }
 
-        return $spfPassed && $isValidSender;
+        $validSenders = explode(',', $this->parameterBag->get('korona_email_valid_senders'));
+
+        foreach ($email['headers']['sender'] as $sender) {
+            if (in_array($sender['mailbox'] . '@' . $sender['host'], $validSenders)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function datetimeFromEmailDate(string $emailDate): DateTimeImmutable
