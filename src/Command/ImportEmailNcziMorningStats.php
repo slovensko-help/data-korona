@@ -57,7 +57,7 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
 
     protected static $defaultName = 'app:import:email:nczi-morning-stats';
 
-    private $debug = true;
+    private $debug = false;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -149,14 +149,14 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
                     continue 1;
                 }
 
-                $email['reported_at'] = $this->datetimeFromEmailDate($email['date']);
+                $email['reported_at'] = $this->datetimeFromEmailDate($email['headers']['date']);
 
                 try {
-                    $email['published_on'] = $this->datetimeFromEmailSubject($email['subject'], $email['reported_at']);
+                    $email['published_on'] = $this->datetimeFromEmailSubject($email['headers']['subject'], $email['reported_at']);
                 } catch (Exception $exception) {
                     $email['published_on'] = $email['reported_at']->sub(new DateInterval('P1D'));
                     $this->updateErrors($errors, $email, $exception->getMessage());
-                    $this->updateErrors($errors, $email, 'NOTICE: published_on was calculated as one day before reported_at time ' . $email['date'] . '. You can ignore previous error.');
+                    $this->updateErrors($errors, $email, 'NOTICE: published_on was calculated as one day before reported_at time ' . $email['headers']['date'] . '. You can ignore previous error.');
                 }
 
                 $emailsWithResolvedDates[] = $email;
@@ -304,11 +304,11 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
         if (isset($email['published_on'])) {
             $date = $email['published_on']->format('Y-m-d');
         } else {
-            $date = $email['date'];
+            $date = $email['headers']['date'];
         }
 
         $errors[$date] = isset($errors[$date]) ? $errors[$date] : [];
-        $errors[$date][] = '[' . $email['date'] . '] ' . $message;
+        $errors[$date][] = '[' . $email['headers']['date'] . '] ' . $message;
     }
 
     /**

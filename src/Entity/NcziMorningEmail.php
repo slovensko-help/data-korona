@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Traits\Datetimeable;
 use App\Entity\Traits\Timestampable;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,6 +18,7 @@ use OpenApi\Annotations\Property;
 class NcziMorningEmail
 {
     use Timestampable;
+    use Datetimeable;
 
     /**
      * @ORM\Id
@@ -303,9 +305,7 @@ class NcziMorningEmail
 
     public function setPublishedOn(DateTimeImmutable $publishedOn): self
     {
-        $this->publishedOn = $publishedOn;
-
-        return $this;
+         return $this->updateDateTime($this->publishedOn, $publishedOn);
     }
 
     public function getReportedAt(): DateTimeImmutable
@@ -315,9 +315,7 @@ class NcziMorningEmail
 
     public function setReportedAt(DateTimeImmutable $reportedAt): self
     {
-        $this->reportedAt = $reportedAt;
-
-        return $this;
+        return $this->updateDateTime($this->reportedAt, $reportedAt);
     }
 
     public function getSlovakiaTestsPcrPositiveDelta(): ?int
