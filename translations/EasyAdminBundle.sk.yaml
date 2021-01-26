@@ -1,0 +1,66 @@
+action:
+    add_new_item: Pridať
+    cancel: Zrušiť
+    choose_file: Vybrať súbor
+    create: Vytvoriť
+    create_and_add_another: Vytvoriť a pridať ďalší
+    delete: Odstrániť
+    edit: Upraviť
+    entity_actions: Akcie
+    index: Späť na zoznam
+    new: Vytvoriť
+    remove_item: Odstrániť
+    save: Uložiť
+    save_and_continue: Uložiť a pokračovať v úprave
+    search: Hľadať
+datagrid:
+    hidden_results: Na zobrazenie týchto položiek nemáte dostatočné oprávnenia.
+    no_results: Žiadne výsledky.
+delete_modal:
+    content: Túto operáciu nieje možné vrátiť späť.
+    title: Naozaj chcete odstrániť túto položku?
+filter:
+    button:
+        apply: Použiť
+        clear: Zrušiť filtre
+    label:
+        contains: obsahuje
+        ends_with: končí s
+        exactly: je presne
+        is_after: nasleduje po
+        is_after_or_same: je zhodný alebo nasleduje po
+        is_before: je pred
+        is_before_or_same: je zhodný alebo je pred
+        is_between: je medzi
+        is_not_same: sa nezhoduje s
+        is_same: sa zhoduje s
+        not_contains: neobsahuje
+        not_exactly: okrem
+        starts_with: začína s
+    title: Filtre
+form:
+    are_you_sure: Neuložili ste posledné zmeny.
+label:
+    'false': Nie
+    'null': Žiadny
+    'true': Áno
+    empty: Prázdny
+    form:
+        empty_value: Prázdny
+login_page:
+    password: Heslo
+    sign_in: Prihlásiť
+    username: Email
+page_title:
+    detail: '%entity_label_singular% <small>(#%entity_id%)</small>'
+    edit: '%entity_label_singular% <small>(#%entity_id%)</small>'
+    index: '%entity_label_plural%'
+    new: '%entity_label_singular%'
+paginator:
+    next: Nasledujúca strana
+    previous: Predchádzajúca strana
+    results: '{0} %count% výsledkov | {1} %count% výsledok | {2,3,4} %count% výsledky | [5,+Inf] %count% výsledkov'
+user:
+    exit_impersonation: Ukončiť zosobnenie
+    logged_in_as: Prihlásený ako
+    sign_out: Odhlásiť

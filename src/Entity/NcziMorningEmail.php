@@ -31,7 +31,7 @@ class NcziMorningEmail
     /**
      * Deň, pre ktorý sú dáta záznamu publikované pre potreby štatistík
      *
-     * @ORM\Column(type="date_immutable")
+     * @ORM\Column(type="date_immutable", unique=true)
      * @Serializer\Type("DateTimeImmutable<'Y-m-d'>")
      * @Property(example="2020-01-13")
      *
@@ -286,7 +286,7 @@ class NcziMorningEmail
      */
     private $hospitalPatientsAllCovid;
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

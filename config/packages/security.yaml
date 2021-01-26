@@ -1,0 +1,35 @@
+security:
+    access_control:
+        -   path: ^/admin
+            role: ROLE_ADMIN
+        -   path: ^/security
+            role: IS_AUTHENTICATED_ANONYMOUSLY
+    encoders:
+        App\Entity\User:
+            algorithm: auto
+    firewalls:
+        admin:
+            anonymous: true
+            form_login:
+                always_use_default_target_path: true
+                check_path: security_login
+                default_target_path: admin
+                login_path: security_login
+            lazy: true
+            logout:
+                path: security_logout
+                target: security_login
+            pattern: ^/(admin|security)
+            switch_user: true
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            anonymous: true
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER

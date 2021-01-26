@@ -457,15 +457,19 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
         $id = (int)$record['published_on']->format('Ymd');
 
         return $this->updateOrCreate(function (?NcziMorningEmail $ncziMorningEmail) use ($record, $id) {
-            $ncziMorningEmail = ($ncziMorningEmail ?? new NcziMorningEmail())
-                ->setId($id)
-                ->setPublishedOn($record['published_on'])
-                ->setReportedAt($record['reported_at']);
+            $ncziMorningEmail = ($ncziMorningEmail ?? new NcziMorningEmail());
 
-            $propertyAccessor = PropertyAccess::createPropertyAccessor();
+            if (!$ncziMorningEmail->isManuallyOverridden()) {
+                $ncziMorningEmail
+                    ->setId($id)
+                    ->setPublishedOn($record['published_on'])
+                    ->setReportedAt($record['reported_at']);
 
-            foreach ($record['attributes'] as $attributeName => $attributeValue) {
-                $propertyAccessor->setValue($ncziMorningEmail, $attributeName, $attributeValue);
+                $propertyAccessor = PropertyAccess::createPropertyAccessor();
+
+                foreach ($record['attributes'] as $attributeName => $attributeValue) {
+                    $propertyAccessor->setValue($ncziMorningEmail, $attributeName, $attributeValue);
+                }
             }
 
             return $ncziMorningEmail;
