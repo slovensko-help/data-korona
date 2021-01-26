@@ -68,8 +68,8 @@ class ImportIzaHospitalFullCsv extends AbstractImportTimeSeries
 
             $hospital = $hospitals[$record['KODPZS']] ?? null;
 
-//            $this->hospitalBeds($record, $hospital);
-//            $this->hospitalPatients($record, $hospital);
+            $this->hospitalBeds($record, $hospital);
+            $this->hospitalPatients($record, $hospital);
             $this->hospitalStaff($record, $hospital);
 
             if ($count % 1000 === 0) {
