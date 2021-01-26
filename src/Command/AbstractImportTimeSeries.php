@@ -210,15 +210,24 @@ abstract class AbstractImportTimeSeries extends Command
     protected function hospital(array $record, ?City $city): ?Hospital
     {
         if ($this->isValidCode($record['KODPZS']) && $city instanceof City) {
-            return $this->findOrCreate(function () use ($record, $city) {
+            $code = $this->uniqueHospitalCode($record['KODPZS'], $record['NAZOV']);
+            return $this->findOrCreate(function () use ($code, $record, $city) {
                 return (new Hospital())
                     ->setCity($city)
                     ->setTitle($record['NAZOV'])
-                    ->setCode($record['KODPZS']);
-            }, $this->hospitalRepository, ['code' => $record['KODPZS']]);
+                    ->setCode($code);
+            }, $this->hospitalRepository, ['code' => $code]);
         }
 
         return null;
+    }
+
+    private function uniqueHospitalCode(string $code, string $name): string {
+        if ('P99999999999' !== $code) {
+            return $code;
+        }
+
+        return $code . '_' . substr(sha1($name), 0, 8);
     }
 
     /**

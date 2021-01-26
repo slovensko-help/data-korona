@@ -59,7 +59,7 @@ class ImportIzaHospitalFullCsv extends AbstractImportTimeSeries
         $this->entityManager->flush();
         $output->writeln($this->log('DONE.'));
 
-        $output->writeln($this->log('Updating hospitalBeds and hospitalPatients. Records=' . $recordsCount . '...'));
+        $output->writeln($this->log('Updating hospitalBeds, hospitalPatients and hospitalStaff. Records=' . $recordsCount . '...'));
 
         $count = 0;
 
@@ -68,8 +68,8 @@ class ImportIzaHospitalFullCsv extends AbstractImportTimeSeries
 
             $hospital = $hospitals[$record['KODPZS']] ?? null;
 
-            $this->hospitalBeds($record, $hospital);
-            $this->hospitalPatients($record, $hospital);
+//            $this->hospitalBeds($record, $hospital);
+//            $this->hospitalPatients($record, $hospital);
             $this->hospitalStaff($record, $hospital);
 
             if ($count % 1000 === 0) {
@@ -313,9 +313,7 @@ class ImportIzaHospitalFullCsv extends AbstractImportTimeSeries
             $id = $this->idFromDateTimeAndInt($publishedOn, $hospital->getId());
 
             $this->updateOrCreate(function (?HospitalStaff $hospitalStaff) use ($record, $id, $publishedOn, $hospital) {
-                if (null === $hospitalStaff) {
-                    $hospitalStaff = new HospitalStaff();
-                }
+                $hospitalStaff = $hospitalStaff ?? new HospitalStaff();
 
                 return $hospitalStaff
                     ->setId($id)
