@@ -16,6 +16,8 @@ use App\Repository\HospitalRepository;
 use App\Repository\HospitalStaffRepository;
 use App\Repository\NcziMorningEmailRepository;
 use App\Repository\NotificationRepository;
+use App\Repository\PowerBi\AbstractRepository;
+use App\Repository\PowerBi\VaccineRepository;
 use App\Repository\RegionHospitalBedsRepository;
 use App\Repository\RegionHospitalPatientsRepository;
 use App\Repository\RegionRepository;
@@ -28,9 +30,10 @@ use Generator;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Notifier\ChatterInterface;
 
 abstract class AbstractImportTimeSeries extends Command
 {
@@ -53,6 +56,7 @@ abstract class AbstractImportTimeSeries extends Command
     protected $parameterBag;
     protected $mailer;
     protected $notificationRepository;
+    protected $powerBiVaccineRepository;
 
     public function __construct(
         EntityManagerInterface $managerRegistry,
@@ -74,6 +78,7 @@ abstract class AbstractImportTimeSeries extends Command
         NcziMorningEmailRepository $ncziMorningEmailRepository,
         NotificationRepository $notificationRepository,
         ParameterBagInterface $parameterBag,
+        VaccineRepository $powerBiVaccineRepository,
         string $name = null
     )
     {
@@ -101,9 +106,10 @@ abstract class AbstractImportTimeSeries extends Command
         $this->ncziMorningEmailRepository = $ncziMorningEmailRepository;
         $this->mailer = $mailer;
         $this->notificationRepository = $notificationRepository;
+        $this->powerBiVaccineRepository = $powerBiVaccineRepository;
     }
 
-    protected function fileContent(string $filePathOrUrl, array $formData = null)
+    protected function fileContent(string $filePathOrUrl, $formData = null, string $postHeader = null)
     {
         if (null === $formData) {
             return file_get_contents(str_replace('@project_dir', $this->parameterBag->get('kernel.project_dir'), $filePathOrUrl));
@@ -112,8 +118,8 @@ abstract class AbstractImportTimeSeries extends Command
         return file_get_contents($filePathOrUrl, false, stream_context_create(['http' =>
             [
                 'method' => 'POST',
-                'header' => 'Content-Type: application/x-www-form-urlencoded',
-                'content' => http_build_query($formData)
+                'header' => null === $postHeader ? 'Content-Type: application/x-www-form-urlencoded' : $postHeader,
+                'content' => is_array($formData) ? http_build_query($formData) : $formData
             ]
         ]));
     }
@@ -222,14 +228,6 @@ abstract class AbstractImportTimeSeries extends Command
         return null;
     }
 
-    private function uniqueHospitalCode(string $code, string $name): string {
-        if ('P99999999999' !== $code) {
-            return $code;
-        }
-
-        return $code . '_' . substr(sha1($name), 0, 8);
-    }
-
     /**
      * @param callable $updateEntityCallback
      * @param EntityRepository $repository
@@ -286,6 +284,25 @@ abstract class AbstractImportTimeSeries extends Command
     protected function log($message)
     {
         return '[' . date('Y-m-d H:i:s') . '] ' . $message;
+    }
+
+    protected function dumpPowerBiSchema(AbstractRepository $repository, OutputInterface $output)
+    {
+        $schema = $repository->schema();
+
+        (new Table($output))
+            ->setHeaders(array_shift($schema))
+            ->setRows($schema)
+            ->render();
+    }
+
+    private function uniqueHospitalCode(string $code, string $name): string
+    {
+        if ('P99999999999' !== $code) {
+            return $code;
+        }
+
+        return $code . '_' . substr(sha1($name), 0, 8);
     }
 
     private function isValidCode($code)

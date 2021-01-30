@@ -325,10 +325,6 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
         $htmlContent = preg_replace('/(\d) (\d)/', "$1$2", $htmlContent);
         $htmlContent = preg_replace('/: *(\d+)/', " $1.", $htmlContent);
 
-        if ($publishedOn->format('Y-m-d') === '2020-05-30') {
-            dump($htmlContent);
-        }
-
         $separator = 'Ranné štatistiky k ' . $publishedOn->format('j.n.Y');
 
         list($htmlContent) = explode($separator, $htmlContent);
