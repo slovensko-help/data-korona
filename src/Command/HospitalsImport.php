@@ -34,7 +34,7 @@ class HospitalsImport extends AbstractImport
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->entityManager->getConnection()->getConfiguration()->setSQLLogger();
+        $this->disableDoctrineLogger();
 
         $output->writeln($this->log('Downloading CSV file...'));
         $csv = $this->content->load(self::CSV_FILE);
@@ -77,16 +77,18 @@ class HospitalsImport extends AbstractImport
     {
         $hospitals = $this->hospitalRepository->findAllIndexedByCode();
 
-        foreach ($items as $i => $item) {
+        $i = 0;
+        foreach ($items as $item) {
             $hospital = $hospitals[$item['KODPZS']] ?? null;
 
             foreach ($this->itemRepositories as $itemRepository) {
                 $itemRepository->save($item, $hospital);
+            }
 
-                if (($i + 1) % 200 === 0) {
-                    $this->commitChangesToDb();
-                    $hospitals = $this->hospitalRepository->findAllIndexedByCode();
-                }
+            if ($i++ > 1000) {
+                $i = 0;
+                $this->commitChangesToDb();
+                $hospitals = $this->hospitalRepository->findAllIndexedByCode();
             }
         }
 
@@ -101,7 +103,7 @@ class HospitalsImport extends AbstractImport
             foreach ($repository->items() as $i => $item) {
                 $this->entityManager->persist($item);
 
-                if (($i + 1) % 200 === 0) {
+                if (($i + 1) % 1000 === 0) {
                     $repository->commitChangesToDb();
                 }
             }

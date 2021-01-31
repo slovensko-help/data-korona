@@ -37,6 +37,8 @@ class VaccinationsImport extends AbstractImport
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->disableDoctrineLogger();
+
         if ($input->getOption('dump-powerbi-schema')) {
             $this->dumpPowerBiSchema($this->powerBiVaccinationsClient, $output);
             return self::SUCCESS;

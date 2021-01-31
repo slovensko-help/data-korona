@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\NcziMorningEmailRepository;
+use App\Repository\Raw\NcziMorningEmailRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

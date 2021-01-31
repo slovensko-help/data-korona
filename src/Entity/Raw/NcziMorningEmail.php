@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Entity\Raw;
 
 use App\Entity\Traits\Datetimeable;
+use App\Entity\Traits\Publishable;
 use App\Entity\Traits\Timestampable;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,12 +13,13 @@ use JMS\Serializer\Annotation as Serializer;
 use OpenApi\Annotations\Property;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\NcziMorningEmailRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\Raw\NcziMorningEmailRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class NcziMorningEmail
 {
     use Timestampable;
+    use Publishable;
     use Datetimeable;
 
     /**
@@ -29,19 +31,8 @@ class NcziMorningEmail
     private $id;
 
     /**
-     * Deň, pre ktorý sú dáta záznamu publikované pre potreby štatistík
-     *
-     * @ORM\Column(type="date_immutable", unique=true)
-     * @Serializer\Type("DateTimeImmutable<'Y-m-d'>")
-     * @Property(example="2020-01-13")
-     *
-     * @var DateTimeImmutable
-     */
-    private $publishedOn;
-
-    /**
-     *
      * @ORM\Column(type="boolean")
+     * @Serializer\Exclude()
      * @var bool
      */
     private $isManuallyOverridden = false;
@@ -296,16 +287,6 @@ class NcziMorningEmail
         $this->id = $id;
 
         return $this;
-    }
-
-    public function getPublishedOn(): DateTimeImmutable
-    {
-        return $this->publishedOn;
-    }
-
-    public function setPublishedOn(DateTimeImmutable $publishedOn): self
-    {
-         return $this->updateDateTime($this->publishedOn, $publishedOn);
     }
 
     public function getReportedAt(): DateTimeImmutable

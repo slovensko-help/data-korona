@@ -10,12 +10,7 @@ use App\Entity\Region;
 use App\Repository\CityRepository;
 use App\Repository\DistrictRepository;
 use App\Repository\RegionRepository;
-use App\Repository\HospitalBedsRepository;
-use App\Repository\HospitalPatientsRepository;
 use App\Repository\HospitalRepository;
-use App\Repository\HospitalStaffRepository;
-use App\Repository\NcziMorningEmailRepository;
-use App\Repository\NotificationRepository;
 use App\Service\Content;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,7 +21,6 @@ use League\Csv\Statement;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Mailer\MailerInterface;
 
 abstract class AbstractImport extends Command
@@ -39,10 +33,7 @@ abstract class AbstractImport extends Command
     protected $hospitalRepository;
     protected $districtRepository;
     protected $cityRepository;
-    protected $ncziMorningEmailRepository;
-    protected $notificationRepository;
 
-    protected $parameterBag;
     protected $mailer;
 
     public function __construct(
@@ -56,11 +47,6 @@ abstract class AbstractImport extends Command
         DistrictRepository $districtRepository,
         RegionRepository $regionRepository,
 
-        NcziMorningEmailRepository $ncziMorningEmailRepository,
-
-        NotificationRepository $notificationRepository,
-
-        ParameterBagInterface $parameterBag,
         string $name = null
     )
     {
@@ -75,11 +61,12 @@ abstract class AbstractImport extends Command
         $this->districtRepository = $districtRepository;
         $this->regionRepository = $regionRepository;
 
-        $this->ncziMorningEmailRepository = $ncziMorningEmailRepository;
-        $this->notificationRepository = $notificationRepository;
-
-        $this->parameterBag = $parameterBag;
         $this->mailer = $mailer;
+    }
+
+    protected function disableDoctrineLogger()
+    {
+        $this->entityManager->getConnection()->getConfiguration()->setSQLLogger();
     }
 
     protected function region(array $record): ?Region
