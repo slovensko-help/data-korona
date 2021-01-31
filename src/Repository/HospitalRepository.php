@@ -20,4 +20,14 @@ class HospitalRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Hospital::class);
     }
+
+    public function findAllIndexedByCode() {
+        $result = [];
+
+        foreach ($this->findAll() as $hospital) {
+            $result[$hospital->getCode()] = $hospital;
+        }
+
+        return $result;
+    }
 }

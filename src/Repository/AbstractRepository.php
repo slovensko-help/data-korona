@@ -6,9 +6,8 @@ namespace App\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 
 abstract class AbstractRepository extends ServiceEntityRepository
 {
@@ -28,14 +27,15 @@ abstract class AbstractRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function updateAllFromQuery(callable $queryBuilderCallback, callable $updateRecordCallback) {
+    public function updateAllFromQuery(callable $queryBuilderCallback, callable $updateRecordCallback)
+    {
 
         $query = $queryBuilderCallback($this)->execute();
 
-        $i = 0;
-
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $entityClass = $this->getEntityName();
+
+        $i = 1;
 
         while ($record = $query->fetch()) {
             $record = $updateRecordCallback($record);
@@ -48,19 +48,23 @@ abstract class AbstractRepository extends ServiceEntityRepository
 
             $this->getEntityManager()->persist($entity);
 
-            if ($i % 1000 === 0) {
-                $this->commitChangesToDb([$entityClass]);
+            if ($i % 200 === 0) {
+                yield true;
             }
 
             $i++;
         }
 
-        $this->commitChangesToDb([$entityClass]);
+        yield true;
     }
 
-    public function updateOrCreate(callable $updateEntityCallback, array $criteria, $flushAutomatically = false)
+    public function updateOrCreate(callable $updateEntityCallback, array $criteria, $flushAutomatically = false, $returnBeforeAndAfterUpdate = false)
     {
-        $entity = $updateEntityCallback($this->findOneBy($criteria));
+        $entity = $this->findOneBy($criteria);
+        $beforeEntity = !$returnBeforeAndAfterUpdate || null === $entity ? null : clone $entity;
+        $entityClass = $this->getClassName();
+
+        $entity = $updateEntityCallback($entity ?? new $entityClass());
 
         if (null !== $entity) {
             $this->getEntityManager()->persist($entity);
@@ -70,32 +74,37 @@ abstract class AbstractRepository extends ServiceEntityRepository
             }
         }
 
-        return $entity;
+        return $returnBeforeAndAfterUpdate ? [
+            'before' => $beforeEntity,
+            'after' => $entity,
+        ] : $entity;
     }
 
-    public function aggregatableColumns(string $trait, string $entityClass)
+    public function save(array $item, ...$relatedEntities)
     {
-        $traitProperties = (new PropertyInfoExtractor([new ReflectionExtractor()]))->getProperties($trait);
-        $classMetadata = $this->getEntityManager()->getClassMetadata($entityClass);
-
-        $fieldNameIndices = array_flip($classMetadata->getFieldNames());
-        $columnNames = $classMetadata->getColumnNames();
-
-        $result = [];
-
-        foreach ($traitProperties as $traitPropertyName) {
-            $result[$traitPropertyName] = $columnNames[$fieldNameIndices[$traitPropertyName]];
-        }
-
-        return $result;
+        throw new Exception('Save method must be implemented in inherited class.');
     }
 
-    protected function commitChangesToDb(array $clearEntityClasses = [])
+    public function saveAll($items)
+    {
+        foreach ($items as $i => $item) {
+            $this->save($item);
+        }
+    }
+
+    protected function nullOrInt($stringValue): ?int
+    {
+        return '' === $stringValue ? null : (int)$stringValue;
+    }
+
+    protected function nullOrFloat($stringValue): ?float
+    {
+        return '' === $stringValue ? null : round((float)str_replace(',', '.', $stringValue), 3);
+    }
+
+    protected function commitChangesToDb()
     {
         $this->getEntityManager()->flush();
-
-        foreach ($clearEntityClasses as $clearEntityClasse) {
-            $this->getEntityManager()->clear($clearEntityClasse);
-        }
+        $this->getEntityManager()->clear();
     }
 }

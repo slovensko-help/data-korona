@@ -34,6 +34,7 @@ class PowerBiQueryBuilder
     private $modelId;
     private $datasetId;
     private $reportId;
+    private $fieldIndices = [];
 
     public function __construct(int $modelId, string $datasetId, string $reportId)
     {
@@ -42,14 +43,14 @@ class PowerBiQueryBuilder
         $this->reportId = $reportId;
     }
 
-    public function selectColumn(string $fromName, string $propertyName, ?int $aggregationFunction = null): self
+    public function selectColumn(string $entityName, string $propertyName, ?int $aggregationFunction = null): self
     {
-        return $this->addSelect($fromName, $propertyName, self::SELECT_TYPE_COLUMN, $aggregationFunction);
+        return $this->addSelect($entityName, $propertyName, self::SELECT_TYPE_COLUMN, $aggregationFunction);
     }
 
-    public function selectMeasure(string $fromName, string $propertyName): self
+    public function selectMeasure(string $entityName, string $propertyName): self
     {
-        return $this->addSelect($fromName, $propertyName, self::SELECT_TYPE_MEASURE);
+        return $this->addSelect($entityName, $propertyName, self::SELECT_TYPE_MEASURE);
     }
 
     public function setLimit(int $limit): self
@@ -59,11 +60,11 @@ class PowerBiQueryBuilder
         return $this;
     }
 
-    public function andWhere(string $fromName, string $propertyName, int $comparisonKind, string $value): self
+    public function andWhere(string $entityName, string $propertyName, int $comparisonKind, string $value): self
     {
         $comparison = [
             'Comparison' => $this->leftRight(
-                $this->columnReference($fromName, $propertyName),
+                $this->columnReference($entityName, $propertyName),
                 [
                     'Literal' => [
                         'Value' => $value,
@@ -79,11 +80,11 @@ class PowerBiQueryBuilder
         return $this;
     }
 
-    public function orderBy(string $fromName, string $propertyName, int $direction = self::ORDER_ASC): self
+    public function orderBy(string $entityName, string $propertyName, int $direction = self::ORDER_ASC): self
     {
         $this->orderBys[] = [
             'Direction' => $direction,
-            'Expression' => $this->columnReference($fromName, $propertyName)
+            'Expression' => $this->columnReference($entityName, $propertyName)
         ];
 
         return $this;
@@ -137,11 +138,9 @@ class PowerBiQueryBuilder
         ];
     }
 
-    public function sortedFieldNames()
+    public function fieldIndex(string $entityName, string $propertyName): ?int
     {
-        return array_map(function (array $select) {
-            return $select['Name'];
-        }, $this->selects);
+        return $this->fieldIndices[$this->fieldKey($entityName, $propertyName)] ?? null;
     }
 
     private function leftRight(array $left, array $right): array
@@ -154,17 +153,6 @@ class PowerBiQueryBuilder
 
     private function buildAndWhere(array $andWheres, bool $isTop = false): array
     {
-//        $result = [
-//            'Contains' => $this->leftRight(
-//                $this->columnReference('Ag testy', 'AGTEST_OKRES_POPIS'),
-//                [
-//                    'Literal' => [
-//                        'Value' => '\'Ž\'',
-//                    ],
-//                ]
-//            ),
-//        ];
-
         if (empty($andWheres)) {
             return [];
         }
@@ -190,13 +178,13 @@ class PowerBiQueryBuilder
         return $result;
     }
 
-    private function columnReference(string $fromName, string $propertyName, int $selectType = self::SELECT_TYPE_COLUMN): array
+    private function columnReference(string $entityName, string $propertyName, int $selectType = self::SELECT_TYPE_COLUMN): array
     {
         return [
             (self::SELECT_TYPE_MEASURE === $selectType ? 'Measure' : 'Column') => [
                 'Expression' => [
                     'SourceRef' => [
-                        'Source' => $this->getOrAddFrom($fromName)['Name'],
+                        'Source' => $this->getOrAddEntityName($entityName)['Name'],
                     ]
                 ],
                 'Property' => $propertyName,
@@ -204,9 +192,9 @@ class PowerBiQueryBuilder
         ];
     }
 
-    private function addSelect(string $fromName, string $propertyName, int $selectType = self::SELECT_TYPE_COLUMN, ?int $aggregationFunction = null): self
+    private function addSelect(string $entityName, string $propertyName, int $selectType = self::SELECT_TYPE_COLUMN, ?int $aggregationFunction = null): self
     {
-        $select = $this->columnReference($fromName, $propertyName, $selectType);
+        $select = $this->columnReference($entityName, $propertyName, $selectType);
 
         if (null !== $aggregationFunction) {
             $select = [
@@ -221,14 +209,20 @@ class PowerBiQueryBuilder
 
         $this->selects[] = $select;
 
+        $this->fieldIndices[$this->fieldKey($entityName, $propertyName)] = count($this->selects) - 1;
+
         return $this;
     }
 
-    private function getOrAddFrom(string $fromName): array
+    private function fieldKey(string $entityName, string $propertyName) {
+        return $entityName . '~~~' . $propertyName;
+    }
+
+    private function getOrAddEntityName(string $entityName): array
     {
-        return $this->froms[$fromName] = $this->froms[$fromName] ?? [
+        return $this->froms[$entityName] = $this->froms[$entityName] ?? [
                 'Name' => 'f' . (count($this->froms) + 1),
-                'Entity' => $fromName,
+                'Entity' => $entityName,
                 'Type' => 0,
             ];
     }

@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Repository\PowerBi;
+namespace App\Client\PowerBi;
 
+use App\QueryBuilder\Hint\PaginationHintInterface;
 use App\QueryBuilder\PowerBiQueryBuilder;
 use App\QueryResult\PowerBiQueryResult;
-use App\Repository\AbstractRemoteRepository;
+use App\Service\Content;
 use App\Tool\ArrayChain;
 use Exception;
+use Generator;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-class AbstractRepository extends AbstractRemoteRepository
+class AbstractClient extends \App\Client\AbstractClient
 {
-    const CACHE_TTL = 3600;
-    const DAY_IN_SECONDS = 86400;
     const REPORT_URL = null;
 
     public function schema()
@@ -37,7 +38,7 @@ class AbstractRepository extends AbstractRemoteRepository
             }
 
             return $result;
-        }, self::DAY_IN_SECONDS);
+        }, self::ONE_DAY);
     }
 
     protected function createQueryBuilder()
@@ -45,12 +46,35 @@ class AbstractRepository extends AbstractRemoteRepository
         return new PowerBiQueryBuilder($this->modelId(), $this->datasetId(), $this->reportId());
     }
 
+    protected function items(PowerBiQueryBuilder $queryBuilder, ?PaginationHintInterface $paginationHint = null): Generator
+    {
+        if ($paginationHint instanceof PaginationHintInterface) {
+            $queryBuildersGenerator = $paginationHint->queryBuildersGenerator($queryBuilder);
+
+            $lastItem = null;
+            do {
+                $pageQueryBuilder = $queryBuildersGenerator->send($lastItem);
+                $lastItem = null;
+
+                if ($pageQueryBuilder instanceof PowerBiQueryBuilder) {
+                    foreach ($this->execute($pageQueryBuilder)->items() as $item) {
+                        yield $item;
+                    }
+
+                    if (isset($item)) {
+                        $lastItem = $item;
+                    }
+                }
+
+            } while (null !== $lastItem);
+        } else {
+            yield from $this->execute($queryBuilder);
+        }
+    }
+
     protected function execute(PowerBiQueryBuilder $queryBuilder): PowerBiQueryResult
     {
-        return new PowerBiQueryResult(
-            $this->apiContent($this->queryUrl(), $queryBuilder->build()),
-            $queryBuilder
-        );
+        return new PowerBiQueryResult($this->apiContent($this->queryUrl(), $queryBuilder->build()));
     }
 
     private function modelId(): int
@@ -68,14 +92,20 @@ class AbstractRepository extends AbstractRemoteRepository
         return ArrayChain::value($this->modelsAndExploration(), 'models', 0, 'dbName');
     }
 
+    private function originUrl(): string
+    {
+        return $this->baseUrl(static::REPORT_URL);
+    }
+
     private function apiContent(string $url, ?array $formData = null, $secondAttempt = false)
     {
         try {
-            return json_decode($this->fileContent(
+            return json_decode($this->content->load(
                 $url,
-                null === $formData ? $formData : json_encode($formData),
+                null === $formData ? null : [
+                    'json' => $formData
+                ],
                 [
-                    'Content-Type' => 'application/json',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_1_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36',
                     'Origin' => $this->originUrl(),
                     'X-PowerBI-ResourceKey' => $this->resourceKey(),
@@ -94,13 +124,7 @@ class AbstractRepository extends AbstractRemoteRepository
         $url = $this->apiBaseUrl() . '/public/reports/' . $this->resourceKey() . '/modelsAndExploration?preferReadOnlySession=true';
         return $this->cached(md5($url), function () use ($url) {
             return $this->apiContent($url);
-        }, self::DAY_IN_SECONDS);
-    }
-
-    private function originUrl()
-    {
-        $urlParts = parse_url(static::REPORT_URL);
-        return $urlParts['scheme'] . '://' . $urlParts['host'] . '/';
+        }, self::ONE_DAY);
     }
 
     private function resourceKey(): string
@@ -127,14 +151,6 @@ class AbstractRepository extends AbstractRemoteRepository
             }
 
             return $keys['k'];
-        });
-    }
-
-    private function cached(string $name, callable $valueCallback, ?int $cacheTtl = null)
-    {
-        return $this->cache->get('PowerBiRepositoryCache--' . $name, function (ItemInterface $item) use ($valueCallback, $cacheTtl) {
-            $item->expiresAfter($cacheTtl ?? static::CACHE_TTL);
-            return $valueCallback();
         });
     }
 
@@ -170,24 +186,7 @@ class AbstractRepository extends AbstractRemoteRepository
     private function reportHtmlContent()
     {
         return $this->cached(md5(static::REPORT_URL), function () {
-            return $this->fileContent(static::REPORT_URL);
+            return $this->content->load(static::REPORT_URL);
         });
-    }
-
-    private function runtimeClassConstant(string $name, callable $valueCallback)
-    {
-        static $classValues;
-
-        if (null === $classValues) {
-            $classValues = [];
-        }
-
-        $key = static::class . '/' . $name;
-
-        if (!isset($classValues[$key])) {
-            $classValues[$key] = $valueCallback();
-        }
-
-        return $classValues[$key];
     }
 }

@@ -6,17 +6,17 @@ use App\Entity\Region;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ImportInternalRegionsCsv extends AbstractImportTimeSeries
+class RegionsImport extends AbstractImport
 {
     const CSV_FILE = '@project_dir/data/regions.csv';
 
-    protected static $defaultName = 'app:import:internal:regions';
+    protected static $defaultName = 'app:import:regions';
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln($this->log('Reading CSV file...'));
 
-        $csv = $this->fileContent(self::CSV_FILE);
+        $csv = $this->content->load(self::CSV_FILE);
 
         $output->writeln($this->log('DONE.'));
 

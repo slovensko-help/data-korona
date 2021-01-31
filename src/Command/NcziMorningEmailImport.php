@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
+class NcziMorningEmailImport extends AbstractImport
 {
     const SPF_PASS_PATTERN = '/^authentication-results: spf=pass(\n|.)*?smtp\.mailfrom=nczisk\.sk(\n|.)*?compauth=pass/im';
     const ATTRIBUTE_PATTERNS = [
@@ -55,7 +55,7 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
         ],
     ];
 
-    protected static $defaultName = 'app:import:email:nczi-morning-stats';
+    protected static $defaultName = 'app:import:nczi-morning-email';
 
     private $debug = false;
 
@@ -98,12 +98,12 @@ class ImportEmailNcziMorningStats extends AbstractImportTimeSeries
             $filename = 'mailbox-' . md5(json_encode($formData)) . '.json';
 
             if (!is_file($filename)) {
-                file_put_contents($filename, $this->fileContent($this->parameterBag->get('korona_email_proxy_url'), $formData));
+                file_put_contents($filename, $this->content->load($this->parameterBag->get('korona_email_proxy_url'), ['form' => $formData]));
             }
 
-            $mailbox = json_decode($this->fileContent($filename), true);
+            $mailbox = json_decode($this->content->load($filename), true);
         } else {
-            $mailbox = json_decode($this->fileContent($this->parameterBag->get('korona_email_proxy_url'), $formData), true);
+            $mailbox = json_decode($this->content->load($this->parameterBag->get('korona_email_proxy_url'), ['form' => $formData]), true);
         }
 
         if (!is_array($mailbox)) {

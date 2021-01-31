@@ -3,7 +3,6 @@
 namespace App\QueryResult;
 
 use App\Exception\PowerBiResponseException;
-use App\QueryBuilder\PowerBiQueryBuilder;
 use App\Tool\ArrayChain;
 use Exception;
 use Generator;
@@ -38,17 +37,16 @@ class PowerBiQueryResult
         self::PROPERTY_TYPE_BINARY => 'binary',
         self::PROPERTY_TYPE_NONE => 'none',
     ];
+
     private $rawResponse;
-    private $queryBuilder;
     private $selectedFields;
     private $dictionaries;
     private $rawItems;
     private $runtimeObjectConstants = [];
 
-    public function __construct(array $rawResponse, PowerBiQueryBuilder $queryBuilder)
+    public function __construct(array $rawResponse)
     {
         $this->rawResponse = $rawResponse;
-        $this->queryBuilder = clone $queryBuilder;
 
         $data = $this->data();
         $window = $this->window($data);
@@ -58,7 +56,7 @@ class PowerBiQueryResult
         $this->dictionaries = $this->dictionaries($window);
     }
 
-    public function items(): iterable
+    public function items(): Generator
     {
         $attributesCount = count($this->selectedFields);
         $isScalarResultItem = 1 === $attributesCount;

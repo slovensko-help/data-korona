@@ -2,27 +2,21 @@
 
 namespace App\Command;
 
+use App\Client\PowerBi\AbstractClient;
 use App\Entity\City;
 use App\Entity\District;
 use App\Entity\Hospital;
 use App\Entity\Region;
 use App\Repository\CityRepository;
-use App\Repository\DistrictHospitalBedsRepository;
-use App\Repository\DistrictHospitalPatientsRepository;
 use App\Repository\DistrictRepository;
+use App\Repository\RegionRepository;
 use App\Repository\HospitalBedsRepository;
 use App\Repository\HospitalPatientsRepository;
 use App\Repository\HospitalRepository;
 use App\Repository\HospitalStaffRepository;
 use App\Repository\NcziMorningEmailRepository;
 use App\Repository\NotificationRepository;
-use App\Repository\PowerBi\AbstractRepository;
-use App\Repository\PowerBi\VaccineRepository;
-use App\Repository\RegionHospitalBedsRepository;
-use App\Repository\RegionHospitalPatientsRepository;
-use App\Repository\RegionRepository;
-use App\Repository\SlovakiaHospitalBedsRepository;
-use App\Repository\SlovakiaHospitalPatientsRepository;
+use App\Service\Content;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -35,50 +29,38 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Mailer\MailerInterface;
 
-abstract class AbstractImportTimeSeries extends Command
+abstract class AbstractImport extends Command
 {
     protected $connection;
     protected $entityManager;
+    protected $content;
+
     protected $regionRepository;
     protected $hospitalRepository;
     protected $districtRepository;
     protected $cityRepository;
-    protected $hospitalPatientsRepository;
-    protected $hospitalBedsRepository;
-    protected $districtHospitalBedsRepository;
-    protected $regionHospitalBedsRepository;
-    protected $slovakiaHospitalBedsRepository;
-    protected $districtHospitalPatientsRepository;
-    protected $regionHospitalPatientsRepository;
-    protected $slovakiaHospitalPatientsRepository;
-    protected $hospitalStaffRepository;
     protected $ncziMorningEmailRepository;
+    protected $notificationRepository;
+
     protected $parameterBag;
     protected $mailer;
-    protected $notificationRepository;
-    protected $powerBiVaccineRepository;
 
     public function __construct(
         EntityManagerInterface $managerRegistry,
         Connection $connection,
         MailerInterface $mailer,
+        Content $content,
+
         HospitalRepository $hospitalRepository,
         CityRepository $cityRepository,
         DistrictRepository $districtRepository,
         RegionRepository $regionRepository,
-        HospitalBedsRepository $hospitalBedsRepository,
-        HospitalPatientsRepository $hospitalPatientsRepository,
-        DistrictHospitalBedsRepository $districtHospitalBedsRepository,
-        RegionHospitalBedsRepository $regionHospitalBedsRepository,
-        SlovakiaHospitalBedsRepository $slovakiaHospitalBedsRepository,
-        DistrictHospitalPatientsRepository $districtHospitalPatientsRepository,
-        RegionHospitalPatientsRepository $regionHospitalPatientsRepository,
-        SlovakiaHospitalPatientsRepository $slovakiaHospitalPatientsRepository,
-        HospitalStaffRepository $hospitalStaffRepository,
+
         NcziMorningEmailRepository $ncziMorningEmailRepository,
+
         NotificationRepository $notificationRepository,
+
         ParameterBagInterface $parameterBag,
-        VaccineRepository $powerBiVaccineRepository,
         string $name = null
     )
     {
@@ -86,42 +68,18 @@ abstract class AbstractImportTimeSeries extends Command
 
         $this->connection = $connection;
         $this->entityManager = $managerRegistry;
+        $this->content = $content;
 
         $this->hospitalRepository = $hospitalRepository;
         $this->cityRepository = $cityRepository;
         $this->districtRepository = $districtRepository;
         $this->regionRepository = $regionRepository;
 
-        $this->hospitalBedsRepository = $hospitalBedsRepository;
-        $this->hospitalPatientsRepository = $hospitalPatientsRepository;
-        $this->districtHospitalBedsRepository = $districtHospitalBedsRepository;
-        $this->regionHospitalBedsRepository = $regionHospitalBedsRepository;
-        $this->slovakiaHospitalBedsRepository = $slovakiaHospitalBedsRepository;
-
-        $this->districtHospitalPatientsRepository = $districtHospitalPatientsRepository;
-        $this->regionHospitalPatientsRepository = $regionHospitalPatientsRepository;
-        $this->slovakiaHospitalPatientsRepository = $slovakiaHospitalPatientsRepository;
-        $this->hospitalStaffRepository = $hospitalStaffRepository;
-        $this->parameterBag = $parameterBag;
         $this->ncziMorningEmailRepository = $ncziMorningEmailRepository;
-        $this->mailer = $mailer;
         $this->notificationRepository = $notificationRepository;
-        $this->powerBiVaccineRepository = $powerBiVaccineRepository;
-    }
 
-    protected function fileContent(string $filePathOrUrl, $formData = null, string $postHeader = null)
-    {
-        if (null === $formData) {
-            return file_get_contents(str_replace('@project_dir', $this->parameterBag->get('kernel.project_dir'), $filePathOrUrl));
-        }
-
-        return file_get_contents($filePathOrUrl, false, stream_context_create(['http' =>
-            [
-                'method' => 'POST',
-                'header' => null === $postHeader ? 'Content-Type: application/x-www-form-urlencoded' : $postHeader,
-                'content' => is_array($formData) ? http_build_query($formData) : $formData
-            ]
-        ]));
+        $this->parameterBag = $parameterBag;
+        $this->mailer = $mailer;
     }
 
     protected function region(array $record): ?Region
@@ -178,6 +136,12 @@ abstract class AbstractImportTimeSeries extends Command
         $cachedEntities[$class][$key] = $entity;
 
         return $entity;
+    }
+
+    protected function commitChangesToDb()
+    {
+        $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     protected function district(array $record, ?Region $region): ?District
@@ -286,7 +250,7 @@ abstract class AbstractImportTimeSeries extends Command
         return '[' . date('Y-m-d H:i:s') . '] ' . $message;
     }
 
-    protected function dumpPowerBiSchema(AbstractRepository $repository, OutputInterface $output)
+    protected function dumpPowerBiSchema(AbstractClient $repository, OutputInterface $output)
     {
         $schema = $repository->schema();
 
