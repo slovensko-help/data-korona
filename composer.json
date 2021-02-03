@@ -27,6 +27,7 @@
     "symfony/http-client": "5.2.*",
     "symfony/mailer": "5.2.*",
     "symfony/mailjet-mailer": "5.2.*",
+    "symfony/monolog-bundle": "^3.6",
     "symfony/notifier": "5.2.*",
     "symfony/property-access": "5.2.*",
     "symfony/property-info": "5.2.*",

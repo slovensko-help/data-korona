@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\Content;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -56,13 +57,12 @@ class NcziApiController extends AbstractController
     /**
      * @Route("/ncziapi/{route}", methods={"GET"})
      */
-    public function ncziApi(string $route, Request $request, Content $content)
+    public function ncziApi(string $route, Request $request, Content $content, LoggerInterface $logger)
     {
         $routeConfig = self::ALLOWED_REQUESTS[$route] ?? $this->throwNotFoundException();
         $originUrl = $routeConfig['origin_url'] ?? $this->throwNotFoundException();
 
         $allowedParameters = $routeConfig['allowed_parameters'] ?? [];
-        $body = 0 === $request->query->count() ? null : ['json' => $request->query->all(),];
 
         return
             $this->errorIf(
@@ -74,11 +74,18 @@ class NcziApiController extends AbstractController
             $this->errorIf(
                 $this->wrongTypeParameters($request, $allowedParameters),
                 'Wrong type of query parameter(s)') ??
-            JsonResponse::fromJsonString(
-                $content->load($originUrl, $body));
+            $this->ncziResponse($originUrl, $request, $content, $logger);
     }
 
-    private function requiredParameters(array $allowedParams): array {
+    private function ncziResponse(string $url, Request $request, Content $content, LoggerInterface $logger): JsonResponse
+    {
+        $body = 0 === $request->query->count() ? null : ['json' => $request->query->all(),];
+        $logger->info(sprintf('[NCZI API HIT] URL=%s, BODY=%s', $url, json_encode($body)));
+        return JsonResponse::fromJsonString($content->load($url, $body));
+    }
+
+    private function requiredParameters(array $allowedParams): array
+    {
         $result = [];
 
         foreach ($allowedParams as $name => $definition) {

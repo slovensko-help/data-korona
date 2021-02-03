@@ -171,6 +171,9 @@
     "league/csv": {
         "version": "9.6.2"
     },
+    "monolog/monolog": {
+        "version": "2.2.0"
+    },
     "nelmio/api-doc-bundle": {
         "version": "3.0",
         "recipe": {
@@ -410,6 +413,24 @@
     },
     "symfony/mime": {
         "version": "v5.1.10"
+    },
+    "symfony/monolog-bridge": {
+        "version": "v5.2.3"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "d7249f7d560f6736115eee1851d02a65826f0a56"
+        },
+        "files": [
+            "config/packages/dev/monolog.yaml",
+            "config/packages/prod/deprecations.yaml",
+            "config/packages/prod/monolog.yaml",
+            "config/packages/test/monolog.yaml"
+        ]
     },
     "symfony/notifier": {
         "version": "5.0",
