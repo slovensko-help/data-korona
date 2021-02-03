@@ -112,7 +112,7 @@ class NcziApiController extends AbstractController
             return null;
         }
 
-        $this->ncziProxyLogger->info(sprintf('[NCZI PROXY MISS] URL=%s, ERROR=%s', $request->getUri(), $error));
+        $this->ncziProxyLogger->info(sprintf('[NCZI PROXY ERROR] URL=%s, ERROR=%s', $request->getUri(), $error));
 
         return new JsonResponse([
             'success' => false,
