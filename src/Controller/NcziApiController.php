@@ -10,33 +10,84 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class NcziApiController extends AbstractController
 {
-    const NCZI_API_BASE_URL = 'https://mojeezdravie.nczisk.sk/api/v1/web/';
     const ALLOWED_REQUESTS = [
-        'get_vaccination_groups' => [],
-        'get_driveins_vacc' => [],
-        'validate_drivein_times_vacc' => ['drivein_id'],
+        // vaccinations
+        'get_vaccination_groups' => [
+            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_vaccination_groups',
+            'allowed_parameters' => [],
+        ],
+        'get_driveins_vacc' => [
+            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_driveins_vacc',
+            'allowed_parameters' => [],
+        ],
+        'validate_drivein_times_vacc' => [
+            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/validate_drivein_times_vacc',
+            'allowed_parameters' => [
+                'drivein_id' => [
+                    'required' => true,
+                    'type' => 'int',
+                ],
+            ],
+        ],
+        // ag tests
+        'mom_ag.json' => [
+            'origin_url' => 'https://www.old.korona.gov.sk/mom_ag.json',
+            'allowed_parameters' => [],
+        ],
+        'validate_drivein_times' => [
+            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/validate_drivein_times',
+            'allowed_parameters' => [
+                'drivein_id' => [
+                    'required' => true,
+                    'type' => 'int',
+                ],
+            ],
+        ],
     ];
+
+    /**
+     * @Route("/ncziapi/time", methods={"GET"})
+     */
+    public function ncziApiTime()
+    {
+        return new Response(date('Y-m-d H:i:s'));
+    }
 
     /**
      * @Route("/ncziapi/{route}", methods={"GET"})
      */
     public function ncziApi(string $route, Request $request, Content $content)
     {
-        $routeParams = self::ALLOWED_REQUESTS[$route] ?? $this->throwNotFoundException();
+        $routeConfig = self::ALLOWED_REQUESTS[$route] ?? $this->throwNotFoundException();
+        $originUrl = $routeConfig['origin_url'] ?? $this->throwNotFoundException();
+
+        $allowedParameters = $routeConfig['allowed_parameters'] ?? [];
+        $body = 0 === $request->query->count() ? null : ['json' => $request->query->all(),];
 
         return
             $this->errorIfWrongParameters(
-                $this->notAllowedParameters($request, $routeParams),
+                $this->notAllowedParameters($request, $allowedParameters),
                 'Query parameter(s) not allowed') ??
             $this->errorIfWrongParameters(
-                $this->missingParameters($request, $routeParams),
+                $this->missingParameters($request, $this->requiredParameters($allowedParameters)),
                 'Query parameter(s) missing') ??
+            $this->errorIfWrongParameters(
+                $this->wrongTypeParameters($request, $allowedParameters),
+                'Wrong type of query parameter(s)') ??
             JsonResponse::fromJsonString(
-                $content->load(
-                    self::NCZI_API_BASE_URL . $route,
-                    0 === $request->query->count() ? null : [
-                        'json' => $request->query->all(),
-                    ]));
+                $content->load($originUrl, $body));
+    }
+
+    private function requiredParameters(array $allowedParams): array {
+        $result = [];
+
+        foreach ($allowedParams as $name => $definition) {
+            if (true === $definition['required']) {
+                $result[$name] = $definition;
+            }
+        }
+
+        return $result;
     }
 
     private function errorIfWrongParameters(array $violatingParameters, string $error): ?Response
@@ -47,14 +98,35 @@ class NcziApiController extends AbstractController
         ], Response::HTTP_BAD_REQUEST);
     }
 
-    private function notAllowedParameters(Request $request, array $routeParams): array
+    private function wrongTypeParameters(Request $request, array $allowedParameters): array
     {
-        return array_diff($request->query->keys(), $routeParams);
+        $result = [];
+
+        foreach ($allowedParameters as $name => $definition) {
+            $rawValue = $request->query->get($name);
+
+            switch ($definition['type']) {
+                case 'int':
+                    if (strval($rawValue) !== strval(intval($rawValue))) {
+                        $result[] = $name;
+                    }
+                    break;
+                default:
+                    $result[] = $name;
+            }
+        }
+
+        return $result;
     }
 
-    private function missingParameters(Request $request, array $routeParams): array
+    private function notAllowedParameters(Request $request, array $allowedParameters): array
     {
-        return array_diff($routeParams, $request->query->keys());
+        return array_diff($request->query->keys(), array_keys($allowedParameters));
+    }
+
+    private function missingParameters(Request $request, array $requiredParameters): array
+    {
+        return array_diff(array_keys($requiredParameters), $request->query->keys());
     }
 
     private function throwNotFoundException()
