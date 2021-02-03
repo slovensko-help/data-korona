@@ -57,7 +57,7 @@ class NcziApiController extends AbstractController
     /**
      * @Route("/ncziapi/{route}", methods={"GET"})
      */
-    public function ncziApi(string $route, Request $request, Content $content, LoggerInterface $logger)
+    public function ncziApi(string $route, Request $request, Content $content, LoggerInterface $ncziProxyLogger)
     {
         $routeConfig = self::ALLOWED_REQUESTS[$route] ?? $this->throwNotFoundException();
         $originUrl = $routeConfig['origin_url'] ?? $this->throwNotFoundException();
@@ -74,13 +74,13 @@ class NcziApiController extends AbstractController
             $this->errorIf(
                 $this->wrongTypeParameters($request, $allowedParameters),
                 'Wrong type of query parameter(s)') ??
-            $this->ncziResponse($originUrl, $request, $content, $logger);
+            $this->ncziResponse($originUrl, $request, $content, $ncziProxyLogger);
     }
 
-    private function ncziResponse(string $url, Request $request, Content $content, LoggerInterface $logger): JsonResponse
+    private function ncziResponse(string $url, Request $request, Content $content, LoggerInterface $ncziProxyLogger): JsonResponse
     {
         $body = 0 === $request->query->count() ? null : ['json' => $request->query->all(),];
-        $logger->info(sprintf('[NCZI API HIT] URL=%s, BODY=%s', $url, json_encode($body)));
+        $ncziProxyLogger->info(sprintf('[NCZI API HIT] URL=%s, BODY=%s', $url, json_encode($body)));
         return JsonResponse::fromJsonString($content->load($url, $body));
     }
 

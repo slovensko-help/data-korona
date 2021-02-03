@@ -26,3 +26,8 @@ services:
   App\EventListener\LoadClassMetadataListener:
     tags:
       - { name: doctrine.event_listener, event: loadClassMetadata }
+
+  App\Logger\ClientIpProcessor:
+    tags:
+      - { name: monolog.processor, channel: ncziProxy }
+
