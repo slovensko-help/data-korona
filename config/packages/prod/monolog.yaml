@@ -5,5 +5,4 @@ monolog:
             level: info
             type: stream
             path: '%kernel.logs_dir%/nczi_proxy.log'
-            formatter: monolog.formatter.standard
             channels: [ ncziProxy ]
