@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Hospital;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\Hospital as Entity;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Hospital|null find($id, $lockMode = null, $lockVersion = null)
- * @method Hospital|null findOneBy(array $criteria, array $orderBy = null)
- * @method Hospital[]    findAll()
- * @method Hospital[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Entity|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Entity|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Entity[]    findAll()
+ * @method Entity[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class HospitalRepository extends ServiceEntityRepository
+class HospitalRepository extends AbstractRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Hospital::class);
+        parent::__construct($registry, Entity::class);
     }
 
     public function findAllIndexedByCode() {

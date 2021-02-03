@@ -8,7 +8,7 @@ class VaccinationsClient extends AbstractClient
 {
     const CSV_FILE = 'https://raw.githubusercontent.com/Institut-Zdravotnych-Analyz/covid19-data/main/OpenData_Slovakia_Vaccination_Regions.csv';
 
-    protected function hydrateItem(array $data): array
+    protected function dataToEntities(array $data): array
     {
         return [
             'published_on' => DateTime::dateTimeFromString($data['DATE'], 'Y-m-d', true),

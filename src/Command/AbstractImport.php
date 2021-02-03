@@ -134,12 +134,12 @@ abstract class AbstractImport extends Command
     protected function district(array $record, ?Region $region): ?District
     {
         if ($this->isValidCode($record['SIDOU_OKRES_KOD_ST']) && $region instanceof Region) {
-            return $this->findOrCreate(function () use ($record, $region) {
-                return (new District())
+            return $this->findOrCreate(function (District $district) use ($record, $region) {
+                return $district
                     ->setRegion($region)
                     ->setCode($record['SIDOU_OKRES_KOD_ST'])
                     ->setTitle(str_replace('Okres ', '', $record['SIDOU_OKRES_POP_ST']));
-            }, $this->districtRepository, ['code' => $record['SIDOU_OKRES_KOD_ST']]);
+            }, $this->districtRepository, ['code' => $record['SIDOU_OKRES_KOD_ST']], true);
         }
 
         return null;

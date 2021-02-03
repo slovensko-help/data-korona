@@ -1,6 +1,8 @@
 <?php
+
 namespace App\EventListener;
 
+use App\Entity\Traits\Publishable;
 use App\Entity\Traits\Timestampable;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
@@ -17,6 +19,7 @@ class LoadClassMetadataListener implements EventSubscriber
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         $cm = $eventArgs->getClassMetadata();
+
         $class = $cm->getName();
         $uses = class_uses($class);
 
@@ -24,6 +27,14 @@ class LoadClassMetadataListener implements EventSubscriber
             $cm->table['indexes'][] = [
                 'columns' => [
                     'updated_at',
+                ],
+            ];
+        }
+
+        if (in_array(Publishable::class, $uses)) {
+            $cm->table['indexes'][] = [
+                'columns' => [
+                    'published_on',
                 ],
             ];
         }

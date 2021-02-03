@@ -19,7 +19,7 @@ abstract class AbstractClient extends \App\Client\AbstractClient
 
         foreach ($items as $i => $item) {
             if ($i > 0) {
-                yield $this->hydrateItem($item);
+                yield $this->dataToEntities($item);
             }
         }
     }
@@ -31,5 +31,5 @@ abstract class AbstractClient extends \App\Client\AbstractClient
         }, self::FIVE_MINUTES);
     }
 
-    abstract protected function hydrateItem(array $item): array;
+    abstract protected function dataToEntities(array $item): array;
 }

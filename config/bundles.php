@@ -14,4 +14,5 @@ return [
     EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     Sentry\SentryBundle\SentryBundle::class => ['all' => true],
+    DH\AuditorBundle\DHAuditorBundle::class => ['all' => true],
 ];

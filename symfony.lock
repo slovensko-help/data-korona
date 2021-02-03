@@ -5,6 +5,22 @@
     "composer/package-versions-deprecated": {
         "version": "1.11.99.1"
     },
+    "damienharper/auditor": {
+        "version": "1.0.1"
+    },
+    "damienharper/auditor-bundle": {
+        "version": "4.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "4.0",
+            "ref": "694b129ef686d68a4c9ca6b3cafbeb3dec0c9c2d"
+        },
+        "files": [
+            "config/packages/dh_auditor.yaml",
+            "config/routes/dh_auditor.yaml"
+        ]
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -349,6 +365,18 @@
     },
     "symfony/intl": {
         "version": "v5.2.1"
+    },
+    "symfony/lock": {
+        "version": "5.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.2",
+            "ref": "13350583a83fa636bf45a5fb62da3bdc73be52a1"
+        },
+        "files": [
+            "config/packages/lock.yaml"
+        ]
     },
     "symfony/mailer": {
         "version": "4.3",

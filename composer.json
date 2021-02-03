@@ -6,6 +6,7 @@
     "ext-ctype": "*",
     "ext-iconv": "*",
     "ext-json": "*",
+    "damienharper/auditor-bundle": "^4.0",
     "doctrine/annotations": "^1.0",
     "doctrine/doctrine-bundle": "^2.1",
     "doctrine/doctrine-migrations-bundle": "^3.0",

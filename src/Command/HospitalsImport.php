@@ -2,6 +2,14 @@
 
 namespace App\Command;
 
+use App\Client\Iza\HospitalsClient as IzaHospitalsClient;
+use App\Entity\City;
+use App\Entity\District;
+use App\Entity\Hospital;
+use App\Entity\Region;
+use App\Entity\TimeSeries\HospitalBeds;
+use App\Entity\TimeSeries\HospitalPatients;
+use App\Entity\TimeSeries\HospitalStaff;
 use App\Repository\AbstractRepository;
 use App\Repository\Aggregation\AbstractRepository as AbstractAggregationRepository;
 use App\Repository\Aggregation\DistrictHospitalBedsRepository;
@@ -15,12 +23,16 @@ use App\Repository\HospitalPatientsRepository;
 use App\Repository\HospitalStaffRepository;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class HospitalsImport extends AbstractImport
 {
     const CSV_FILE = 'https://raw.githubusercontent.com/Institut-Zdravotnych-Analyz/covid19-data/main/OpenData_Slovakia_Covid_Hospital_Full.csv';
 
     protected static $defaultName = 'app:import:hospitals';
+
+    /** @var IzaHospitalsClient */
+    protected $izaHospitalsClient;
 
     /**
      * @var AbstractAggregationRepository[]
@@ -32,9 +44,109 @@ class HospitalsImport extends AbstractImport
      */
     private $itemRepositories;
 
+//    protected function o($entities, $class)
+//    {
+//        return $entities[$class];
+//    }
+//
+//    protected function sync(array $classAndEntityUpdater, ?array &$prefetchedEntities = null, ?string $keyColumn = null)
+//    {
+//        $repository = $this->entityManager->getRepository($class);
+//
+//        if (null === $classAndEntityUpdater) {
+//            return null;
+//        }
+//
+//        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+//
+//        if (null !== $keyColumn) {
+//            if (!isset($prefetchedEntities[$keyColumn])) {
+//                $prefetchedEntities[$keyColumn] = $repository->findOneBy($classAndEntityUpdater[0]);
+//            }
+//
+//            $entity = $prefetchedEntities[$keyColumn];
+//        } else {
+//            $entity = $repository->findOneBy($classAndEntityUpdater[0]);
+//        }
+//
+//        if (isset($classAndEntityUpdater[1])) {
+//            foreach ($classAndEntityUpdater[0] as $columnName => $columnValue) {
+//                $propertyAccessor->setValue($entity, $columnName, $columnValue);
+//            }
+//
+//            $entity = $classAndEntityUpdater[1]($entity);
+//
+//            $this->entityManager->persist($entity);
+//        }
+//
+//        return $entity;
+//    }
+//
+//    protected function syncM(array $map, array $entityHydrators) {
+//        $hydratedEntities = [];
+//
+//        foreach ($map as $entity) {
+//            dump($entity[0]);
+//            dump($this->entityManager->getRepository($entity[0])->relatedClasses());
+//        }
+//
+////        $this->sync($entities, )
+//    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->disableDoctrineLogger();
+
+////        $this->districtRepository->relatedClasses();
+//
+//        $region = $this->regionRepository->find(1);
+//
+//        $this->entityManager->persist($region);
+//
+//        $region->setAbbreviation('KK');
+//
+//        $this->entityManager->flush();
+//
+////        die;
+//
+//        $prefetchedRegions = $this->regionRepository->findAllIndexedByCode();
+//        $prefetchedDistricts = [];
+//        $prefetchedCities = [];
+//
+//        $m[] = [Region::class, 'code'];
+//        $m[] = [District::class, 'code'];
+//        $m[] = [City::class, 'code'];
+//        $m[] = [Hospital::class, 'code'];
+//        $m[] = [HospitalBeds::class, 'id'];
+//        $m[] = [HospitalPatients::class, 'id'];
+//        $m[] = [HospitalStaff::class, 'id'];
+//
+//        foreach ($this->izaHospitalsClient->findAll() as $i => $entities) {
+//
+//
+//            die;
+//            $this->syncM($m, $entities);
+//
+////            $region = $this->sync($entities, Region::class, $prefetchedRegions, 'code');
+//            $district = $this->sync($entities, District::class, $prefetchedDistricts, 'code');
+//
+//            if (null === $district) {
+//                continue;
+//            }
+//
+//            $city = $this->sync($entities, City::class, $prefetchedCities, 'code');
+//            $city->setDistrict($district);
+//
+//            if (null === $region || null === $district || null === $city) {
+//            }
+//
+//
+//            if ($i % 1000 === 0) {
+//                dump($i);
+//            }
+//        }
+//
+//        die;
 
         $output->writeln($this->log('Downloading CSV file...'));
         $csv = $this->content->load(self::CSV_FILE);
@@ -57,14 +169,22 @@ class HospitalsImport extends AbstractImport
 
     private function updateStructures(iterable $items)
     {
-        foreach ($items as $item) {
+//        foreach ($this->izaHospitalsClient->findAll() as $entities) {
+//            $this->regionRepository->saveFromPartial($entities[Region::class]);
+//
+//            $this->regionRepository->save($entities['region']);
+//        }
+
+        $regions = [];
+        $i = 0;
+        foreach ($items as $entities) {
             $this->hospital(
-                $item,
+                $entities,
                 $this->city(
-                    $item,
+                    $entities,
                     $this->district(
-                        $item,
-                        $this->region($item)
+                        $entities,
+                        $this->region($entities)
                     )
                 )
             );
@@ -157,5 +277,14 @@ class HospitalsImport extends AbstractImport
             $slovakiaHospitalBedsRepository,
             $slovakiaHospitalPatientsRepository,
         ];
+    }
+
+    /**
+     * @required
+     * @param IzaHospitalsClient $izaHospitalsClient
+     */
+    public function setIzaHospitalsClient(IzaHospitalsClient $izaHospitalsClient): void
+    {
+        $this->izaHospitalsClient = $izaHospitalsClient;
     }
 }

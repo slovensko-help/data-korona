@@ -16,12 +16,28 @@ abstract class AbstractRepository extends ServiceEntityRepository
         parent::__construct($registry, $entityClass);
     }
 
+    public function relatedClasses() {
+        dump($this->getClassMetadata()->associationMappings);
+//        die;
+    }
+
     public function findAllIndexedById()
     {
         $result = [];
 
         foreach ($this->findAll() as $entity) {
             $result[$entity->getId()] = $entity;
+        }
+
+        return $result;
+    }
+
+    public function findAllIndexedByCode()
+    {
+        $result = [];
+
+        foreach ($this->findAll() as $entity) {
+            $result[$entity->getCode()] = $entity;
         }
 
         return $result;

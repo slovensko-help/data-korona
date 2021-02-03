@@ -44,9 +44,9 @@ class VaccinationsImport extends AbstractImport
             return self::SUCCESS;
         }
 
-        if ($input->getOption('nczi-only')) {
+//        if ($input->getOption('nczi-only')) {
             $this->slovakiaNcziVaccinationsRepository->saveAll($this->ncziVaccinationsClient->findAll());
-        }
+//        }
 
         $this->commitChangesToDb();
 
