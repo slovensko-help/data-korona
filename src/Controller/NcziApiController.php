@@ -65,13 +65,13 @@ class NcziApiController extends AbstractController
         $body = 0 === $request->query->count() ? null : ['json' => $request->query->all(),];
 
         return
-            $this->errorIfWrongParameters(
+            $this->errorIf(
                 $this->notAllowedParameters($request, $allowedParameters),
                 'Query parameter(s) not allowed') ??
-            $this->errorIfWrongParameters(
+            $this->errorIf(
                 $this->missingParameters($request, $this->requiredParameters($allowedParameters)),
                 'Query parameter(s) missing') ??
-            $this->errorIfWrongParameters(
+            $this->errorIf(
                 $this->wrongTypeParameters($request, $allowedParameters),
                 'Wrong type of query parameter(s)') ??
             JsonResponse::fromJsonString(
@@ -90,7 +90,7 @@ class NcziApiController extends AbstractController
         return $result;
     }
 
-    private function errorIfWrongParameters(array $violatingParameters, string $error): ?Response
+    private function errorIf(array $violatingParameters, string $error): ?Response
     {
         return 0 === count($violatingParameters) ? null : new JsonResponse([
             'success' => false,
