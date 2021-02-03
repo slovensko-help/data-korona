@@ -108,9 +108,13 @@ class NcziApiController extends AbstractController
 
     private function errorIf(array $violatingParameters, string $error, Request $request): ?Response
     {
+        if (0 === count($violatingParameters)) {
+            return null;
+        }
+
         $this->ncziProxyLogger->info(sprintf('[NCZI PROXY MISS] URL=%s, ERROR=%s', $request->getUri(), $error));
 
-        return 0 === count($violatingParameters) ? null : new JsonResponse([
+        return new JsonResponse([
             'success' => false,
             'error' => sprintf('%s: %s', $error, join(',', $violatingParameters)),
         ], Response::HTTP_BAD_REQUEST);
