@@ -116,6 +116,7 @@ class NcziApiController extends AbstractController
 
         return new JsonResponse([
             'success' => false,
+            'time' => date('Y-m-d H:i:s'),
             'error' => sprintf('%s: %s', $error, join(',', $violatingParameters)),
         ], Response::HTTP_BAD_REQUEST);
     }
