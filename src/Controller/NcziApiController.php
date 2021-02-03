@@ -46,6 +46,15 @@ class NcziApiController extends AbstractController
         ],
     ];
 
+    private $content;
+    private $ncziProxyLogger;
+
+    public function __construct(Content $content, LoggerInterface $ncziProxyLogger)
+    {
+        $this->content = $content;
+        $this->ncziProxyLogger = $ncziProxyLogger;
+    }
+
     /**
      * @Route("/ncziapi/time", methods={"GET"})
      */
@@ -57,7 +66,7 @@ class NcziApiController extends AbstractController
     /**
      * @Route("/ncziapi/{route}", methods={"GET"})
      */
-    public function ncziApi(string $route, Request $request, Content $content, LoggerInterface $ncziProxyLogger)
+    public function ncziApi(string $route, Request $request)
     {
         $routeConfig = self::ALLOWED_REQUESTS[$route] ?? $this->throwNotFoundException();
         $originUrl = $routeConfig['origin_url'] ?? $this->throwNotFoundException();
@@ -67,21 +76,21 @@ class NcziApiController extends AbstractController
         return
             $this->errorIf(
                 $this->notAllowedParameters($request, $allowedParameters),
-                'Query parameter(s) not allowed') ??
+                'Query parameter(s) not allowed', $request) ??
             $this->errorIf(
                 $this->missingParameters($request, $this->requiredParameters($allowedParameters)),
-                'Query parameter(s) missing') ??
+                'Query parameter(s) missing', $request) ??
             $this->errorIf(
                 $this->wrongTypeParameters($request, $allowedParameters),
-                'Wrong type of query parameter(s)') ??
-            $this->ncziResponse($originUrl, $request, $content, $ncziProxyLogger);
+                'Wrong type of query parameter(s)', $request) ??
+            $this->ncziResponse($originUrl, $request);
     }
 
-    private function ncziResponse(string $url, Request $request, Content $content, LoggerInterface $ncziProxyLogger): JsonResponse
+    private function ncziResponse(string $url, Request $request): JsonResponse
     {
         $body = 0 === $request->query->count() ? null : ['json' => $request->query->all(),];
-        $ncziProxyLogger->info(sprintf('[NCZI API HIT] URL=%s, BODY=%s', $url, json_encode($body)));
-        return JsonResponse::fromJsonString($content->load($url, $body));
+        $this->ncziProxyLogger->info(sprintf('[NCZI PROXY MISS] URL=%s, BODY=%s', $url, json_encode($body)));
+        return JsonResponse::fromJsonString($this->content->load($url, $body));
     }
 
     private function requiredParameters(array $allowedParams): array
@@ -97,8 +106,10 @@ class NcziApiController extends AbstractController
         return $result;
     }
 
-    private function errorIf(array $violatingParameters, string $error): ?Response
+    private function errorIf(array $violatingParameters, string $error, Request $request): ?Response
     {
+        $this->ncziProxyLogger->info(sprintf('[NCZI PROXY MISS] URL=%s, ERROR=%s', $request->getUri(), $error));
+
         return 0 === count($violatingParameters) ? null : new JsonResponse([
             'success' => false,
             'error' => sprintf('%s: %s', $error, join(',', $violatingParameters)),
