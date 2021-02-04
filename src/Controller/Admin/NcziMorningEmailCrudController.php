@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\NcziMorningEmail;
+use App\Entity\Raw\NcziMorningEmail;
 use DateTimeImmutable;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
