@@ -30,6 +30,10 @@ class NcziApiController extends AbstractController
                 ],
             ],
         ],
+        'get_all_drivein_times_vacc' => [
+            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_all_drivein_times_vacc',
+            'allowed_parameters' => [],
+        ],
         // ag tests
         'mom_ag.json' => [
             'origin_url' => 'https://www.old.korona.gov.sk/mom_ag.json',
@@ -43,6 +47,10 @@ class NcziApiController extends AbstractController
                     'type' => 'int',
                 ],
             ],
+        ],
+        'get_all_drivein_times' => [
+            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_all_drivein_times',
+            'allowed_parameters' => [],
         ],
     ];
 
