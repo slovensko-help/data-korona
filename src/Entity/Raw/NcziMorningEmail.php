@@ -14,9 +14,8 @@ use JMS\Serializer\Annotation as Serializer;
 use OpenApi\Annotations\Property;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\Raw\NcziMorningEmailRepository")
+ * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
- * @Auditable()
  */
 class NcziMorningEmail
 {

@@ -3,18 +3,11 @@
 namespace App\Command;
 
 use App\Client\PowerBi\AbstractClient;
-use App\Entity\City;
-use App\Entity\District;
-use App\Entity\Hospital;
-use App\Entity\Region;
-use App\Repository\CityRepository;
-use App\Repository\DistrictRepository;
-use App\Repository\RegionRepository;
-use App\Repository\HospitalRepository;
 use App\Service\Content;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
+use App\Repository\EntityRepository;
+use Doctrine\Persistence\ObjectRepository;
 use Generator;
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -29,11 +22,6 @@ abstract class AbstractImport extends Command
     protected $entityManager;
     protected $content;
 
-    protected $regionRepository;
-    protected $hospitalRepository;
-    protected $districtRepository;
-    protected $cityRepository;
-
     protected $mailer;
 
     public function __construct(
@@ -41,11 +29,6 @@ abstract class AbstractImport extends Command
         Connection $connection,
         MailerInterface $mailer,
         Content $content,
-
-        HospitalRepository $hospitalRepository,
-        CityRepository $cityRepository,
-        DistrictRepository $districtRepository,
-        RegionRepository $regionRepository,
 
         string $name = null
     )
@@ -56,11 +39,6 @@ abstract class AbstractImport extends Command
         $this->entityManager = $managerRegistry;
         $this->content = $content;
 
-        $this->hospitalRepository = $hospitalRepository;
-        $this->cityRepository = $cityRepository;
-        $this->districtRepository = $districtRepository;
-        $this->regionRepository = $regionRepository;
-
         $this->mailer = $mailer;
     }
 
@@ -68,19 +46,83 @@ abstract class AbstractImport extends Command
     {
         $this->entityManager->getConnection()->getConfiguration()->setSQLLogger();
     }
+//
+//    protected function prefetchEntities(array $entities, ?array &$entityClasses, array &$cachedEntities = null)
+//    {
+//        $keyValue = $repository->keyValue($entity[2], $entity[1], $entityClasses, $syncedEntities, $cachedEntities);
+//        dump($keyValue);
+//        die;
+//    }
 
-    protected function region(array $record): ?Region
+    protected function batches(iterable $dataItems, $batchSize = 10)
     {
-        if ($this->isValidCode($record['SIDOU_KRAJ_KOD_ST'])) {
-            return $this->findOrCreate(function () use ($record) {
-                return (new Region())
-                    ->setCode($record['SIDOU_KRAJ_KOD_ST'])
-                    ->setTitle(str_replace(' kraj', '', $record['SIDOU_KRAJ_POP_ST']));
-            }, $this->regionRepository, ['code' => $record['SIDOU_KRAJ_KOD_ST']]);
+        $result = [];
+        $index = 0;
+        foreach ($dataItems as $item) {
+            $result[] = $item;
+
+            if (0 === ++$index % $batchSize) {
+                echo 'asd';
+                $index = 0;
+                yield $result;
+                $result = [];
+            }
         }
 
-        return null;
+        if (count($result) > 0) {
+            yield $result;
+        }
     }
+
+    protected function persistRecordEntities(array $entities, ?array &$entityClasses, array &$cachedEntities = null
+        , $entityIndex = null
+        , &$syncedEntities = null
+    )
+    {
+        if (null !== $entityIndex) {
+            $syncedEntities = [];
+            $populateEntityClasses = null === $entityClasses;
+
+            $entity = $entities[$entityIndex];
+
+            $entityClass = $entity[0];
+            $repository = $this->entityManager->getRepository($entityClass);
+
+            $object = $repository->sync($entity[2], $entity[1], $entityClasses, $syncedEntities, $cachedEntities);
+
+            // TODO: consider support for multiple entities of the same class
+            $syncedEntities[$entityClass] = $object;
+            if ($populateEntityClasses) {
+                $entityClasses[] = $entityClass;
+            }
+        }
+
+//        foreach ($entities as $entity) {
+//            $entityClass = $entity[0];
+//            $repository = $this->entityManager->getRepository($entityClass);
+//
+//            $object = $repository->sync($entity[2], $entity[1], $entityClasses, $syncedEntities, $cachedEntities);
+//
+//            // TODO: consider support for multiple entities of the same class
+//            $syncedEntities[$entityClass] = $object;
+//            if ($populateEntityClasses) {
+//                $entityClasses[] = $entityClass;
+//            }
+//        }
+    }
+
+//    protected function region(array $record): ?Region
+//    {
+//        if ($this->isValidCode($record['SIDOU_KRAJ_KOD_ST'])) {
+//            return $this->findOrCreate(function () use ($record) {
+//                return (new Region())
+//                    ->setCode($record['SIDOU_KRAJ_KOD_ST'])
+//                    ->setTitle(str_replace(' kraj', '', $record['SIDOU_KRAJ_POP_ST']));
+//            }, $this->regionRepository, ['code' => $record['SIDOU_KRAJ_KOD_ST']]);
+//        }
+//
+//        return null;
+//    }
 
     protected function findOrCreate(callable $newEntityCallback, EntityRepository $repository, array $criteria, bool $cacheEnabled = true, ?array $keyParts = null)
     {
@@ -131,63 +173,63 @@ abstract class AbstractImport extends Command
         $this->entityManager->clear();
     }
 
-    protected function district(array $record, ?Region $region): ?District
-    {
-        if ($this->isValidCode($record['SIDOU_OKRES_KOD_ST']) && $region instanceof Region) {
-            return $this->findOrCreate(function (District $district) use ($record, $region) {
-                return $district
-                    ->setRegion($region)
-                    ->setCode($record['SIDOU_OKRES_KOD_ST'])
-                    ->setTitle(str_replace('Okres ', '', $record['SIDOU_OKRES_POP_ST']));
-            }, $this->districtRepository, ['code' => $record['SIDOU_OKRES_KOD_ST']], true);
-        }
+//    protected function district(array $record, ?Region $region): ?District
+//    {
+//        if ($this->isValidCode($record['SIDOU_OKRES_KOD_ST']) && $region instanceof Region) {
+//            return $this->findOrCreate(function (District $district) use ($record, $region) {
+//                return $district
+//                    ->setRegion($region)
+//                    ->setCode($record['SIDOU_OKRES_KOD_ST'])
+//                    ->setTitle(str_replace('Okres ', '', $record['SIDOU_OKRES_POP_ST']));
+//            }, $this->districtRepository, ['code' => $record['SIDOU_OKRES_KOD_ST']], true);
+//        }
+//
+//        return null;
+//    }
 
-        return null;
-    }
-
-    protected function city(array $record, ?District $district): ?City
-    {
-        if ($this->isValidCode($record['SIDOU_OBEC_KOD_ST']) && $district instanceof District) {
-
-            if (strlen($record['SIDOU_OBEC_KOD_ST']) === 6) {
-                $record['SIDOU_OBEC_KOD_ST'] = $district->getCode() . $record['SIDOU_OBEC_KOD_ST'];
-            }
-
-            return $this->findOrCreate(function () use ($record, $district) {
-                return (new City())
-                    ->setDistrict($district)
-                    ->setCode($record['SIDOU_OBEC_KOD_ST'])
-                    ->setTitle($record['SIDOU_OBEC_POP_ST']);
-            }, $this->cityRepository, ['code' => $record['SIDOU_OBEC_KOD_ST']]);
-        }
-
-        return null;
-    }
-
-    protected function hospital(array $record, ?City $city): ?Hospital
-    {
-        if ($this->isValidCode($record['KODPZS']) && $city instanceof City) {
-            $code = $this->uniqueHospitalCode($record['KODPZS'], $record['NAZOV']);
-            return $this->findOrCreate(function () use ($code, $record, $city) {
-                return (new Hospital())
-                    ->setCity($city)
-                    ->setTitle($record['NAZOV'])
-                    ->setCode($code);
-            }, $this->hospitalRepository, ['code' => $code]);
-        }
-
-        return null;
-    }
+//    protected function city(array $record, ?District $district): ?City
+//    {
+//        if ($this->isValidCode($record['SIDOU_OBEC_KOD_ST']) && $district instanceof District) {
+//
+//            if (strlen($record['SIDOU_OBEC_KOD_ST']) === 6) {
+//                $record['SIDOU_OBEC_KOD_ST'] = $district->getCode() . $record['SIDOU_OBEC_KOD_ST'];
+//            }
+//
+//            return $this->findOrCreate(function () use ($record, $district) {
+//                return (new City())
+//                    ->setDistrict($district)
+//                    ->setCode($record['SIDOU_OBEC_KOD_ST'])
+//                    ->setTitle($record['SIDOU_OBEC_POP_ST']);
+//            }, $this->cityRepository, ['code' => $record['SIDOU_OBEC_KOD_ST']]);
+//        }
+//
+//        return null;
+//    }
+//
+//    protected function hospital(array $record, ?City $city): ?Hospital
+//    {
+//        if ($this->isValidCode($record['KODPZS']) && $city instanceof City) {
+//            $code = $this->uniqueHospitalCode($record['KODPZS'], $record['NAZOV']);
+//            return $this->findOrCreate(function () use ($code, $record, $city) {
+//                return (new Hospital())
+//                    ->setCity($city)
+//                    ->setTitle($record['NAZOV'])
+//                    ->setCode($code);
+//            }, $this->hospitalRepository, ['code' => $code]);
+//        }
+//
+//        return null;
+//    }
 
     /**
      * @param callable $updateEntityCallback
-     * @param EntityRepository $repository
+     * @param ObjectRepository $repository
      * @param array $criteria
      * @param false $flushAutomatically
      * @param false $returnBeforeAndAfterUpdate
      * @return mixed
      */
-    protected function updateOrCreate(callable $updateEntityCallback, EntityRepository $repository, array $criteria, $flushAutomatically = false, $returnBeforeAndAfterUpdate = false)
+    protected function updateOrCreate(callable $updateEntityCallback, ObjectRepository $repository, array $criteria, $flushAutomatically = false, $returnBeforeAndAfterUpdate = false)
     {
         $entity = $repository->findOneBy($criteria);
         $beforeEntity = null === $entity ? null : clone $entity;
@@ -218,7 +260,7 @@ abstract class AbstractImport extends Command
         return '' === $stringValue ? null : round((float)str_replace(',', '.', $stringValue), 3);
     }
 
-    protected function csvRecords($csvString): Generator
+    protected function csvRecords(string $csvString): Generator
     {
         $csv = Reader::createFromString($csvString);
         $csv->setDelimiter(';');

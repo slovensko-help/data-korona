@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace App\Repository\Aggregation;
 
-use App\Repository\DistrictRepository;
+use App\Entity\District;
 use App\Tool\Id;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 abstract class AbstractDistrictRepository extends AbstractRepository
 {
-    /**
-     * @var DistrictRepository
-     */
-    private $districtRepository;
     private $districtsIndexedById;
 
     public function __construct(ManagerRegistry $registry, string $entityClass)
@@ -41,15 +37,6 @@ abstract class AbstractDistrictRepository extends AbstractRepository
 
     protected function reloadDependantEntities()
     {
-        $this->districtsIndexedById = $this->districtRepository->findAllIndexedById();
-    }
-
-    /**
-     * @required
-     * @param DistrictRepository $districtRepository
-     */
-    public function setDistrictRepository(DistrictRepository $districtRepository)
-    {
-        $this->districtRepository = $districtRepository;
+        $this->districtsIndexedById = $this->getEntityManager()->getRepository(District::class)->findAllIndexedById();
     }
 }

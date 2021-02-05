@@ -2,18 +2,24 @@
 
 namespace App\Client\Nczi;
 
+use App\Entity\Raw\NcziVaccinations;
 use App\Tool\DateTime;
 
 class VaccinationsClient extends AbstractKpiDataClient
 {
     const KPI_ID = 31;
 
-    protected function hydrateItem(array $data): array
+    protected function dataItemToEntities(array $dataItem): array
     {
         return [
-            'published_on' => DateTime::dateTimeFromString($data['date'], 'Y-m-d', true),
-            'dose_1_count' => $data['v'],
-            'dose_2_count' => $data['v1'],
+            [NcziVaccinations::class, function(NcziVaccinations $entity) use ($dataItem) {
+                $publishedOn = DateTime::dateTimeFromString($dataItem['date'], 'Y-m-d', true);
+                return $entity
+                    ->setId((int)$publishedOn->format('Ymd'))
+                    ->setPublishedOn($publishedOn)
+                    ->setDose1Count($this->nullOrInt($dataItem['v']))
+                    ->setDose2Count($this->nullOrInt($dataItem['v1']));
+            }],
         ];
     }
 }

@@ -6,15 +6,12 @@ namespace App\Repository;
 
 use App\Entity\Hospital;
 use App\Entity\TimeSeries\HospitalBeds as Entity;
-use App\Repository\Traits\Paginable;
 use App\Tool\DateTime;
 use App\Tool\Id;
 use Doctrine\Persistence\ManagerRegistry;
 
-class HospitalBedsRepository extends AbstractRepository implements PaginableRepositoryInterface
+class HospitalBedsRepository extends AbstractRepository
 {
-    use Paginable;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Entity::class);

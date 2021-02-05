@@ -2,6 +2,7 @@
 
 namespace App\Client;
 
+use App\Entity\District;
 use App\QueryBuilder\Hint\PaginationHintInterface;
 use App\QueryBuilder\PowerBiQueryBuilder;
 use App\QueryResult\PowerBiQueryResult;
@@ -12,7 +13,7 @@ use Generator;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-class AbstractClient
+abstract class AbstractClient
 {
     const CACHE_TTL = 3600;
     const ONE_DAY = 86400;
@@ -28,22 +29,13 @@ class AbstractClient
      */
     protected $cache;
 
-    /**
-     * @required
-     * @param Content $content
-     */
-    public function setContent(Content $content)
-    {
-        $this->content = $content;
-    }
+    abstract protected function dataItemToEntities(array $dataItemItem): array;
 
-    /**
-     * @required
-     * @param CacheInterface $cache
-     */
-    public function setCache(CacheInterface $cache)
+    protected function dataItems(iterable $dataItems): Generator
     {
-        $this->cache = $cache;
+        foreach ($dataItems as $dataItem) {
+            yield $this->dataItemToEntities($dataItem);
+        }
     }
 
     protected function baseUrl(string $url): string
@@ -75,5 +67,51 @@ class AbstractClient
         }
 
         return $classValues[$key];
+    }
+
+    protected function nullOrInt($stringValue): ?int
+    {
+        return '' === $stringValue ? null : (int)$stringValue;
+    }
+
+    protected function fixedCityCode(string $code, District $district): string
+    {
+        if (strlen($code) === 6) {
+            return $district->getCode() . $code;
+        }
+
+        return $code;
+    }
+
+    protected function isInvalidCode($code)
+    {
+        return empty($code) || $code === 'NA';
+    }
+
+    protected function fixedHospitalCode(string $code, string $name): string
+    {
+        if ('P99999999999' !== $code) {
+            return $code;
+        }
+
+        return $code . '_' . substr(sha1($name), 0, 8);
+    }
+
+    /**
+     * @required
+     * @param Content $content
+     */
+    public function setContent(Content $content)
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * @required
+     * @param CacheInterface $cache
+     */
+    public function setCache(CacheInterface $cache)
+    {
+        $this->cache = $cache;
     }
 }

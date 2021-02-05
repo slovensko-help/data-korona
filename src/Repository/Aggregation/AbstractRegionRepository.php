@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository\Aggregation;
 
-use App\Repository\RegionRepository;
+use App\Entity\Region;
 use App\Tool\Id;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -12,10 +12,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 abstract class AbstractRegionRepository extends AbstractRepository
 {
-    /**
-     * @var RegionRepository
-     */
-    private $regionRepository;
     private $regionsIndexedById;
 
     public function __construct(ManagerRegistry $registry, string $entityClass)
@@ -43,15 +39,6 @@ abstract class AbstractRegionRepository extends AbstractRepository
 
     protected function reloadDependantEntities()
     {
-        $this->regionsIndexedById = $this->regionRepository->findAllIndexedById();
-    }
-
-    /**
-     * @required
-     * @param RegionRepository $regionRepository
-     */
-    public function setRegionRepository(RegionRepository $regionRepository)
-    {
-        $this->regionRepository = $regionRepository;
+        $this->regionsIndexedById = $this->getEntityManager()->getRepository(Region::class)->findAllIndexedById();
     }
 }

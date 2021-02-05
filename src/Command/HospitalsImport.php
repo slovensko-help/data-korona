@@ -8,8 +8,6 @@ use App\Entity\District;
 use App\Entity\Hospital;
 use App\Entity\Region;
 use App\Entity\TimeSeries\HospitalBeds;
-use App\Entity\TimeSeries\HospitalPatients;
-use App\Entity\TimeSeries\HospitalStaff;
 use App\Repository\AbstractRepository;
 use App\Repository\Aggregation\AbstractRepository as AbstractAggregationRepository;
 use App\Repository\Aggregation\DistrictHospitalBedsRepository;
@@ -18,12 +16,12 @@ use App\Repository\Aggregation\RegionHospitalBedsRepository;
 use App\Repository\Aggregation\RegionHospitalPatientsRepository;
 use App\Repository\Aggregation\SlovakiaHospitalBedsRepository;
 use App\Repository\Aggregation\SlovakiaHospitalPatientsRepository;
+use App\Repository\EntityRepository;
 use App\Repository\HospitalBedsRepository;
 use App\Repository\HospitalPatientsRepository;
 use App\Repository\HospitalStaffRepository;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class HospitalsImport extends AbstractImport
 {
@@ -40,113 +38,43 @@ class HospitalsImport extends AbstractImport
     private $aggregationRepositories = [];
 
     /**
-     * @var AbstractRepository[]
+     * @var EntityRepository[]
      */
     private $itemRepositories;
-
-//    protected function o($entities, $class)
-//    {
-//        return $entities[$class];
-//    }
-//
-//    protected function sync(array $classAndEntityUpdater, ?array &$prefetchedEntities = null, ?string $keyColumn = null)
-//    {
-//        $repository = $this->entityManager->getRepository($class);
-//
-//        if (null === $classAndEntityUpdater) {
-//            return null;
-//        }
-//
-//        $propertyAccessor = PropertyAccess::createPropertyAccessor();
-//
-//        if (null !== $keyColumn) {
-//            if (!isset($prefetchedEntities[$keyColumn])) {
-//                $prefetchedEntities[$keyColumn] = $repository->findOneBy($classAndEntityUpdater[0]);
-//            }
-//
-//            $entity = $prefetchedEntities[$keyColumn];
-//        } else {
-//            $entity = $repository->findOneBy($classAndEntityUpdater[0]);
-//        }
-//
-//        if (isset($classAndEntityUpdater[1])) {
-//            foreach ($classAndEntityUpdater[0] as $columnName => $columnValue) {
-//                $propertyAccessor->setValue($entity, $columnName, $columnValue);
-//            }
-//
-//            $entity = $classAndEntityUpdater[1]($entity);
-//
-//            $this->entityManager->persist($entity);
-//        }
-//
-//        return $entity;
-//    }
-//
-//    protected function syncM(array $map, array $entityHydrators) {
-//        $hydratedEntities = [];
-//
-//        foreach ($map as $entity) {
-//            dump($entity[0]);
-//            dump($this->entityManager->getRepository($entity[0])->relatedClasses());
-//        }
-//
-////        $this->sync($entities, )
-//    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->disableDoctrineLogger();
 
-////        $this->districtRepository->relatedClasses();
-//
-//        $region = $this->regionRepository->find(1);
-//
-//        $this->entityManager->persist($region);
-//
-//        $region->setAbbreviation('KK');
-//
-//        $this->entityManager->flush();
-//
-////        die;
-//
-//        $prefetchedRegions = $this->regionRepository->findAllIndexedByCode();
-//        $prefetchedDistricts = [];
-//        $prefetchedCities = [];
-//
-//        $m[] = [Region::class, 'code'];
-//        $m[] = [District::class, 'code'];
-//        $m[] = [City::class, 'code'];
-//        $m[] = [Hospital::class, 'code'];
-//        $m[] = [HospitalBeds::class, 'id'];
-//        $m[] = [HospitalPatients::class, 'id'];
-//        $m[] = [HospitalStaff::class, 'id'];
-//
-//        foreach ($this->izaHospitalsClient->findAll() as $i => $entities) {
-//
-//
-//            die;
-//            $this->syncM($m, $entities);
-//
-////            $region = $this->sync($entities, Region::class, $prefetchedRegions, 'code');
-//            $district = $this->sync($entities, District::class, $prefetchedDistricts, 'code');
-//
-//            if (null === $district) {
-//                continue;
-//            }
-//
-//            $city = $this->sync($entities, City::class, $prefetchedCities, 'code');
-//            $city->setDistrict($district);
-//
-//            if (null === $region || null === $district || null === $city) {
-//            }
-//
-//
-//            if ($i % 1000 === 0) {
-//                dump($i);
-//            }
-//        }
-//
-//        die;
+        $cachedEntities = [];
+        $entityClasses = null;
+
+//        $cachedEntities[Region::class] = $this->regionRepository->findAllIndexedByCode();
+//        $cachedEntities[District::class] = $this->districtRepository->findAllIndexedByCode();
+//        $cachedEntities[City::class] = $this->cityRepository->findAllIndexedByCode();
+//        $cachedEntities[Hospital::class] = $this->hospitalRepository->findAllIndexedByCode();
+//        $cachedEntities[HospitalBeds::class] = $this->entityManager->getRepository(HospitalBeds::class)->findAllIndexedById();
+
+
+        $dataEntities = $this->izaHospitalsClient->findAll();
+
+        foreach ($dataEntities as $i => $entities) {
+            $this->persistRecordEntities($entities, $entityClasses, $cachedEntities);
+
+            if ($i % 1000 === 0) {
+                $output->writeln($i);
+                $this->commitChangesToDb();
+                $cachedEntities[Region::class] = $this->regionRepository->findAllIndexedByCode();
+                $cachedEntities[District::class] = $this->districtRepository->findAllIndexedByCode();
+                $cachedEntities[City::class] = $this->cityRepository->findAllIndexedByCode();
+                $cachedEntities[Hospital::class] = $this->hospitalRepository->findAllIndexedByCode();
+                $cachedEntities[HospitalBeds::class] = $this->entityManager->getRepository(HospitalBeds::class)->findAllIndexedById();
+            }
+        }
+
+        $this->commitChangesToDb();
+
+        die;
 
         $output->writeln($this->log('Downloading CSV file...'));
         $csv = $this->content->load(self::CSV_FILE);

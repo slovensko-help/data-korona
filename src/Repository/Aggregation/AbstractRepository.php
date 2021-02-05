@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository\Aggregation;
 
-use App\Repository\PaginableRepositoryInterface;
-use App\Repository\Traits\Paginable;
+use App\Repository\ServiceEntityRepository;
 use App\Tool\Id;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -15,10 +14,8 @@ use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use App\Tool\DateTime;
 
-abstract class AbstractRepository extends \App\Repository\AbstractRepository implements PaginableRepositoryInterface
+abstract class AbstractRepository extends ServiceEntityRepository
 {
-    use Paginable;
-
     const SOURCE_TABLE_NAME = '';
     const SOURCE_TRAIT_NAME = '';
     const SOURCE_CLASS_NAME = '';

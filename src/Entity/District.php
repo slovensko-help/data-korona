@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\DistrictRepository")
+ * @ORM\Entity()
  */
 class District
 {

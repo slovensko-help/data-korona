@@ -8,10 +8,10 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\Raw\SlovakiaNcziVaccinationsRepository")
+ * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
  */
-class SlovakiaNcziVaccinations
+class NcziVaccinations
 {
     use Timestampable;
     use Datetimeable;

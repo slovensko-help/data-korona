@@ -15,33 +15,41 @@ class RegionsImport extends AbstractImport
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln($this->log('Reading CSV file...'));
-
-        $csv = $this->content->load(self::CSV_FILE);
-
+        $csvContent = $this->content->load(self::CSV_FILE);
         $output->writeln($this->log('DONE.'));
 
         $output->writeln($this->log('Updating regions...'));
-
-        /**
-         * all record columns are referenced ONLY by uppercase keys
-         */
-        foreach ($this->csvRecords($csv) as $record) {
-            $this->region($record);
-        }
-
-        $this->entityManager->flush();
+        $this->updateEntities($csvContent);
         $output->writeln($this->log('DONE.'));
 
         return self::SUCCESS;
     }
 
-    protected function region(array $record): ?Region
+    private function updateEntities(string $csvContent)
     {
-        return $this->updateOrCreate(function (?Region $region) use ($record) {
-            return ($region ?? new Region())
-                ->setAbbreviation($record['REGION_ABBREVIATION'])
-                ->setCode($record['REGION_CODE'])
-                ->setTitle($record['REGION_NAME']);
-        }, $this->regionRepository, ['code' => $record['REGION_CODE']], true);
+        $entityClasses = null;
+        $cachedEntities = [];
+        $syncedEntities = [];
+
+        foreach ($this->csvRecords($csvContent) as $_) {
+            foreach ($this->entities($_) as $index => $entity) {
+                $this->persistRecordEntities($this->entities($_), $entityClasses, $cachedEntities, $index, $syncedEntities);
+            }
+        }
+
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+    }
+
+    private function entities($_)
+    {
+        return [
+            [Region::class, 'code', function (Region $region) use ($_) {
+                return $region
+                    ->setAbbreviation($_['REGION_ABBREVIATION'])
+                    ->setCode($_['REGION_CODE'])
+                    ->setTitle($_['REGION_NAME']);
+            }],
+        ];
     }
 }

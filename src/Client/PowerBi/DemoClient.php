@@ -57,4 +57,9 @@ class DemoClient extends AbstractClient
 //            ->orderBy('COVID-19 Pocet obyvatelov', 'KRAJ_POPIS', PowerBiQueryBuilder::ORDER_DESC)
         )->items();
     }
+
+    protected function dataItemToEntities(array $dataItemItem): array
+    {
+        // TODO: Implement dataItemToEntities() method.
+    }
 }

@@ -4,13 +4,18 @@ namespace App\Controller;
 
 use App\Repository\PaginableRepositoryInterface;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AbstractController extends AbstractFOSRestController
 {
-    protected function paginatedResponse(PaginableRepositoryInterface $repository, Request $request)
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
+    protected function paginatedResponse(string $entityClass, Request $request)
     {
         $offset = $request->get('offset', PHP_INT_MAX);
         $rawUpdatedSince = $request->get('updated_since', null);
@@ -38,7 +43,8 @@ class AbstractController extends AbstractFOSRestController
             ], Response::HTTP_BAD_REQUEST));
         }
 
-        $result = $repository->findOnePage($offset, $updatedSince, $publishedSince);
+        $result = $this->entityManager->getRepository($entityClass)
+            ->findOnePage($offset, $updatedSince, $publishedSince);
 
         $nextOffset = count($result) > 0 ? $result[count($result) - 1]->getId() : null;
 
@@ -47,5 +53,14 @@ class AbstractController extends AbstractFOSRestController
             'next_offset' => $nextOffset,
             'page' => $result,
         ], Response::HTTP_OK));
+    }
+
+    /**
+     * @required
+     * @param EntityManagerInterface $entityManager
+     */
+    public function setEntityManager(EntityManagerInterface $entityManager): void
+    {
+        $this->entityManager = $entityManager;
     }
 }

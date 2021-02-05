@@ -5,8 +5,6 @@ namespace App\Command;
 use App\Client\Mail\NcziMorningEmailClient;
 use App\Entity\Raw\NcziMorningEmail;
 use App\Entity\Notification;
-use App\Repository\NotificationRepository;
-use App\Repository\Raw\NcziMorningEmailRepository;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Mime\Email;
@@ -18,12 +16,6 @@ class NcziMorningEmailImport extends AbstractImport
 
     /** @var NcziMorningEmailClient */
     private $ncziMorningEmailClient;
-
-    /** @var NcziMorningEmailRepository */
-    private $ncziMorningEmailRepository;
-
-    /** @var NotificationRepository */
-    private $notificationRepository;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -70,7 +62,7 @@ class NcziMorningEmailImport extends AbstractImport
             }
 
             return $ncziMorningEmail;
-        }, $this->ncziMorningEmailRepository, ['id' => $id], true);
+        }, $this->entityManager->getRepository(NcziMorningEmail::class), ['id' => $id], true);
     }
 
     private function notifyErrors(array $errors)
@@ -116,7 +108,7 @@ class NcziMorningEmailImport extends AbstractImport
                 ->setContentHash(md5(json_encode($content)))
                 ->setContent(json_encode($content));
 
-        }, $this->notificationRepository, ['id' => $id], true, true);
+        }, $this->entityManager->getRepository(Notification::class), ['id' => $id], true, true);
 
         /** @var Notification $beforeUpdate */
         $beforeUpdate = $entities['before'];
@@ -134,23 +126,5 @@ class NcziMorningEmailImport extends AbstractImport
     public function setNcziMorningEmailClient(NcziMorningEmailClient $ncziMorningEmailClient): void
     {
         $this->ncziMorningEmailClient = $ncziMorningEmailClient;
-    }
-
-    /**
-     * @required
-     * @param NcziMorningEmailRepository $ncziMorningEmailRepository
-     */
-    public function setNcziMorningEmailRepository(NcziMorningEmailRepository $ncziMorningEmailRepository): void
-    {
-        $this->ncziMorningEmailRepository = $ncziMorningEmailRepository;
-    }
-
-    /**
-     * @required
-     * @param NotificationRepository $notificationRepository
-     */
-    public function setNotificationRepository(NotificationRepository $notificationRepository): void
-    {
-        $this->notificationRepository = $notificationRepository;
     }
 }

@@ -12,7 +12,7 @@ use Generator;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-class AbstractClient extends \App\Client\AbstractClient
+abstract class AbstractClient extends \App\Client\AbstractClient
 {
     const REPORT_URL = 'https://covid-19.nczisk.sk/sk';
 

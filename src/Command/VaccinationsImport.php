@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Client\Iza\VaccinationsClient as IzaVaccinationsClient;
 use App\Client\Nczi\VaccinationsClient as NcziVaccinationsClient;
 use App\Client\PowerBi\VaccinationsClient as PowerBiVaccinationsClient;
-use App\Repository\Raw\SlovakiaNcziVaccinationsRepository;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -16,16 +15,13 @@ class VaccinationsImport extends AbstractImport
     protected static $defaultName = 'app:import:vaccinations';
 
     /** @var PowerBiVaccinationsClient */
-    protected $powerBiVaccinationsClient;
+    protected $powerBiClient;
 
     /** @var NcziVaccinationsClient */
-    protected $ncziVaccinationsClient;
+    protected $ncziClient;
 
     /** @var IzaVaccinationsClient */
-    protected $izaVaccinationsClient;
-
-    /** @var SlovakiaNcziVaccinationsRepository */
-    protected $slovakiaNcziVaccinationsRepository;
+    protected $izaClient;
 
     protected function configure()
     {
@@ -40,15 +36,45 @@ class VaccinationsImport extends AbstractImport
         $this->disableDoctrineLogger();
 
         if ($input->getOption('dump-powerbi-schema')) {
-            $this->dumpPowerBiSchema($this->powerBiVaccinationsClient, $output);
+            $this->dumpPowerBiSchema($this->powerBiClient, $output);
             return self::SUCCESS;
         }
 
+//        $table = new Table($output);
+//
+//        foreach ($this->powerBiClient->dump() as $row) {
+//            $row[0] = date('Y-m-d', $row[0] / 1000);
+//            $table->addRow($row);
+//        }
+//
+//        $table->render();
+//
+//        die;
+//
+//        $this->ncziClient->findAll();
+
 //        if ($input->getOption('nczi-only')) {
-            $this->slovakiaNcziVaccinationsRepository->saveAll($this->ncziVaccinationsClient->findAll());
+//            $this->slovakiaNcziVaccinationsRepository->saveAll($this->ncziVaccinationsClient->findAll());
 //        }
 
-        $this->commitChangesToDb();
+//        $this->commitChangesToDb();
+
+        $cachedEntities = [];
+        $entityClasses = null;
+
+//        $cachedEntities[Region::class] = $this->regionRepository->findAllIndexedByCode();
+
+        foreach ($this->batches($this->powerBiClient->findAllByRegion(), 100) as $batchIndex => $batch) {
+            foreach ($batch as $i => $entities) {
+                $this->persistRecordEntities($entities, $entityClasses, $cachedEntities);
+            }
+
+            $output->writeln("Batch: $batchIndex");
+            $this->entityManager->flush();
+//            $this->commitChangesToDb();
+//            $cachedEntities[Region::class] = $this->regionRepository->findAllIndexedByCode();
+        }
+
 
 //        dump(iterator_to_array($this->powerBiVaccinationsClient->findAllByRegion()));die;
 //        dump(iterator_to_array($this->ncziVaccinationsClient->findAll()));
@@ -59,37 +85,28 @@ class VaccinationsImport extends AbstractImport
 
     /**
      * @required
-     * @param NcziVaccinationsClient $ncziVaccinationsClient
+     * @param NcziVaccinationsClient $ncziClient
      */
-    public function setNcziVaccinationsClient(NcziVaccinationsClient $ncziVaccinationsClient)
+    public function setNcziClient(NcziVaccinationsClient $ncziClient)
     {
-        $this->ncziVaccinationsClient = $ncziVaccinationsClient;
+        $this->ncziClient = $ncziClient;
     }
 
     /**
      * @required
-     * @param IzaVaccinationsClient $izaVaccinationsClient
+     * @param IzaVaccinationsClient $izaClient
      */
-    public function setIzaVaccinationsClient(IzaVaccinationsClient $izaVaccinationsClient)
+    public function setIzaClient(IzaVaccinationsClient $izaClient)
     {
-        $this->izaVaccinationsClient = $izaVaccinationsClient;
+        $this->izaClient = $izaClient;
     }
 
     /**
      * @required
-     * @param PowerBiVaccinationsClient $powerBiVaccinationsClient
+     * @param PowerBiVaccinationsClient $powerBiClient
      */
-    public function setPowerBiVaccinationsClient(PowerBiVaccinationsClient $powerBiVaccinationsClient)
+    public function setPowerBiClient(PowerBiVaccinationsClient $powerBiClient)
     {
-        $this->powerBiVaccinationsClient = $powerBiVaccinationsClient;
-    }
-
-    /**
-     * @required
-     * @param SlovakiaNcziVaccinationsRepository $slovakiaNcziVaccinationsRepository
-     */
-    public function setSlovakiaNcziVaccinationsRepository(SlovakiaNcziVaccinationsRepository $slovakiaNcziVaccinationsRepository)
-    {
-        $this->slovakiaNcziVaccinationsRepository = $slovakiaNcziVaccinationsRepository;
+        $this->powerBiClient = $powerBiClient;
     }
 }

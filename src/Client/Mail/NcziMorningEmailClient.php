@@ -2,14 +2,12 @@
 
 namespace App\Client\Mail;
 
-use App\Repository\RegionRepository;
+use App\Entity\Region;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Generator;
-use League\Csv\Reader;
-use League\Csv\Statement;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class NcziMorningEmailClient extends \App\Client\AbstractClient
@@ -58,9 +56,9 @@ class NcziMorningEmailClient extends \App\Client\AbstractClient
     private $regionRepository;
     private $parameterBag;
 
-    public function __construct(RegionRepository $regionRepository, ParameterBagInterface $parameterBag)
+    public function __construct(EntityManagerInterface $entityManager, ParameterBagInterface $parameterBag)
     {
-        $this->regionRepository = $regionRepository;
+        $this->regionRepository = $entityManager->getRepository(Region::class);
         $this->parameterBag = $parameterBag;
     }
 
@@ -432,5 +430,10 @@ class NcziMorningEmailClient extends \App\Client\AbstractClient
 
         $errors[$date] = isset($errors[$date]) ? $errors[$date] : [];
         $errors[$date][] = '[' . $email['headers']['date'] . '] ' . $message;
+    }
+
+    protected function dataItemToEntities(array $dataItemItem): array
+    {
+        // TODO: Implement dataItemToEntities() method.
     }
 }

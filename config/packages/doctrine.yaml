@@ -9,6 +9,7 @@ doctrine:
         auto_generate_proxy_classes: true
         naming_strategy: App\Doctrine\ORM\Mapping\RawEntitiesAwareNamingStrategy
         auto_mapping: true
+        default_repository_class: App\Repository\EntityRepository
         mappings:
             App:
                 is_bundle: false

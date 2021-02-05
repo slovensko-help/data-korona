@@ -18,10 +18,6 @@ abstract class AbstractKpiDataClient extends AbstractClient
             'period' => 'd',
         ]);
 
-        foreach (ArrayChain::value($response, 'd') as $item) {
-            yield $this->hydrateItem($item);
-        }
+        yield from $this->dataItems(ArrayChain::value($response, 'd'));
     }
-
-    abstract protected function hydrateItem(array $item): array;
 }

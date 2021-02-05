@@ -6,10 +6,6 @@ use App\Entity\TimeSeries\HospitalBeds;
 use App\Entity\Aggregation\DistrictHospitalBeds;
 use App\Entity\Aggregation\RegionHospitalBeds;
 use App\Entity\Aggregation\SlovakiaHospitalBeds;
-use App\Repository\DistrictHospitalBedsRepository;
-use App\Repository\HospitalBedsRepository;
-use App\Repository\RegionHospitalBedsRepository;
-use App\Repository\SlovakiaHospitalBedsRepository;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -78,13 +74,12 @@ class HospitalBedsController extends AbstractController
      *
      * @Route("/api/hospital-beds", methods={"GET"})
      *
-     * @param HospitalBedsRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function hospitalBeds(HospitalBedsRepository $repository, Request $request)
+    public function hospitalBeds(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(HospitalBeds::class, $request);
     }
 
     /**
@@ -144,13 +139,12 @@ class HospitalBedsController extends AbstractController
      *
      * @Route("/api/hospital-beds/by-district", methods={"GET"})
      *
-     * @param DistrictHospitalBedsRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function districtHospitalBeds(DistrictHospitalBedsRepository $repository, Request $request)
+    public function districtHospitalBeds(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(DistrictHospitalBeds::class, $request);
     }
 
     /**
@@ -210,13 +204,12 @@ class HospitalBedsController extends AbstractController
      *
      * @Route("/api/hospital-beds/by-region", methods={"GET"})
      *
-     * @param RegionHospitalBedsRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function regionHospitalBeds(RegionHospitalBedsRepository $repository, Request $request)
+    public function regionHospitalBeds(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(RegionHospitalBeds::class, $request);
     }
 
     /**
@@ -276,12 +269,11 @@ class HospitalBedsController extends AbstractController
      *
      * @Route("/api/hospital-beds/in-slovakia", methods={"GET"})
      *
-     * @param SlovakiaHospitalBedsRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function slovakiaHospitalBeds(SlovakiaHospitalBedsRepository $repository, Request $request)
+    public function slovakiaHospitalBeds(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(SlovakiaHospitalBeds::class, $request);
     }
 }

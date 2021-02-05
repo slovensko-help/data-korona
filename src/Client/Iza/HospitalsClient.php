@@ -9,20 +9,19 @@ use App\Entity\Region;
 use App\Entity\TimeSeries\HospitalBeds;
 use App\Tool\DateTime;
 use App\Tool\Id;
-use DateTimeImmutable;
 
 class HospitalsClient extends AbstractClient
 {
-    const CSV_FILE = 'https://raw.githubusercontent.com/Institut-Zdravotnych-Analyz/covid19-data/main/OpenData_Slovakia_Covid_Hospital_Full.csv';
+    const CSV_FILE = 'Hospitals/OpenData_Slovakia_Covid_Hospital_Full.csv';
 
-    protected function dataToEntities(array $data): array
+    protected function dataItemToEntities(array $dataItem): array
     {
         return [
-            [Region::class, $this->region($data)],
-            [District::class => $this->district($data)],
-            [City::class => $this->city($data)],
-            [Hospital::class => $this->hospital($data)],
-            [HospitalBeds::class => $this->hospitalBeds($data)],
+            [Region::class, 'code', $this->region($dataItem)],
+            [District::class, 'code', $this->district($dataItem)],
+            [City::class, 'code', $this->city($dataItem)],
+            [Hospital::class, 'code', $this->hospital($dataItem)],
+            [HospitalBeds::class, 'id', $this->hospitalBeds($dataItem)],
         ];
     }
 
@@ -44,21 +43,12 @@ class HospitalsClient extends AbstractClient
             return null;
         }
 
-        return function(District $district, Region $region) use ($_) {
+        return function(District $district, ?Region $region) use ($_) {
             return $district
                 ->setRegion($region)
                 ->setCode($_['SIDOU_OKRES_KOD_ST'])
                 ->setTitle($_['SIDOU_OKRES_POP_ST']);
         };
-    }
-
-    private function fixedCityCode(string $code, District $district): string
-    {
-        if (strlen($code) === 6) {
-            return $district->getCode() . $code;
-        }
-
-        return $code;
     }
 
     private function city(array $_): ?callable
@@ -102,24 +92,5 @@ class HospitalsClient extends AbstractClient
                 ->setOccupiedO2Covid($this->nullOrInt($_['COVID_O2']))
                 ->setOccupiedOtherCovid($this->nullOrInt($_['COVID_NONO2']));
         };
-    }
-
-    protected function nullOrInt($stringValue): ?int
-    {
-        return '' === $stringValue ? null : (int)$stringValue;
-    }
-
-    private function isInvalidCode($code)
-    {
-        return empty($code) || $code === 'NA';
-    }
-
-    private function fixedHospitalCode(string $code, string $name): string
-    {
-        if ('P99999999999' !== $code) {
-            return $code;
-        }
-
-        return $code . '_' . substr(sha1($name), 0, 8);
     }
 }

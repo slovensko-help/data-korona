@@ -12,7 +12,7 @@ use Generator;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-class AbstractClient extends \App\Client\AbstractClient
+abstract class AbstractClient extends \App\Client\AbstractClient
 {
     const REPORT_URL = null;
 
@@ -46,7 +46,7 @@ class AbstractClient extends \App\Client\AbstractClient
         return new PowerBiQueryBuilder($this->modelId(), $this->datasetId(), $this->reportId());
     }
 
-    protected function items(PowerBiQueryBuilder $queryBuilder, ?PaginationHintInterface $paginationHint = null): Generator
+    protected function all(PowerBiQueryBuilder $queryBuilder, ?PaginationHintInterface $paginationHint = null): Generator
     {
         if ($paginationHint instanceof PaginationHintInterface) {
             $queryBuildersGenerator = $paginationHint->queryBuildersGenerator($queryBuilder);
@@ -74,7 +74,8 @@ class AbstractClient extends \App\Client\AbstractClient
 
     protected function execute(PowerBiQueryBuilder $queryBuilder): PowerBiQueryResult
     {
-        return new PowerBiQueryResult($this->apiContent($this->queryUrl(), $queryBuilder->build()));
+        return new PowerBiQueryResult($this->cachedApiContent($this->queryUrl(), $queryBuilder->build()));
+        //return new PowerBiQueryResult($this->apiContent($this->queryUrl(), $queryBuilder->build()));
     }
 
     private function modelId(): int
@@ -117,6 +118,13 @@ class AbstractClient extends \App\Client\AbstractClient
 
             throw $exception;
         }
+    }
+
+    private function cachedApiContent($url, $formData)
+    {
+        return $this->cached(md5($url . json_encode($formData)), function () use ($url, $formData) {
+            return $this->apiContent($url, $formData);
+        }, self::FIVE_MINUTES);
     }
 
     private function modelsAndExploration()

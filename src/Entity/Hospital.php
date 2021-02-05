@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\HospitalRepository")
+ * @ORM\Entity()
  */
 class Hospital
 {
@@ -44,7 +44,7 @@ class Hospital
      */
     private $city;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }

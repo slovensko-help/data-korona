@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\TimeSeries\HospitalStaff;
-use App\Repository\HospitalStaffRepository;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,12 +71,11 @@ class HospitalStaffController extends AbstractController
      *
      * @Route("/api/hospital-staff", methods={"GET"})
      *
-     * @param HospitalStaffRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function hospitalPatients(HospitalStaffRepository $repository, Request $request)
+    public function hospitalPatients(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(HospitalStaff::class, $request);
     }
 }

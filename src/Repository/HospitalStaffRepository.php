@@ -7,7 +7,6 @@ namespace App\Repository;
 use App\Entity\Hospital;
 use App\Entity\TimeSeries\HospitalStaff;
 use App\Entity\TimeSeries\HospitalStaff as Entity;
-use App\Repository\Traits\Paginable;
 use App\Tool\DateTime;
 use App\Tool\Id;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,10 +17,8 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Entity[]    findAll()
  * @method Entity[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class HospitalStaffRepository extends AbstractRepository implements PaginableRepositoryInterface
+class HospitalStaffRepository extends AbstractRepository
 {
-    use Paginable;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Entity::class);

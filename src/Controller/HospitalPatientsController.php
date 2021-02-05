@@ -6,10 +6,6 @@ use App\Entity\TimeSeries\HospitalPatients;
 use App\Entity\Aggregation\DistrictHospitalPatients;
 use App\Entity\Aggregation\RegionHospitalPatients;
 use App\Entity\Aggregation\SlovakiaHospitalPatients;
-use App\Repository\DistrictHospitalPatientsRepository;
-use App\Repository\HospitalPatientsRepository;
-use App\Repository\RegionHospitalPatientsRepository;
-use App\Repository\SlovakiaHospitalPatientsRepository;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -78,13 +74,12 @@ class HospitalPatientsController extends AbstractController
      *
      * @Route("/api/hospital-patients", methods={"GET"})
      *
-     * @param HospitalPatientsRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function hospitalPatients(HospitalPatientsRepository $repository, Request $request)
+    public function hospitalPatients(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(HospitalPatients::class, $request);
     }
 
     /**
@@ -144,13 +139,12 @@ class HospitalPatientsController extends AbstractController
      *
      * @Route("/api/hospital-patients/by-district", methods={"GET"})
      *
-     * @param DistrictHospitalPatientsRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function districtHospitalPatients(DistrictHospitalPatientsRepository $repository, Request $request)
+    public function districtHospitalPatients(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(DistrictHospitalPatients::class, $request);
     }
 
     /**
@@ -210,13 +204,12 @@ class HospitalPatientsController extends AbstractController
      *
      * @Route("/api/hospital-patients/by-region", methods={"GET"})
      *
-     * @param RegionHospitalPatientsRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function regionHospitalPatientsByRegion(RegionHospitalPatientsRepository $repository, Request $request)
+    public function regionHospitalPatientsByRegion(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(RegionHospitalPatients::class, $request);
     }
 
     /**
@@ -276,12 +269,11 @@ class HospitalPatientsController extends AbstractController
      *
      * @Route("/api/hospital-patients/in-slovakia", methods={"GET"})
      *
-     * @param SlovakiaHospitalPatientsRepository $repository
      * @param Request $request
      * @return Response
      */
-    public function hospitalPatientsSlovakia(SlovakiaHospitalPatientsRepository $repository, Request $request)
+    public function hospitalPatientsSlovakia(Request $request)
     {
-        return $this->paginatedResponse($repository, $request);
+        return $this->paginatedResponse(SlovakiaHospitalPatients::class, $request);
     }
 }
