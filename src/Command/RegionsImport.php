@@ -19,37 +19,19 @@ class RegionsImport extends AbstractImport
         $output->writeln($this->log('DONE.'));
 
         $output->writeln($this->log('Updating regions...'));
-        $this->updateEntities($csvContent);
+        $this->persist(
+            $this->csvRecords($csvContent),
+            function ($_) {
+                yield 'code' => function (Region $region) use ($_) {
+                    return $region
+                        ->setAbbreviation($_['REGION_ABBREVIATION'])
+                        ->setCode($_['REGION_CODE'])
+                        ->setTitle($_['REGION_NAME']);
+                };
+            }
+        );
         $output->writeln($this->log('DONE.'));
 
         return self::SUCCESS;
-    }
-
-    private function updateEntities(string $csvContent)
-    {
-        $entityClasses = null;
-        $cachedEntities = [];
-        $syncedEntities = [];
-
-        foreach ($this->csvRecords($csvContent) as $_) {
-            foreach ($this->entities($_) as $index => $entity) {
-                $this->persistRecordEntities($this->entities($_), $entityClasses, $cachedEntities, $index, $syncedEntities);
-            }
-        }
-
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
-    private function entities($_)
-    {
-        return [
-            [Region::class, 'code', function (Region $region) use ($_) {
-                return $region
-                    ->setAbbreviation($_['REGION_ABBREVIATION'])
-                    ->setCode($_['REGION_CODE'])
-                    ->setTitle($_['REGION_NAME']);
-            }],
-        ];
     }
 }

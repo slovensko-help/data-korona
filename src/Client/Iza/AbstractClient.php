@@ -19,7 +19,7 @@ abstract class AbstractClient extends \App\Client\AbstractClient
         $csv->setDelimiter(static::CSV_DELIMITER);
         $csv->setHeaderOffset(static::CSV_HEADER_OFFSET);
 
-        yield from $this->dataItems(Statement::create()->process($csv, array_map('strtoupper', $csv->getHeader())));
+        yield from Statement::create()->process($csv, array_map('strtoupper', $csv->getHeader()));
     }
 
     private function csvContent(): string

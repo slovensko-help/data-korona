@@ -20,90 +20,15 @@ class EntityRepository extends DefaultEntityRepository
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
-//    public function keyValue(?callable $updater, string $keyColumn, ?array &$previousEntityClasses, ?array &$syncedEntities, ?array &$cachedEntities = null)
-//    {
-//        if (null === $updater) {
-//            return null;
-//        }
-//
-//        $entityClass = $this->getEntityName();
-//
-//        if (!isset($cachedEntities[$entityClass])) {
-//            $cachedEntities[$entityClass] = [];
-//        }
-//
-//        $classMateEntities = $cachedEntities[$entityClass];
-//        $associatedEntities = [];
-//        $isNewEntity = false;
-//
-//        if ($this->associationsCount > 0) {
-//            foreach ($previousEntityClasses as $previousEntityClass) {
-//                if (isset($this->associationClassToFieldNames[$previousEntityClass])) {
-//                    if (null !== $syncedEntities[$previousEntityClass]) {
-//                        $associatedEntities[] = $syncedEntities[$previousEntityClass];
-//                    } else {
-//                        return null;
-//                    }
-//                }
-//            }
-//        }
-//
-//        return $this->propertyAccessor->getValue($updater(new $entityClass, ...$associatedEntities), $keyColumn);
-//    }
-
-    public function sync(?callable $updater, string $keyColumn, ?array &$previousEntityClasses, ?array &$syncedEntities, ?array &$cachedEntities = null)
+    public function findAllByKey(string $keyField, array $values)
     {
-        if (null === $updater) {
-            return null;
-        }
-
-        $associationClassConfig = $this->associationClassConfig();
-
-        $entityClass = $this->getEntityName();
-
-        if (!isset($cachedEntities[$entityClass])) {
-            $cachedEntities[$entityClass] = [];
-        }
-
-        $classMateEntities = $cachedEntities[$entityClass];
-        $associatedEntities = [];
-        $isNewEntity = false;
-
-        if ($associationClassConfig['count'] > 0) {
-            foreach ($previousEntityClasses as $previousEntityClass) {
-                if (isset($associationClassConfig['classToFieldNames'][$previousEntityClass])) {
-                    if (null !== $syncedEntities[$previousEntityClass]) {
-                        $associatedEntities[] = $syncedEntities[$previousEntityClass];
-                    } else {
-                        return null;
-                    }
-                }
-            }
-        }
-
-        $keyValue = $this->propertyAccessor->getValue($updater(new $entityClass, ...$associatedEntities), $keyColumn);
-
-        if (!isset($classMateEntities[$keyValue])) {
-            $criteria[$keyColumn] = $keyValue;
-            $entity = $this->findOneBy($criteria);
-
-            if (null === $entity) {
-                $entity = new $entityClass;
-                $isNewEntity = true;
-            }
-
-            $classMateEntities[$keyValue] = $entity;
-        }
-
-        $cachedEntities[$entityClass] = $classMateEntities;
-        $entity = $updater($classMateEntities[$keyValue], ...$associatedEntities);
-
-        if ($isNewEntity) {
-            // start tracking entity & schedule for persisting
-            $this->getEntityManager()->persist($entity);
-        }
-
-        return $entity;
+        $prefixedKeyField = 'o.' . $keyField;
+        $queryBuilder = $this->createQueryBuilder('o', $prefixedKeyField);
+        return $queryBuilder
+            ->andWhere($prefixedKeyField . ' IN (:values)')
+            ->setParameter('values', $values)
+            ->getQuery()
+            ->getResult();
     }
 
     public function findAllIndexedById()
@@ -186,13 +111,6 @@ class EntityRepository extends DefaultEntityRepository
         throw new \Exception('Save method must be implemented in inherited class.');
     }
 
-    public function saveAll($items)
-    {
-        foreach ($items as $i => $item) {
-            $this->save($item);
-        }
-    }
-
     /**
      * @param int $offsetId
      * @param DateTimeImmutable|null $updatedSince
@@ -220,41 +138,16 @@ class EntityRepository extends DefaultEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    protected function nullOrInt($stringValue): ?int
+    public function associationClasses(): array
     {
-        return '' === $stringValue ? null : (int)$stringValue;
-    }
-
-    protected function nullOrFloat($stringValue): ?float
-    {
-        return '' === $stringValue ? null : round((float)str_replace(',', '.', $stringValue), 3);
+        return array_map(function (array $associationMapping) {
+            return $associationMapping['targetEntity'];
+        }, $this->getClassMetadata()->associationMappings);
     }
 
     protected function commitChangesToDb()
     {
         $this->getEntityManager()->flush();
         $this->getEntityManager()->clear();
-    }
-
-    private function associationClassConfig()
-    {
-        $entityClass = $this->getEntityName();
-
-        if (!isset($this->associationClassConfig[$entityClass])) {
-            $classToFieldNames = [];
-
-            foreach ($this->getClassMetadata()->associationMappings as $associationMapping) {
-                // TODO: consider support for multiple associations of the same class
-                // TODO: handle nullable associations
-                $classToFieldNames[$associationMapping['targetEntity']] = true;
-            }
-
-            $this->associationClassConfig[$entityClass] = [
-                'classToFieldNames' => $classToFieldNames,
-                'count' => count($this->getClassMetadata()->associationMappings),
-            ];
-        }
-
-        return $this->associationClassConfig[$entityClass];
     }
 }

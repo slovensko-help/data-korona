@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Client\PowerBi\AbstractClient;
+use App\Persister\EntityPersisterFactory;
 use App\Service\Content;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,12 +24,14 @@ abstract class AbstractImport extends Command
     protected $content;
 
     protected $mailer;
+    protected $persisterFactory;
 
     public function __construct(
         EntityManagerInterface $managerRegistry,
         Connection $connection,
         MailerInterface $mailer,
         Content $content,
+        EntityPersisterFactory $persisterFactory,
 
         string $name = null
     )
@@ -38,6 +41,7 @@ abstract class AbstractImport extends Command
         $this->connection = $connection;
         $this->entityManager = $managerRegistry;
         $this->content = $content;
+        $this->persisterFactory = $persisterFactory;
 
         $this->mailer = $mailer;
     }
@@ -46,69 +50,10 @@ abstract class AbstractImport extends Command
     {
         $this->entityManager->getConnection()->getConfiguration()->setSQLLogger();
     }
-//
-//    protected function prefetchEntities(array $entities, ?array &$entityClasses, array &$cachedEntities = null)
-//    {
-//        $keyValue = $repository->keyValue($entity[2], $entity[1], $entityClasses, $syncedEntities, $cachedEntities);
-//        dump($keyValue);
-//        die;
-//    }
 
-    protected function batches(iterable $dataItems, $batchSize = 10)
+    protected function persist(Generator $rows, callable $entityUpdatersGenerator, int $batchSize = 128)
     {
-        $result = [];
-        $index = 0;
-        foreach ($dataItems as $item) {
-            $result[] = $item;
-
-            if (0 === ++$index % $batchSize) {
-                echo 'asd';
-                $index = 0;
-                yield $result;
-                $result = [];
-            }
-        }
-
-        if (count($result) > 0) {
-            yield $result;
-        }
-    }
-
-    protected function persistRecordEntities(array $entities, ?array &$entityClasses, array &$cachedEntities = null
-        , $entityIndex = null
-        , &$syncedEntities = null
-    )
-    {
-        if (null !== $entityIndex) {
-            $syncedEntities = [];
-            $populateEntityClasses = null === $entityClasses;
-
-            $entity = $entities[$entityIndex];
-
-            $entityClass = $entity[0];
-            $repository = $this->entityManager->getRepository($entityClass);
-
-            $object = $repository->sync($entity[2], $entity[1], $entityClasses, $syncedEntities, $cachedEntities);
-
-            // TODO: consider support for multiple entities of the same class
-            $syncedEntities[$entityClass] = $object;
-            if ($populateEntityClasses) {
-                $entityClasses[] = $entityClass;
-            }
-        }
-
-//        foreach ($entities as $entity) {
-//            $entityClass = $entity[0];
-//            $repository = $this->entityManager->getRepository($entityClass);
-//
-//            $object = $repository->sync($entity[2], $entity[1], $entityClasses, $syncedEntities, $cachedEntities);
-//
-//            // TODO: consider support for multiple entities of the same class
-//            $syncedEntities[$entityClass] = $object;
-//            if ($populateEntityClasses) {
-//                $entityClasses[] = $entityClass;
-//            }
-//        }
+        $this->persisterFactory->createPersister()->persist($rows, $entityUpdatersGenerator, $batchSize);
     }
 
 //    protected function region(array $record): ?Region

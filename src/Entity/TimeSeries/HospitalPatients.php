@@ -15,7 +15,7 @@ use JMS\Serializer\Annotation as Serializer;
 use OpenApi\Annotations\Property;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\HospitalPatientsRepository")
+ * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
  *
  * data source: https://raw.githubusercontent.com/Institut-Zdravotnych-Analyz/covid19-data/main/OpenData_Slovakia_Covid_Hospital_Details.csv

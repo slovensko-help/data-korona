@@ -29,8 +29,6 @@ abstract class AbstractClient
      */
     protected $cache;
 
-    abstract protected function dataItemToEntities(array $dataItemItem): array;
-
     protected function dataItems(iterable $dataItems): Generator
     {
         foreach ($dataItems as $dataItem) {
@@ -72,6 +70,11 @@ abstract class AbstractClient
     protected function nullOrInt($stringValue): ?int
     {
         return '' === $stringValue ? null : (int)$stringValue;
+    }
+
+    protected function nullOrFloat($stringValue): ?float
+    {
+        return '' === $stringValue ? null : round((float)str_replace(',', '.', $stringValue), 3);
     }
 
     protected function fixedCityCode(string $code, District $district): string

@@ -20,32 +20,22 @@ class DistrictsImport extends AbstractImport
         $output->writeln($this->log('DONE.'));
 
         $output->writeln($this->log('Updating districts...'));
-        $this->persistRecords($this->csvRecords($csvContent));
-        $output->writeln($this->log('DONE.'));
-
-        return self::SUCCESS;
-    }
-
-    private function persistRecords(iterable $records)
-    {
-        $entityClasses = null;
-        $cachedEntities = [];
-
-        foreach ($records as $_) {
-            $this->persistRecordEntities([
-                [Region::class, 'code', function (Region $region) use ($_) {
+        $this->persist($this->csvRecords($csvContent),
+            function ($_) {
+                yield 'code' => function (Region $region) use ($_) {
                     return $region
                         ->setCode($_['REGION_CODE']);
-                }],
-                [District::class, 'code', function (District $district, Region $region) use ($_) {
+                };
+                yield 'code' => function (District $district, Region $region) use ($_) {
                     return $district
                         ->setRegion($region)
                         ->setCode($_['DISTRICT_CODE'])
                         ->setTitle($_['DISTRICT_NAME']);
-                }],
-            ], $entityClasses, $cachedEntities);
-        }
+                };
+            }
+        );
+        $output->writeln($this->log('DONE.'));
 
-        $this->entityManager->flush();
+        return self::SUCCESS;
     }
 }
