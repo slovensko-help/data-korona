@@ -19,7 +19,7 @@ class HospitalsClient extends AbstractClient
 
     public function entities(): callable
     {
-        return function ($_) {
+        return function (array $_) {
             yield 'code' => $this->region($_);
             yield 'code' => $this->district($_);
             yield 'code' => $this->city($_);
@@ -30,25 +30,24 @@ class HospitalsClient extends AbstractClient
         };
     }
 
-    private function region(array $_): ?callable
+    private function region(array $_): callable
     {
-        if (!empty($_) && $this->isInvalidCode($_['SIDOU_KRAJ_KOD_ST'])) {
-            return null;
-        }
         return function (Region $region) use ($_) {
+            if ($this->isInvalidCode($_['SIDOU_KRAJ_KOD_ST'])) {
+                return null;
+            }
             return $region
                 ->setCode($_['SIDOU_KRAJ_KOD_ST'])
                 ->setTitle($_['SIDOU_KRAJ_POP_ST']);
         };
     }
 
-    private function district(array $_): ?callable
+    private function district(array $_): callable
     {
-        if (!empty($_) && $this->isInvalidCode($_['SIDOU_OKRES_KOD_ST'])) {
-            return null;
-        }
-
-        return function (District $district, ?Region $region) use ($_) {
+        return function (District $district, Region $region) use ($_) {
+            if ($this->isInvalidCode($_['SIDOU_OKRES_KOD_ST'])) {
+                return null;
+            }
             return $district
                 ->setRegion($region)
                 ->setCode($_['SIDOU_OKRES_KOD_ST'])
@@ -56,13 +55,12 @@ class HospitalsClient extends AbstractClient
         };
     }
 
-    private function city(array $_): ?callable
+    private function city(array $_): callable
     {
-        if (!empty($_) && $this->isInvalidCode($_['SIDOU_OBEC_KOD_ST'])) {
-            return null;
-        }
-
         return function (City $city, District $district) use ($_) {
+            if ($this->isInvalidCode($_['SIDOU_OBEC_KOD_ST'])) {
+                return null;
+            }
             return $city
                 ->setDistrict($district)
                 ->setCode($this->fixedCityCode($_['SIDOU_OBEC_KOD_ST'], $district))

@@ -18,7 +18,7 @@ final class EntityPersister
 
     private $associatedEntities = [];
     private $updaterTable = [];
-    private $entityKeyValues = [];
+    private $entityKeys = [];
 
     private $closed = false;
 
@@ -37,7 +37,7 @@ final class EntityPersister
         $classPositions = [];
         $index = 0;
 
-        foreach ($entitiesMapping as $entityKey => $entityMappingCallback) {
+        foreach ($entitiesMapping as $keyField => $entityMappingCallback) {
             $parameters = (new ReflectionFunction($entityMappingCallback))->getParameters();
 
             if (0 === count($parameters)) {
@@ -66,6 +66,7 @@ final class EntityPersister
                 if (!isset($classIndices[$associationClass])) {
                     $classIndices[$associationClass] = 0;
                 }
+
                 $classIndices[$associationClass]++;
 
                 $classCount = count($classPositions[$associationClass]);
@@ -77,17 +78,16 @@ final class EntityPersister
                 $associationIndices[] = $classPositions[$associationClass][$classIndices[$associationClass] - 1];
             }
 
-            $entityClass = $parameters[0]->getType()->getName();
+            $class = $parameters[0]->getType()->getName();
 
             $result[] = [
-                'repository' => $this->entityManager->getRepository($entityClass),
-                'entityClass' => $entityClass,
-                'entityKeyField' => $entityKey,
-                'hasAssociations' => count($associationIndices) > 0,
+                'repository' => $this->entityManager->getRepository($class),
+                'class' => $class,
+                'keyField' => $keyField,
                 'associationIndices' => $associationIndices,
             ];
 
-            $classPositions[$entityClass][] = $index;
+            $classPositions[$class][] = $index;
 
             $index++;
         }
@@ -105,28 +105,28 @@ final class EntityPersister
 
         foreach ($this->batches($rows, $batchSize) as $rows) {
             $this->trackedEntities = [];
-            $this->entityTable = [];
             $this->associatedEntities = [];
+            $this->entityTable = [];
             $this->updaterTable = [];
-            $this->entityKeyValues = [];
+            $this->entityKeys = [];
 
             foreach ($entitiesConfig as $colIndex => $entityConfig) {
-                $entityKeyValues = [];
+                $entityKeys = [];
                 foreach ($rows as $rowIndex => $row) {
                     if (0 === $colIndex) {
                         $this->initializeRowEntityUpdaters($rowIndex, $entityUpdatersGenerator($row));
                     }
 
-                    $entityKeyValue = $this->entityKey($rowIndex, $colIndex, $entityConfig);
+                    $entityKey = $this->entityKey($rowIndex, $colIndex, $entityConfig);
 
-                    if (null !== $entityKeyValue) {
-                        $entityKeyValues[$entityKeyValue] = $entityKeyValue;
+                    if (null !== $entityKey) {
+                        $entityKeys[$entityKey] = $entityKey;
                     }
                 }
 
-                $this->trackedEntities[$entityConfig['entityClass']] = $entityConfig['repository']->findAllByKey(
-                    $entityConfig['entityKeyField'],
-                    array_values($entityKeyValues)
+                $this->trackedEntities[$entityConfig['class']] = $entityConfig['repository']->findAllByKey(
+                    $entityConfig['keyField'],
+                    array_values($entityKeys)
                 );
 
                 foreach ($rows as $rowIndex => $row) {
@@ -145,14 +145,14 @@ final class EntityPersister
 
     public function persistedEntity(int $rowIndex, int $colIndex, array $entityConfig): ?object
     {
-        if (!isset($this->entityKeyValues[$rowIndex][$colIndex])) {
+        if (!isset($this->entityKeys[$rowIndex][$colIndex])) {
             return null;
         }
 
-        $entity = $this->trackedEntity($entityConfig['entityClass'], $this->entityKeyValues[$rowIndex][$colIndex]);
+        $entity = $this->trackedEntity($entityConfig['class'], $this->entityKeys[$rowIndex][$colIndex]);
 
         if (null === $entity) {
-            $entity = new $entityConfig['entityClass'];
+            $entity = new $entityConfig['class'];
             $doPersist = true;
         } else {
             $doPersist = false;
@@ -169,10 +169,6 @@ final class EntityPersister
 
     public function entityKey(int $rowIndex, int $colIndex, array $entityConfig)
     {
-        if (null === $this->updaterTable[$rowIndex][$colIndex]) {
-            return null;
-        }
-
         $this->associatedEntities[$rowIndex][$colIndex] = [];
 
         foreach ($entityConfig['associationIndices'] as $associationIndex) {
@@ -182,13 +178,13 @@ final class EntityPersister
             $this->associatedEntities[$rowIndex][$colIndex][] = $this->entityTable[$rowIndex][$associationIndex];
         }
 
-        return $this->entityKeyValues[$rowIndex][$colIndex] = $this->propertyAccessor->getValue(
-            $this->updaterTable[$rowIndex][$colIndex](
-                new $entityConfig['entityClass'],
-                ...$this->associatedEntities[$rowIndex][$colIndex]
-            ),
-            $entityConfig['entityKeyField']
-        );
+        $entity = $this->updaterTable[$rowIndex][$colIndex](new $entityConfig['class'], ...$this->associatedEntities[$rowIndex][$colIndex]);
+
+        if (null === $entity) {
+            return null;
+        }
+
+        return $this->entityKeys[$rowIndex][$colIndex] = $this->propertyAccessor->getValue($entity, $entityConfig['keyField']);
     }
 
     protected function batches(Generator $dataItems, $batchSize = 128)
