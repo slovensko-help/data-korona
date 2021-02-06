@@ -16,15 +16,13 @@ final class Version20210204162822 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $this->addSql('RENAME TABLE `nczi_vaccinations` TO `raw_slovakia_nczi_vaccinations`');
-        $this->addSql('RENAME TABLE `region_power_bi_vaccinations` TO `raw_power_bi_vaccinations`');
+        $this->addSql('RENAME TABLE `raw_slovakia_nczi_vaccinations` TO `raw_nczi_vaccinations`');
         $this->addSql('CREATE TABLE vaccine (id INT AUTO_INCREMENT NOT NULL, code VARCHAR(255) CHARACTER SET ASCII NOT NULL, title VARCHAR(255) NOT NULL, manufacturer VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_A7DD90B177153098 (code), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
     }
 
     public function down(Schema $schema) : void
     {
         $this->addSql('RENAME TABLE `raw_nczi_vaccinations` TO `raw_slovakia_nczi_vaccinations`');
-        $this->addSql('RENAME TABLE `raw_power_bi_vaccinations` TO `raw_region_power_bi_vaccinations`');
         $this->addSql('DROP TABLE vaccine');
     }
 }
