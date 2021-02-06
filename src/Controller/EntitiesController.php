@@ -6,10 +6,6 @@ use App\Entity\Hospital;
 use App\Entity\City;
 use App\Entity\District;
 use App\Entity\Region;
-use App\Repository\CityRepository;
-use App\Repository\DistrictRepository;
-use App\Repository\HospitalRepository;
-use App\Repository\RegionRepository;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +15,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(name="Entity")
  */
-class EntitiesController extends AbstractFOSRestController {
+class EntitiesController extends AbstractController {
     /**
      * Zoznam nemocníc a zdravotníckych zariadení
      *
@@ -34,12 +30,11 @@ class EntitiesController extends AbstractFOSRestController {
      *
      * @Route("/api/hospitals", methods={"GET"})
      *
-     * @param HospitalRepository $hospitalRepository
      * @return Response
      */
-    public function hospitals(HospitalRepository $hospitalRepository)
+    public function hospitals()
     {
-        return $this->handleView($this->view($hospitalRepository->findAll(), 200));
+        return $this->handleView($this->view($this->getRepository(Hospital::class)->findAll(), 200));
     }
 
     /**
@@ -58,12 +53,11 @@ class EntitiesController extends AbstractFOSRestController {
      *
      * @Route("/api/cities", methods={"GET"})
      *
-     * @param CityRepository $cityRepository
      * @return Response
      */
-    public function cities(CityRepository $cityRepository)
+    public function cities()
     {
-        return $this->handleView($this->view($cityRepository->findAll(), 200));
+        return $this->handleView($this->view($this->getRepository(City::class)->findAll(), 200));
     }
 
     /**
@@ -82,12 +76,11 @@ class EntitiesController extends AbstractFOSRestController {
      *
      * @Route("/api/districts", methods={"GET"})
      *
-     * @param DistrictRepository $districtRepository
      * @return Response
      */
-    public function districts(DistrictRepository $districtRepository)
+    public function districts()
     {
-        return $this->handleView($this->view($districtRepository->findAll(), 200));
+        return $this->handleView($this->view($this->getRepository(District::class)->findAll(), 200));
     }
 
     /**
@@ -104,11 +97,10 @@ class EntitiesController extends AbstractFOSRestController {
      *
      * @Route("/api/regions", methods={"GET"})
      *
-     * @param RegionRepository $regionRepository
      * @return Response
      */
-    public function regions(RegionRepository $regionRepository)
+    public function regions()
     {
-        return $this->handleView($this->view($regionRepository->findAll(), 200));
+        return $this->handleView($this->view($this->getRepository(Region::class)->findAll(), 200));
     }
 }

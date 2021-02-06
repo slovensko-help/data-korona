@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Repository\EntityRepository;
 use App\Repository\PaginableRepositoryInterface;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +16,16 @@ class AbstractController extends AbstractFOSRestController
 {
     /** @var EntityManagerInterface */
     private $entityManager;
+
+    protected function getRepository(string $entityClass): EntityRepository
+    {
+        $repository = $this->entityManager->getRepository($entityClass);
+        if ($repository instanceof EntityRepository) {
+            return $repository;
+        }
+
+        throw new Exception('Entity needs to be handled by EntityRepository or its descendant.');
+    }
 
     protected function paginatedResponse(string $entityClass, Request $request)
     {

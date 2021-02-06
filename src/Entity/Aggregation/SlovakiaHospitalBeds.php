@@ -9,7 +9,7 @@ use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\SlovakiaHospitalBedsRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\Aggregation\SlovakiaHospitalBedsRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class SlovakiaHospitalBeds extends AbstractData
