@@ -6,7 +6,7 @@ use App\Entity\TimeSeries\HospitalBeds;
 use App\Entity\Aggregation\DistrictHospitalBeds;
 use App\Entity\Aggregation\RegionHospitalBeds;
 use App\Entity\Aggregation\SlovakiaHospitalBeds;
-use App\Repository\DistrictHospitalBedsRepository;
+use App\Repository\Aggregation\DistrictHospitalBedsRepository;
 use App\Repository\HospitalBedsRepository;
 use App\Repository\RegionHospitalBedsRepository;
 use App\Repository\SlovakiaHospitalBedsRepository;
