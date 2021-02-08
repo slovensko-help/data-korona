@@ -43,7 +43,7 @@ class NcziMorningEmailClient extends \App\Client\AbstractClient
             ],
             'slovakia_tests_ag_positive_delta' => 'Ag testov poskytovateľmi zdravotnej starostlivosti s pozitívnym výsledkom za.*?(?<v1>\d+)',
         ],
-        '2021-01-14' => [
+        '2021-01-14:2021-02-07' => [
             'slovakia_vaccination_all_total' => 'zaočkovaných osôb poskytovateľmi zdravotnej starostlivosti (?<v1>\d+)',
             'slovakia_vaccination_all_delta' => [
                 'zaočkovaných osôb poskytovateľmi zdravotnej starostlivosti od.*?(?<v1>\d+)',
@@ -368,8 +368,10 @@ class NcziMorningEmailClient extends \App\Client\AbstractClient
 
         $publishedOnFormatted = $publishedOn->format('Y-m-d');
 
-        foreach (self::ATTRIBUTE_PATTERNS as $validSince => $attributePatterns) {
-            if ($validSince <= $publishedOnFormatted) {
+        foreach (self::ATTRIBUTE_PATTERNS as $validInterval => $attributePatterns) {
+            list($validSince, $validUntil) = explode(':', $validInterval);
+
+            if ($validSince <= $publishedOnFormatted && (null === $validUntil || $publishedOnFormatted <= $validUntil)) {
                 $result += $attributePatterns;
             }
         }

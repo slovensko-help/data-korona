@@ -48,6 +48,10 @@ class NcziMorningEmailCrudController extends AbstractCrudController
                     case 'isManuallyOverridden':
                         $field->setHelp('isManuallyOverriddenHelp');
                         break;
+                    case 'slovakiaVaccinationAllTotal':
+                    case 'slovakiaVaccinationAllDelta':
+                        $field->setHelp('Od dňa publikovania 8. 2. 2021 vakcinačné štatistiky nechodia v rannom emaili.');
+                        break;
                     case 'publishedOn':
                     case 'reportedAt':
                         $field
@@ -64,10 +68,41 @@ class NcziMorningEmailCrudController extends AbstractCrudController
             $priorityFields = [
                 'publishedOn' => '010_',
                 'isManuallyOverridden' => '020_',
-                'slovakiaVaccinationAllDelta' => '030_',
-                'slovakiaVaccinationAllTotal' => '030_',
-                'slovakiaTestsPcrPositiveDelta' => '040_',
-                'slovakiaTestsPcrPositiveDeltaWithoutQuarantine' => '040_',
+
+                'slovakiaTestsPcrPositiveDelta' => '030_',
+
+                'regionBbTestsPcrPositiveTotal' => '100_',
+                'regionBbTestsPcrPositiveDelta' => '105_',
+                'regionBaTestsPcrPositiveTotal' => '110_',
+                'regionBaTestsPcrPositiveDelta' => '115_',
+                'regionKeTestsPcrPositiveTotal' => '120_',
+                'regionKeTestsPcrPositiveDelta' => '125_',
+                'regionNrTestsPcrPositiveTotal' => '130_',
+                'regionNrTestsPcrPositiveDelta' => '135_',
+                'regionPoTestsPcrPositiveTotal' => '140_',
+                'regionPoTestsPcrPositiveDelta' => '145_',
+                'regionTnTestsPcrPositiveTotal' => '150_',
+                'regionTnTestsPcrPositiveDelta' => '155_',
+                'regionTtTestsPcrPositiveTotal' => '160_',
+                'regionTtTestsPcrPositiveDelta' => '165_',
+                'regionZaTestsPcrPositiveTotal' => '170_',
+                'regionZaTestsPcrPositiveDelta' => '175_',
+
+                'hospitalPatientsConfirmedCovid' => '210_',
+                'hospitalBedsOccupiedJisCovid' => '220_',
+                'hospitalPatientsVentilatedCovid' => '230_',
+                'hospitalPatientsSuspectedCovid' => '240_',
+                'hospitalPatientsAllCovid' => '250_',
+
+                'slovakiaTestsPcrPositiveDeltaWithoutQuarantine' => '260_',
+
+                'slovakiaTestsAgAllTotal' => '270_',
+                'slovakiaTestsAgAllDelta' => '280_',
+                'slovakiaTestsAgPositiveTotal' => '290_',
+                'slovakiaTestsAgPositiveDelta' => '300_',
+
+                'slovakiaVaccinationAllTotal' => '500_',
+                'slovakiaVaccinationAllDelta' => '510_',
                 'reportedAt' => 'x_',
             ];
 
