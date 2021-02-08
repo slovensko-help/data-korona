@@ -21,32 +21,102 @@ class StatsController extends AbstractController
 //        return $cache->get('stats-vaccinations-' . $section . rand(), function (ItemInterface $item) use ($section, $vaccination) {
 //            $item->expiresAfter($cacheTtl ?? static::FIVE_MINUTES);
 
-            $data = [
-                'section' => $section,
-                'tabs' => array_map(function ($tab) use ($section) {
-                    return $tab + [
-                            'url' => $this->generateUrl('app_front_stats_vaccinations', ['section' => $tab['section']]),
-                            'is_active' => $tab['section'] === $section,
-                        ];
-                }, [
-                    ['title' => 'Prehľad', 'section' => '',],
-                    ['title' => 'Po dňoch', 'section' => 'by-day',],
-                    ['title' => 'Po dňoch a krajoch', 'section' => 'by-day-and-region',],
-                ])
-            ];
+        $data = [
+            'section' => $section,
+            'template' => $section,
+            'tabs' => array_map(function ($tab) use ($section) {
+                return $tab + [
+                        'url' => $this->generateUrl('app_front_stats_vaccinations', ['section' => $tab['section']]),
+                        'is_active' => $tab['section'] === $section,
+                    ];
+            }, [
+                ['title' => 'Prehľad', 'section' => '',],
+                ['title' => 'Po dňoch', 'section' => 'by-day',],
+                ['title' => 'Po dňoch a krajoch', 'section' => 'by-day-and-region',],
+                ['title' => 'Po dňoch a vakcínach', 'section' => 'by-day-and-vaccine',],
+                ['title' => 'Po dňoch, krajoch a vakcínach', 'section' => 'by-day-and-region-and-vaccine',],
+                ['title' => 'Po krajoch', 'section' => 'by-region',],
+                ['title' => 'Po vakcínach', 'section' => 'by-vaccine',],
+                ['title' => 'Po vakcínach a krajoch', 'section' => 'by-vaccine-and-region',],
+            ])
+        ];
 
-            switch ($section) {
-                case 'by-day':
-                    $data = $data + ['stats' => $vaccination->dailyStats(),];
-                    break;
-                case 'by-day-and-region':
-                    $data = $data + ['stats' => $vaccination->regionalDailyStats(),];
-                    break;
-                default:
-                    $data = $data + ['stats' => $vaccination->updateStats()];
-            }
+        switch ($section) {
+            case 'by-day':
+                $data = ['stats' => $vaccination->dailyStats(),] + $data;
+                break;
+            case 'by-day-and-region':
+                $data = ['stats' => $vaccination->regionalDailyStats(),] + $data;
+                break;
+            case 'by-day-and-region-and-vaccine':
+                $data = [
+                        'template' => 'table',
+                        'stats' => $vaccination->statsByDayAndRegionAndVaccine(),
+                        'header' => [
+                            'published_on' => 'Deň',
+                            'region_title' => 'Kraj',
+                            'vaccine_title' => 'Vakcína',
+                            'dose1_count' => 'Δ 1. dávka',
+                            'dose2_count' => 'Δ 2. dávka',
+                            'dose1_sum' => 'Σ 1. dávka',
+                            'dose2_sum' => 'Σ 2. dávka',
+                        ],
+                    ] + $data;
+                break;
+            case 'by-day-and-vaccine':
+                $data = [
+                        'template' => 'table',
+                        'stats' => $vaccination->statsByDayAndVaccine(),
+                        'header' => [
+                            'published_on' => 'Deň',
+                            'vaccine_title' => 'Vakcína',
+                            'dose1_count' => 'Δ 1. dávka',
+                            'dose2_count' => 'Δ 2. dávka',
+                            'dose1_sum' => 'Σ 1. dávka',
+                            'dose2_sum' => 'Σ 2. dávka',
+                        ],
+                    ] + $data;
+                break;
+            case 'by-region':
+                $data = [
+                        'template' => 'table',
+                        'stats' => $vaccination->statsByRegion(),
+                        'header' => [
+                            'region_title' => 'Kraj',
+                            'dose1_sum' => 'Σ 1. dávka',
+                            'dose2_sum' => 'Σ 2. dávka',
+                        ],
+                    ] + $data;
+                break;
+            case 'by-vaccine':
+                $data = [
+                        'template' => 'table',
+                        'stats' => $vaccination->statsByVaccine(),
+                        'header' => [
+                            'vaccine_title' => 'Vakcína',
+                            'manufacturer' => 'Dodávateľ',
+                            'dose1_sum' => 'Σ 1. dávka',
+                            'dose2_sum' => 'Σ 2. dávka',
+                        ],
+                    ] + $data;
+                break;
+            case 'by-vaccine-and-region':
+                $data = [
+                        'template' => 'table',
+                        'stats' => $vaccination->statsByVaccineAndRegion(),
+                        'header' => [
+                            'vaccine_title' => 'Vakcína',
+                            'region_title' => 'Kraj',
+                            'dose1_sum' => 'Σ 1. dávka',
+                            'dose2_sum' => 'Σ 2. dávka',
+                        ],
+                    ] + $data;
+                break;
+            default:
+                $data = $data + ['stats' => $vaccination->updateStats()];
+        }
 
-            return $this->render('Stats/vaccinations.html.twig', $data);
+        return $this->render('Stats/vaccinations.html.twig', $data);
 //        });
     }
 }

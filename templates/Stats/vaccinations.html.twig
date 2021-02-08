@@ -16,7 +16,7 @@
                     {% endfor %}
                 </ul>
 
-                {% include('Stats/_partial/' ~ ('' == section ? 'default' : section) ~ '.html.twig') %}
+                {% include('Stats/_partial/' ~ ('' == template ? 'default' : template) ~ '.html.twig') %}
 
             </div>
         </div>

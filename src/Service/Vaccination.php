@@ -275,6 +275,149 @@ class Vaccination
         ')->fetchAll();
     }
 
+    public function statsByDayAndRegionAndVaccine()
+    {
+        return array_reverse($this->withSums($this->findAllPowerBiByDayAndRegionAndVaccine(), ['region_title', 'vaccine_title']));
+    }
+
+    private function findAllPowerBiByDayAndRegionAndVaccine()
+    {
+        return $this->connection->query('
+            SELECT
+               CONCAT(v.published_on, \'-\', r.title, \'-\', va.title) AS row_key,
+                v.published_on,
+                r.title AS region_title,
+                va.title AS vaccine_title,
+                SUM(v.dose1_count) AS dose1_count,
+                SUM(v.dose2_count) AS dose2_count
+            FROM
+                raw_power_bi_vaccinations AS v
+            INNER JOIN
+                region AS r 
+            ON
+                v.region_id = r.id
+            INNER JOIN
+                vaccine AS va 
+            ON
+                v.vaccine_id = va.id
+            GROUP BY
+                v.published_on, r.id, va.id
+            ORDER BY
+                v.published_on ASC, r.title ASC, va.title ASC
+        ')->fetchAll();
+    }
+
+    public function statsByRegion()
+    {
+        return $this->indexBy('region_title', $this->findAllPowerBiByRegion());
+    }
+
+    public function findAllPowerBiByRegion()
+    {
+        return $this->connection->query('
+            SELECT
+                r.title AS region_title,
+                SUM(v.dose1_count) AS dose1_sum,
+                SUM(v.dose2_count) AS dose2_sum
+            FROM
+                raw_power_bi_vaccinations AS v
+            INNER JOIN
+                region AS r 
+            ON
+                v.region_id = r.id
+            GROUP BY
+                r.id
+            ORDER BY
+                r.title ASC
+        ')->fetchAll();
+    }
+
+    public function statsByDayAndVaccine()
+    {
+        return array_reverse($this->withSums($this->findAllPowerBiByDayAndVaccine(), ['vaccine_title']));
+    }
+
+    public function findAllPowerBiByDayAndVaccine()
+    {
+
+        return $this->connection->query('
+            SELECT
+               CONCAT(v.published_on, \'-\', va.title) AS row_key,
+                v.published_on,
+                va.title AS vaccine_title,
+                SUM(v.dose1_count) AS dose1_count,
+                SUM(v.dose2_count) AS dose2_count
+            FROM
+                raw_power_bi_vaccinations AS v
+            INNER JOIN
+                vaccine AS va 
+            ON
+                v.vaccine_id = va.id
+            GROUP BY
+                v.published_on, va.id
+            ORDER BY
+                v.published_on ASC, va.title ASC
+        ')->fetchAll();
+    }
+
+    public function statsByVaccine()
+    {
+        return $this->indexBy('vaccine_title', $this->findAllPowerByVaccine());
+    }
+
+    public function findAllPowerByVaccine()
+    {
+
+        return $this->connection->query('
+            SELECT
+                va.title As vaccine_title,
+                va.manufacturer,
+                SUM(v.dose1_count) AS dose1_sum,
+                SUM(v.dose2_count) AS dose2_sum
+            FROM
+                raw_power_bi_vaccinations AS v
+            INNER JOIN
+                vaccine AS va 
+            ON
+                v.vaccine_id = va.id
+            GROUP BY
+                va.id
+            ORDER BY
+                va.title ASC
+        ')->fetchAll();
+    }
+
+    public function statsByVaccineAndRegion()
+    {
+        return $this->findAllPowerByVaccineAndRegion();
+    }
+
+    public function findAllPowerByVaccineAndRegion()
+    {
+
+        return $this->connection->query('
+            SELECT
+                r.title As region_title,
+                va.title As vaccine_title,
+                SUM(v.dose1_count) AS dose1_sum,
+                SUM(v.dose2_count) AS dose2_sum
+            FROM
+                raw_power_bi_vaccinations AS v
+            INNER JOIN
+                region AS r 
+            ON
+                v.region_id = r.id
+            INNER JOIN
+                vaccine AS va 
+            ON
+                v.vaccine_id = va.id
+            GROUP BY
+                r.id, va.id
+            ORDER BY
+                r.title ASC, va.title ASC
+        ')->fetchAll();
+    }
+
     private function withSums(iterable $collection, array $sumGroupFields = []): array
     {
         $result = [];
