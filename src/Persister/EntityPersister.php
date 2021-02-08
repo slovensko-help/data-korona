@@ -2,6 +2,7 @@
 
 namespace App\Persister;
 
+use App\Entity\Vaccine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Generator;
@@ -170,11 +171,19 @@ final class EntityPersister
         $entity = $this->updaterTable[$rowIndex][$colIndex]($entity, ...$this->associatedEntities[$rowIndex][$colIndex]);
 
         if ($doPersist) {
-            $this->entityManager->persist($entity);
+            $this->persistAndTrackEntity($rowIndex, $colIndex, $entity, $entityConfig);
         }
 
         return $entity;
     }
+
+    private function persistAndTrackEntity(int $rowIndex, int $colIndex, object $entity, array $entityConfig): void
+    {
+        $this->entityManager->persist($entity);
+        $this->entityKeys[$rowIndex][$colIndex] = $this->propertyAccessor->getValue($entity, $entityConfig['keyField']);
+        $this->trackedEntities[$entityConfig['class']][$this->entityKeys[$rowIndex][$colIndex]] = $entity;
+    }
+
 
     public function entityKey(int $rowIndex, int $colIndex, array $entityConfig)
     {
