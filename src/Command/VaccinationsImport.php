@@ -40,45 +40,12 @@ class VaccinationsImport extends AbstractImport
             return self::SUCCESS;
         }
 
-//        $table = new Table($output);
-//
-//        foreach ($this->powerBiClient->dump() as $row) {
-//            $row[0] = date('Y-m-d', $row[0] / 1000);
-//            $table->addRow($row);
-//        }
-//
-//        $table->render();
-//
-//        die;
-//
-//        $this->ncziClient->findAll();
-
-//        if ($input->getOption('nczi-only')) {
-//            $this->slovakiaNcziVaccinationsRepository->saveAll($this->ncziVaccinationsClient->findAll());
-//        }
-
-//        $this->commitChangesToDb();
-
-        $cachedEntities = [];
-        $entityClasses = null;
-
-//        $cachedEntities[Region::class] = $this->regionRepository->findAllIndexedByCode();
-
-        foreach ($this->batches($this->powerBiClient->findAllByRegion(), 100) as $batchIndex => $batch) {
-            foreach ($batch as $i => $entities) {
-                $this->persistRecordEntities($entities, $entityClasses, $cachedEntities);
-            }
-
-            $output->writeln("Batch: $batchIndex");
-            $this->entityManager->flush();
-//            $this->commitChangesToDb();
-//            $cachedEntities[Region::class] = $this->regionRepository->findAllIndexedByCode();
-        }
-
-
-//        dump(iterator_to_array($this->powerBiVaccinationsClient->findAllByRegion()));die;
-//        dump(iterator_to_array($this->ncziVaccinationsClient->findAll()));
-//        dump(iterator_to_array($this->izaVaccinationsClient->findAll()));
+        $output->writeln($this->log('Updating powerBi/NCZI/IZA vaccinactions.'));
+        $this->persist($this->powerBiClient->findAllByRegionAndVaccine(), $this->powerBiClient->entitiesByRegionAndVaccine());
+        $this->persist($this->powerBiClient->findAllByRegion(), $this->powerBiClient->entitiesByRegion());
+        $this->persist($this->ncziClient->findAll(), $this->ncziClient->entities());
+        $this->persist($this->izaClient->findAll(), $this->izaClient->entities());
+        $output->writeln($this->log('DONE.'));
 
         return self::SUCCESS;
     }

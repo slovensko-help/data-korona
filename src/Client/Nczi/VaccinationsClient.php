@@ -9,17 +9,17 @@ class VaccinationsClient extends AbstractKpiDataClient
 {
     const KPI_ID = 31;
 
-    protected function dataItemToEntities(array $dataItem): array
+    public function entities(): callable
     {
-        return [
-            [NcziVaccinations::class, function(NcziVaccinations $entity) use ($dataItem) {
-                $publishedOn = DateTime::dateTimeFromString($dataItem['date'], 'Y-m-d', true);
-                return $entity
+        return function($_) {
+            yield 'id' => function(NcziVaccinations $vaccinations) use ($_) {
+                $publishedOn = DateTime::dateTimeFromString($_['date'], 'Y-m-d', true);
+                return $vaccinations
                     ->setId((int)$publishedOn->format('Ymd'))
                     ->setPublishedOn($publishedOn)
-                    ->setDose1Count($this->nullOrInt($dataItem['v']))
-                    ->setDose2Count($this->nullOrInt($dataItem['v1']));
-            }],
-        ];
+                    ->setDose1Count($this->nullOrInt($_['v']) + $this->nullOrInt($_['v1']))
+                    ->setDose2Count($this->nullOrInt($_['v1']));
+            };
+        };
     }
 }

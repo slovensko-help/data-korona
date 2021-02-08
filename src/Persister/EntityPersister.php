@@ -31,6 +31,11 @@ final class EntityPersister
         $this->propertyAccessor = $propertyAccessor;
     }
 
+    private function isInt($value)
+    {
+        return strval($value) === strval(intval($value));
+    }
+
     public function initializeEntitiesConfig(Generator $entitiesMapping): array
     {
         $result = [];
@@ -38,6 +43,10 @@ final class EntityPersister
         $index = 0;
 
         foreach ($entitiesMapping as $keyField => $entityMappingCallback) {
+            if (empty($keyField) || $this->isInt($keyField)) {
+                throw new Exception('Entity key field "' . $keyField . '" is not valid');
+            }
+
             $parameters = (new ReflectionFunction($entityMappingCallback))->getParameters();
 
             if (0 === count($parameters)) {
@@ -95,7 +104,7 @@ final class EntityPersister
         return $result;
     }
 
-    public function persist(Generator $rows, callable $entityUpdatersGenerator, int $batchSize = 128)
+    public function persist(Generator $rows, callable $entityUpdatersGenerator, int $batchSize = 512)
     {
         if ($this->closed) {
             throw new Exception('Cannot persist closed persister.');

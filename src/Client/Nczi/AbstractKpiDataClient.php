@@ -18,6 +18,6 @@ abstract class AbstractKpiDataClient extends AbstractClient
             'period' => 'd',
         ]);
 
-        yield from $this->dataItems(ArrayChain::value($response, 'd'));
+        yield from ArrayChain::value($response, 'd');
     }
 }
