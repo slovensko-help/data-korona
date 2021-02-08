@@ -38,7 +38,7 @@ class HospitalsClient extends AbstractClient
             }
             return $region
                 ->setCode($_['SIDOU_KRAJ_KOD_ST'])
-                ->setTitle($_['SIDOU_KRAJ_POP_ST']);
+                ->setTitle(str_replace(' kraj', '', $_['SIDOU_KRAJ_POP_ST']));
         };
     }
 
@@ -51,7 +51,7 @@ class HospitalsClient extends AbstractClient
             return $district
                 ->setRegion($region)
                 ->setCode($_['SIDOU_OKRES_KOD_ST'])
-                ->setTitle($_['SIDOU_OKRES_POP_ST']);
+                ->setTitle(str_replace('Okres ', '', $_['SIDOU_OKRES_POP_ST']));
         };
     }
 

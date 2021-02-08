@@ -90,7 +90,7 @@ class NcziMorningEmailImport extends AbstractImport
 
             $email = (new Email())
                 ->from('data.korona.gov.sk <filip@bratia.sk>')
-                ->to('korona.gov@krizovystab.sk')
+                ->to('korona.gov@krizovystab.sk', 'filip@bratia.sk')
                 ->subject('❗ Konverzia NCZI emailu do API si vyžaduje hýčkanie a opateru')
                 ->text($text);
 
