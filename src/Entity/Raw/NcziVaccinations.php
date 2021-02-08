@@ -32,18 +32,18 @@ class NcziVaccinations
     private $publishedOn;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      *
      * @var integer
      */
-    private $dose1Count;
+    private $dose1Sum;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      *
      * @var integer
      */
-    private $dose2Count;
+    private $dose2Sum;
 
     public function getId(): ?int
     {
@@ -71,14 +71,14 @@ class NcziVaccinations
         return $this->publishedOn;
     }
 
-    public function getDose1Count(): int
+    public function getDose1Sum(): int
     {
-        return $this->dose1Count;
+        return $this->dose1Sum;
     }
 
-    public function getDose2Count(): int
+    public function getDose2Sum(): int
     {
-        return $this->dose2Count;
+        return $this->dose2Sum;
     }
 
     /**
@@ -102,15 +102,15 @@ class NcziVaccinations
         return $this->updateDateTime($this->publishedOn, $publishedOn);
     }
 
-    public function setDose1Count(int $dose1Count): self
+    public function setDose1Sum(int $dose1Sum): self
     {
-        $this->dose1Count = $dose1Count;
+        $this->dose1Sum = $dose1Sum;
         return $this;
     }
 
-    public function setDose2Count(int $dose2Count): self
+    public function setDose2Sum(int $dose2Sum): self
     {
-        $this->dose2Count = $dose2Count;
+        $this->dose2Sum = $dose2Sum;
         return $this;
     }
 }

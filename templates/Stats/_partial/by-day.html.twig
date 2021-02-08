@@ -1,0 +1,74 @@
+{% import "Stats/_macro/field.html.twig" as macro %}
+
+<table class="table table-striped table-hover table-sm mt-3">
+    {% for row in stats %}
+        {% if loop.first %}
+            <thead>
+            <tr>
+                <th rowspan="2">
+                    Published   on
+                </th>
+                <th colspan="4" class="table-cell-left-column">
+                    NCZI (Power BI)
+                </th>
+                <th colspan="2" class="table-cell-left-column">
+                    NCZI (API)
+                </th>
+                <th colspan="4" class="table-cell-left-column">
+                    IZA (GitHub)
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    Δ dose1
+                </th>
+                <th>
+                    Δ dose2
+                </th>
+                <th>
+                    Σ dose1
+                </th>
+                <th>
+                    Σ dose2
+                </th>
+                <th class="table-cell-left-column">
+                    Σ dose1
+                </th>
+                <th>
+                    Σ dose2
+                </th>
+                <th class="table-cell-left-column">
+                    Δ dose1
+                </th>
+                <th>
+                    Δ dose2
+                </th>
+                <th>
+                    Σ dose1
+                </th>
+                <th>
+                    Σ dose2
+                </th>
+            </tr>
+            </thead>
+        {% endif %}
+        <tr>
+            <td>
+                {{ row.key }}
+            </td>
+            <!-- POWER BI -->
+            {{ macro.fieldCell(row, 'power_bi', 'dose1_count', ['table-cell-left-column']) }}
+            {{ macro.fieldCell(row, 'power_bi', 'dose2_count') }}
+            {{ macro.fieldCell(row, 'power_bi', 'dose1_sum') }}
+            {{ macro.fieldCell(row, 'power_bi', 'dose2_sum') }}
+            <!-- NCZI API -->
+            {{ macro.fieldCell(row, 'nczi', 'dose1_sum', ['table-cell-left-column']) }}
+            {{ macro.fieldCell(row, 'nczi', 'dose2_sum') }}
+            <!-- IZA -->
+            {{ macro.fieldCell(row, 'iza', 'dose1_count', ['table-cell-left-column']) }}
+            {{ macro.fieldCell(row, 'iza', 'dose2_count') }}
+            {{ macro.fieldCell(row, 'iza', 'dose1_sum') }}
+            {{ macro.fieldCell(row, 'iza', 'dose2_sum') }}
+        </tr>
+    {% endfor %}
+</table>

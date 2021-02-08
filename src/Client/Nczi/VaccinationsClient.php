@@ -17,8 +17,8 @@ class VaccinationsClient extends AbstractKpiDataClient
                 return $vaccinations
                     ->setId((int)$publishedOn->format('Ymd'))
                     ->setPublishedOn($publishedOn)
-                    ->setDose1Count($this->nullOrInt($_['v']) + $this->nullOrInt($_['v1']))
-                    ->setDose2Count($this->nullOrInt($_['v1']));
+                    ->setDose1Sum($this->nullOrInt($_['v']) + $this->nullOrInt($_['v1']))
+                    ->setDose2Sum($this->nullOrInt($_['v1']));
             };
         };
     }

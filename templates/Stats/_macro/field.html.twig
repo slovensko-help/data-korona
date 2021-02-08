@@ -1,0 +1,29 @@
+{% macro field(row, collection, key) %}
+    {{ row[collection][key]|default('') }}
+    {% if 'YES' == _self.hasFieldWarning(row, collection, key) %}
+        <span class="js-tooltip"
+              title="{{ row.uniques[key]|map((otherCollections, otherValue) => "#{otherValue} (" ~ otherCollections|join(',') ~ ")")|join(', ') }}"><i
+                    class="bi bi-exclamation-diamond"></i></span>
+    {% endif %}
+{% endmacro %}
+
+{% macro fieldCell(row, collection, key, extraClasses) %}
+    {% set extraClasses = extraClasses|default([]) %}
+
+    {% if 'YES' == _self.hasFieldWarning(row, collection, key) %}
+        {% set extraClasses = extraClasses|merge(['table-warning']) %}
+    {% endif %}
+
+    <td{{ (extraClasses|length > 0 ? ' class="' ~ extraClasses|join(' ') ~ '"' : '')|raw }}>
+        {{ _self.field(row, collection, key) }}
+    </td>
+{% endmacro %}
+
+{%- macro hasFieldWarning(row, collection, key) -%}
+    {%- set keyValue = row[collection][key]|default('null') -%}
+    {%- if row.uniques[key]|length > 1 and row.uniques[key][keyValue] is defined and row.uniques[key][keyValue]|length == 1 and (row.uniques_without_null[key]|length > 1 or keyValue == 'null') -%}
+        YES
+    {%- else -%}
+        NO
+    {%- endif -%}
+{%- endmacro -%}

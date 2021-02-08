@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
+use App\Controller\AbstractController;
 use App\Entity\Hospital;
 use App\Entity\City;
 use App\Entity\District;
 use App\Entity\Region;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;

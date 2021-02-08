@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api\Raw;
 
+use App\Controller\AbstractController;
 use App\Entity\Raw\NcziMorningEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,7 @@ class RawDataController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function hospitalPatients(Request $request)
+    public function ncziMorningEmails(Request $request)
     {
         return $this->paginatedResponse(NcziMorningEmail::class, $request);
     }

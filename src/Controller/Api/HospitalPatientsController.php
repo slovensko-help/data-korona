@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
-use App\Entity\TimeSeries\HospitalBeds;
-use App\Entity\Aggregation\DistrictHospitalBeds;
-use App\Entity\Aggregation\RegionHospitalBeds;
-use App\Entity\Aggregation\SlovakiaHospitalBeds;
+use App\Controller\AbstractController;
+use App\Entity\TimeSeries\HospitalPatients;
+use App\Entity\Aggregation\DistrictHospitalPatients;
+use App\Entity\Aggregation\RegionHospitalPatients;
+use App\Entity\Aggregation\SlovakiaHospitalPatients;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,12 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\Tag(name="Lôžka")
+ * @OA\Tag(name="Pacienti")
  */
-class HospitalBedsController extends AbstractController
+class HospitalPatientsController extends AbstractController
 {
     /**
-     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach v časovej rade po dňoch od 30. apríla 2020
+     * Počty pacientov v nemocniciach v časovej rade po dňoch od 30. apríla 2020
      *
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
@@ -27,7 +28,7 @@ class HospitalBedsController extends AbstractController
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach po dňoch",
+     *     description="Vráti stránkovaný zoznam počtov pacientov v nemocniciach po dňoch",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
@@ -44,7 +45,7 @@ class HospitalBedsController extends AbstractController
      *        @OA\Property(
      *          property="page",
      *          type="array",
-     *          @OA\Items(ref=@Model(type=HospitalBeds::class))
+     *          @OA\Items(ref=@Model(type=HospitalPatients::class))
      *        )
      *     )
      * )
@@ -72,18 +73,18 @@ class HospitalBedsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/hospital-beds", methods={"GET"})
+     * @Route("/api/hospital-patients", methods={"GET"})
      *
      * @param Request $request
      * @return Response
      */
-    public function hospitalBeds(Request $request)
+    public function hospitalPatients(Request $request)
     {
-        return $this->paginatedResponse(HospitalBeds::class, $request);
+        return $this->paginatedResponse(HospitalPatients::class, $request);
     }
 
     /**
-     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach súhrnne po okresoch v časovej rade po dňoch od 30. apríla 2020
+     * Počty pacientov v nemocniciach súhrnne po okresoch v časovej rade po dňoch od 30. apríla 2020
      *
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
@@ -92,7 +93,7 @@ class HospitalBedsController extends AbstractController
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach súhrnne po okresoch po dňoch",
+     *     description="Vráti stránkovaný zoznam počtov pacientov v nemocniciach súhrnne po okresoch po dňoch",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
@@ -109,7 +110,7 @@ class HospitalBedsController extends AbstractController
      *        @OA\Property(
      *          property="page",
      *          type="array",
-     *          @OA\Items(ref=@Model(type=DistrictHospitalBeds::class))
+     *          @OA\Items(ref=@Model(type=DistrictHospitalPatients::class))
      *        )
      *     )
      * )
@@ -137,18 +138,18 @@ class HospitalBedsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/hospital-beds/by-district", methods={"GET"})
+     * @Route("/api/hospital-patients/by-district", methods={"GET"})
      *
      * @param Request $request
      * @return Response
      */
-    public function districtHospitalBeds(Request $request)
+    public function districtHospitalPatients(Request $request)
     {
-        return $this->paginatedResponse(DistrictHospitalBeds::class, $request);
+        return $this->paginatedResponse(DistrictHospitalPatients::class, $request);
     }
 
     /**
-     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach súhrnne po krajoch v časovej rade po dňoch od 30. apríla 2020
+     * Počty pacientov v nemocniciach súhrnne za kraje v časovej rade po dňoch od 30. apríla 2020
      *
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
@@ -157,7 +158,7 @@ class HospitalBedsController extends AbstractController
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach súhrnne po krajoch po dňoch",
+     *     description="Vráti stránkovaný zoznam počtov pacientov v nemocniciach súhrnne za kraje po dňoch",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
@@ -174,7 +175,7 @@ class HospitalBedsController extends AbstractController
      *        @OA\Property(
      *          property="page",
      *          type="array",
-     *          @OA\Items(ref=@Model(type=RegionHospitalBeds::class))
+     *          @OA\Items(ref=@Model(type=RegionHospitalPatients::class))
      *        )
      *     )
      * )
@@ -202,18 +203,18 @@ class HospitalBedsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/hospital-beds/by-region", methods={"GET"})
+     * @Route("/api/hospital-patients/by-region", methods={"GET"})
      *
      * @param Request $request
      * @return Response
      */
-    public function regionHospitalBeds(Request $request)
+    public function regionHospitalPatientsByRegion(Request $request)
     {
-        return $this->paginatedResponse(RegionHospitalBeds::class, $request);
+        return $this->paginatedResponse(RegionHospitalPatients::class, $request);
     }
 
     /**
-     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach súhrnne za celé Slovensko v časovej rade po dňoch od 30. apríla 2020
+     * Počty pacientov v nemocniciach súhrnne za celé Slovensko v časovej rade po dňoch od 30. apríla 2020
      *
      * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
      *
@@ -222,7 +223,7 @@ class HospitalBedsController extends AbstractController
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach súhrnne za celé Slovensko po dňoch",
+     *     description="Vráti stránkovaný zoznam počtov pacientov v nemocniciach súhrnne za celé Slovensko po dňoch",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
@@ -239,7 +240,7 @@ class HospitalBedsController extends AbstractController
      *        @OA\Property(
      *          property="page",
      *          type="array",
-     *          @OA\Items(ref=@Model(type=SlovakiaHospitalBeds::class))
+     *          @OA\Items(ref=@Model(type=SlovakiaHospitalPatients::class))
      *        )
      *     )
      * )
@@ -267,13 +268,13 @@ class HospitalBedsController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/hospital-beds/in-slovakia", methods={"GET"})
+     * @Route("/api/hospital-patients/in-slovakia", methods={"GET"})
      *
      * @param Request $request
      * @return Response
      */
-    public function slovakiaHospitalBeds(Request $request)
+    public function hospitalPatientsSlovakia(Request $request)
     {
-        return $this->paginatedResponse(SlovakiaHospitalBeds::class, $request);
+        return $this->paginatedResponse(SlovakiaHospitalPatients::class, $request);
     }
 }

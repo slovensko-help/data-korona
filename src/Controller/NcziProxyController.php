@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class NcziApiController extends AbstractController
+class NcziProxyController extends AbstractController
 {
     const ALLOWED_REQUESTS = [
         // vaccinations

@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block title %}Vakcinácia{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>
+                    Vakcinácia
+                </h1>
+
+                <ul class="nav nav-tabs">
+                    {% for tab in tabs %}
+                        <li class="nav-item">
+                            <a class="nav-link{{ tab.is_active ? ' active' : '' }}" aria-current="page" href="{{ tab.url }}">{{ tab.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                {% include('Stats/_partial/' ~ ('' == section ? 'default' : section) ~ '.html.twig') %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
