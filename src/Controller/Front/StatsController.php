@@ -18,8 +18,8 @@ class StatsController extends AbstractController
     public function vaccinations(Vaccination $vaccination, CacheInterface $cache, string $section = '')
     {
 
-        return $cache->get('stats-vaccinations-' . $section, function (ItemInterface $item) use ($section, $vaccination) {
-            $item->expiresAfter($cacheTtl ?? static::FIVE_MINUTES);
+//        return $cache->get('stats-vaccinations-' . $section . rand(), function (ItemInterface $item) use ($section, $vaccination) {
+//            $item->expiresAfter($cacheTtl ?? static::FIVE_MINUTES);
 
             $data = [
                 'section' => $section,
@@ -47,6 +47,6 @@ class StatsController extends AbstractController
             }
 
             return $this->render('Stats/vaccinations.html.twig', $data);
-        });
+//        });
     }
 }
