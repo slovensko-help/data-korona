@@ -39,6 +39,7 @@ class HospitalsImport extends AbstractImport
         $this->persist(
             $this->izaHospitalsClient->findAll(),
             $this->izaHospitalsClient->entities(),
+            [],
             1000
         );
         $output->writeln($this->log('DONE.'));
