@@ -9,6 +9,9 @@
         {% endblock %}
     </head>
     <body>
+        <header>
+            {% include '_partials/header.html.twig' %}
+        </header>
         {% block body %}{% endblock %}
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}

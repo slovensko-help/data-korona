@@ -1,6 +1,35 @@
 @import "~bootstrap";
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 
+header {
+  margin-bottom: 30px;
+
+  &:before {
+    content: unset;
+  }
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+#swagger-ui {
+  &.api-platform {
+    .wrapper,
+    .info {
+      padding: 0;
+    }
+
+    .opblock-tag {
+      &:hover {
+        background-color: white;
+        transform: none;
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
 .table-cell-left-column {
   border-left: 1px solid black;
 }

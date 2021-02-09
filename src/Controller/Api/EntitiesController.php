@@ -117,7 +117,7 @@ class EntitiesController extends AbstractController {
      *     )
      * )
      *
-     * @Route("/new-api/vaccines", methods={"GET"})
+     * @Route("/api/vaccines", methods={"GET"})
      *
      * @return Response
      */

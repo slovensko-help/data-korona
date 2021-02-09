@@ -135,16 +135,16 @@ class EntityRepository extends DefaultEntityRepository
     }
 
     /**
-     * @param int $offsetId
+     * @param string $offsetId
      * @param DateTimeImmutable|null $updatedSince
      * @param int $limit
      * @return array
      */
-    public function findOnePage(int $offsetId, ?DateTimeImmutable $updatedSince = null, ?DateTimeImmutable $publishedSince = null, int $limit = 1000): array
+    public function findOnePage(string $offsetId, ?DateTimeImmutable $updatedSince = null, ?DateTimeImmutable $publishedSince = null, int $limit = 1000): array
     {
         $qb = $this->createQueryBuilder('o')
             ->where('o.id < :offsetId')
-            ->setParameter('offsetId', $offsetId, Types::INTEGER)
+            ->setParameter('offsetId', $offsetId)
             ->orderBy('o.id', 'DESC')
             ->setMaxResults($limit);
 

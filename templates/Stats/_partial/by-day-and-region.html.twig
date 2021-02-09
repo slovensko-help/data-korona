@@ -1,5 +1,20 @@
 {% import "Stats/_macro/field.html.twig" as macro %}
 
+<p class="mt-4">
+    Postup aktualizácie dát v API (<a href="{{ url('app_api_vaccinations_regionvaccinations') }}" target="_blank">{{ path('app_api_vaccinations_regionvaccinations') }}</a>):
+</p>
+<ol class="mb-4">
+    <li>
+        Údaje za dnes nie sú dostupné v API. NCZI (Power BI) a IZA (GitHub) zvyknú mať dostupné čiastkové údaje za dnes každý deň doobeda, ale neaktualizujú sa v priebehu dňa.
+    </li>
+    <li>
+        Údaje za včera sa berú z prvého dostupného zdroja v tomto poradí: NCZI (Power BI), IZA (GitHub) ale iba ak sú dostupné <a href="{{ path('app_front_stats_vaccinations', {'section': 'by-day'}) }}">údaje po dňoch</a> za včera.
+    </li>
+    <li>
+        Údaje za dni od predvčera a ďalej do minulosti sa berú z prvého dostupného zdroja v tomto poradí: NCZI (Power BI), IZA (GitHub).
+    </li>
+</ol>
+
 <table class="table table-striped table-hover table-sm mt-3">
     {% for row in stats %}
         {% if loop.first %}

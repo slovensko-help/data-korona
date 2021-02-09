@@ -7,8 +7,9 @@
     {% endif %}
 {% endmacro %}
 
-{% macro fieldCell(row, collection, key, extraClasses) %}
+{% macro fieldCell(row, collection, key, extraClasses, note) %}
     {% set extraClasses = extraClasses|default([]) %}
+    {% set note = note|default('') %}
 
     {% if 'YES' == _self.hasFieldWarning(row, collection, key) %}
         {% set extraClasses = extraClasses|merge(['table-warning']) %}

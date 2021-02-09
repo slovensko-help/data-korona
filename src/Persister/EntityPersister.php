@@ -64,10 +64,15 @@ class EntityPersister
         $classPositions = [];
         $index = 0;
 
-        foreach ($entitiesMapping as $keyField => $entityMappingCallback) {
-            if (empty($keyField) || $this->isInt($keyField)) {
-                throw new Exception('Entity key field "' . $keyField . '" is not valid');
+        foreach ($entitiesMapping as $rawKeyField => $entityMappingCallback) {
+            if (empty($rawKeyField) || $this->isInt($rawKeyField)) {
+                throw new Exception('Entity key field "' . $rawKeyField . '" is not valid');
             }
+
+            $keyFieldParts = explode(':', $rawKeyField);
+
+            $keyField = $keyFieldParts[0];
+            $isReadonlyMode = $keyFieldParts[1] ?? 'write' === 'readonly';
 
             $parameters = (new ReflectionFunction($entityMappingCallback))->getParameters();
 
@@ -123,6 +128,7 @@ class EntityPersister
 
             $result[] = [
                 'repository' => $this->entityManager->getRepository($class),
+                'isReadonlyMode' => $isReadonlyMode,
                 'class' => $class,
                 'keyField' => $keyField,
                 'associationIndices' => $associationIndices,
@@ -192,6 +198,9 @@ class EntityPersister
 
         $this->deleteMissingEntities($entitiesConfig, static::LAST_BATCH | ($isFirstBatch ? static::FIRST_BATCH : 0));
 
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
         $this->closed = true;
     }
 
@@ -204,29 +213,31 @@ class EntityPersister
                     throw new Exception('There are multiple entities of class ' . $entityConfig['class'] . '. Automatic deletion of missing entities is not possible.');
                 }
 
-                if ($flags & static::FIRST_BATCH) {
-                    $minKey = $entityConfig['deletions']['startKey'];
-                }
-                else {
-                    $minKey = $this->minKeys[$entityConfig['class']];
-                }
+                if (isset($this->maxKeys[$entityConfig['class']])) {
+                    if ($flags & static::FIRST_BATCH) {
+                        $minKey = $entityConfig['deletions']['startKey'];
+                    }
+                    else {
+                        $minKey = $this->minKeys[$entityConfig['class']];
+                    }
 
-                if ($flags & static::LAST_BATCH) {
-                    $maxKey = $entityConfig['deletions']['endKey'];
-                }
-                else {
-                    $maxKey = $this->maxKeys[$entityConfig['class']];
-                }
+                    if ($flags & static::LAST_BATCH) {
+                        $maxKey = $entityConfig['deletions']['endKey'];
+                    }
+                    else {
+                        $maxKey = $this->maxKeys[$entityConfig['class']];
+                    }
 
-                $missingEntities = $entityConfig['repository']->findAllByKeyForDeletion(
-                    $entityConfig['keyField'],
-                    $this->classKeys[$entityConfig['class']],
-                    $minKey,
-                    $maxKey
-                );
+                    $missingEntities = $entityConfig['repository']->findAllByKeyForDeletion(
+                        $entityConfig['keyField'],
+                        $this->classKeys[$entityConfig['class']],
+                        $minKey,
+                        $maxKey
+                    );
 
-                foreach ($missingEntities as $missingEntity) {
-                    $this->entityManager->remove($missingEntity);
+                    foreach ($missingEntities as $missingEntity) {
+                        $this->entityManager->remove($missingEntity);
+                    }
                 }
             }
         }
@@ -267,7 +278,7 @@ class EntityPersister
         $entity = $this->updaterTable[$rowIndex][$colIndex]($entity, ...$this->associatedEntities[$rowIndex][$colIndex]);
 
         if ($doPersist) {
-            $this->persistAndTrackEntity($rowIndex, $colIndex, $entity, $entityConfig);
+            $entity = $this->persistAndTrackEntity($rowIndex, $colIndex, $entity, $entityConfig);
         }
 
         return $entity;
@@ -278,10 +289,7 @@ class EntityPersister
         $this->associatedEntities[$rowIndex][$colIndex] = [];
 
         foreach ($entityConfig['associationIndices'] as $associationIndex) {
-            if (!isset($this->entityTable[$rowIndex][$associationIndex])) {
-                return null;
-            }
-            $this->associatedEntities[$rowIndex][$colIndex][] = $this->entityTable[$rowIndex][$associationIndex];
+            $this->associatedEntities[$rowIndex][$colIndex][] = $this->entityTable[$rowIndex][$associationIndex] ?? null;
         }
 
         $entity = $this->updaterTable[$rowIndex][$colIndex](new $entityConfig['class'], ...$this->associatedEntities[$rowIndex][$colIndex]);
@@ -334,11 +342,19 @@ class EntityPersister
         return strval($value) === strval(intval($value));
     }
 
-    private function persistAndTrackEntity(int $rowIndex, int $colIndex, object $entity, array $entityConfig): void
+    private function persistAndTrackEntity(int $rowIndex, int $colIndex, object $entity, array $entityConfig): ?object
     {
-        $this->entityManager->persist($entity);
         $this->entityKeys[$rowIndex][$colIndex] = $this->propertyAccessor->getValue($entity, $entityConfig['keyField']);
-        $this->trackedEntities[$entityConfig['class']][$this->entityKeys[$rowIndex][$colIndex]] = $entity;
+
+        if ($entityConfig['isReadonlyMode']) {
+            $this->trackedEntities[$entityConfig['class']][$this->entityKeys[$rowIndex][$colIndex]] = null;
+        }
+        else {
+            $this->entityManager->persist($entity);
+            $this->trackedEntities[$entityConfig['class']][$this->entityKeys[$rowIndex][$colIndex]] = $entity;
+        }
+
+        return $this->trackedEntities[$entityConfig['class']][$this->entityKeys[$rowIndex][$colIndex]];
     }
 
     private function initializeRowEntityUpdaters(int $rowIndex, Generator $entityUpdaters): void

@@ -25,7 +25,7 @@ class RegionVaccinations
      * @ORM\Id()
      * @ORM\Column(type="string", options={"charset"="ascii"})
      *
-     * @var int
+     * @var string
      */
     protected $id;
 
@@ -65,5 +65,58 @@ class RegionVaccinations
      */
     private $dose2Sum;
 
+    public function getId(): string
+    {
+        return $this->id;
+    }
 
+    public function getDose1Count(): int
+    {
+        return $this->dose1Count;
+    }
+
+    public function getDose2Count(): int
+    {
+        return $this->dose2Count;
+    }
+
+    public function getDose1Sum(): int
+    {
+        return $this->dose1Sum;
+    }
+
+    public function getDose2Sum(): int
+    {
+        return $this->dose2Sum;
+    }
+
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function setDose1Count(int $dose1Count): self
+    {
+        $this->dose1Count = $dose1Count;
+        return $this;
+    }
+
+    public function setDose2Count(int $dose2Count): self
+    {
+        $this->dose2Count = $dose2Count;
+        return $this;
+    }
+
+    public function setDose1Sum(int $dose1Sum): self
+    {
+        $this->dose1Sum = $dose1Sum;
+        return $this;
+    }
+
+    public function setDose2Sum(int $dose2Sum): self
+    {
+        $this->dose2Sum = $dose2Sum;
+        return $this;
+    }
 }

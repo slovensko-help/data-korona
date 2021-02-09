@@ -5,6 +5,8 @@ namespace App\Command;
 use App\Client\Iza\VaccinationsClient as IzaVaccinationsClient;
 use App\Client\Nczi\VaccinationsClient as NcziVaccinationsClient;
 use App\Client\PowerBi\VaccinationsClient as PowerBiVaccinationsClient;
+use App\Entity\Aggregation\RegionVaccinations;
+use App\Entity\Aggregation\SlovakiaVaccinations;
 use App\Entity\Raw\IzaVaccinations;
 use App\Entity\Raw\NcziVaccinations;
 use App\Entity\Raw\PowerBiVaccinations;
@@ -32,7 +34,6 @@ class VaccinationsImport extends AbstractImport
         parent::configure();
 
         $this->addOption('dump-powerbi-schema');
-        $this->addOption('nczi-only');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -44,44 +45,40 @@ class VaccinationsImport extends AbstractImport
             return self::SUCCESS;
         }
 
-//        foreach ($this->powerBiClient->debug() as $item) {
-//            $item[0] = date('Y-m-d', $item[0] / 1000);
-//            dump($item);
-//        }
-//
-//        die;
-
         $output->writeln($this->log('Updating powerBi/NCZI/IZA vaccinactions.'));
         $this->persist(
             $this->powerBiClient->findAllByRegionAndVaccine(),
             $this->powerBiClient->entitiesByRegionAndVaccine(),
-            [
-                PowerBiVaccinations::class => [null, null],
-            ]
+            [PowerBiVaccinations::class => [null, null],]
         );
         $this->persist(
             $this->ncziClient->findAll(),
             $this->ncziClient->entities(),
-            [
-                NcziVaccinations::class => [null, null],
-            ]
+            [NcziVaccinations::class => [null, null],]
         );
         $this->persist(
             $this->izaClient->findAll(),
             $this->izaClient->entities(),
-            [
-                IzaVaccinations::class => [null, null],
-            ]);
+            [IzaVaccinations::class => [null, null],]);
         $output->writeln($this->log('DONE.'));
 
         $vaccinationsRepository = $this->entityManager->getRepository(Vaccinations::class);
 
         $output->writeln($this->log('Updating Vaccinactions.'));
+        // slovakiaVaccinations must be imported first because regionVaccinations and vaccinations depend on it
+        $this->persist(
+            $vaccinationsRepository->slovakiaVaccinations(),
+            $vaccinationsRepository->slovakiaVaccinationsEntities()
+        );
+        $this->persist(
+            $vaccinationsRepository->regionVaccinations(),
+            $vaccinationsRepository->regionVaccinationsEntities()
+        );
         $this->persist(
             $vaccinationsRepository->vaccinationsFromRawEntities(),
-            $vaccinationsRepository->vaccinationsEntities()
+            $vaccinationsRepository->vaccinationsEntities(),
+            [Vaccinations::class => [null, null],]
         );
-//        $this->persist($vaccinationsRepository->slovakiaVaccinations(), $vaccinationsRepository->slovakiaVaccinationsEntities());
         $output->writeln($this->log('DONE.'));
 
         return self::SUCCESS;

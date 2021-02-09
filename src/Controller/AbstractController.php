@@ -47,16 +47,13 @@ class AbstractController extends AbstractFOSRestController
             ], Response::HTTP_BAD_REQUEST));
         }
 
-        if (!is_numeric($offset)) {
-            return $this->handleView($this->view([
-                'success' => false,
-                'code' => 'invalid_value_offset',
-                'error' => 'Invalid value. Offset is not int.',
-            ], Response::HTTP_BAD_REQUEST));
-        }
+        $repository = $this->entityManager->getRepository($entityClass);
 
-        $result = $this->entityManager->getRepository($entityClass)
-            ->findOnePage($offset, $updatedSince, $publishedSince);
+        if (0 === strpos($request->headers->get('referer', ''), $request->getSchemeAndHttpHost())) {
+            $result = $repository->findOnePage($offset, $updatedSince, $publishedSince, 20);
+        } else {
+            $result = $repository->findOnePage($offset, $updatedSince, $publishedSince);
+        }
 
         $nextOffset = count($result) > 0 ? $result[count($result) - 1]->getId() : null;
 
