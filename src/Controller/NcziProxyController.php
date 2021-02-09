@@ -52,6 +52,10 @@ class NcziProxyController extends AbstractController
             'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_all_drivein_times',
             'allowed_parameters' => [],
         ],
+        'get_driveins' => [
+            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_driveins',
+            'allowed_parameters' => [],
+        ],
     ];
 
     private $content;
