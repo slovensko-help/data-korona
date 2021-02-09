@@ -11,7 +11,7 @@ class VaccinationsClient extends AbstractKpiDataClient
 
     public function entities(): callable
     {
-        return function($_) {
+        return function(array $_) {
             yield 'id' => function(NcziVaccinations $vaccinations) use ($_) {
                 $publishedOn = DateTime::dateTimeFromString($_['date'], 'Y-m-d', true);
                 return $vaccinations

@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Client\Iza\VaccinationsClient as IzaVaccinationsClient;
 use App\Client\Nczi\VaccinationsClient as NcziVaccinationsClient;
 use App\Client\PowerBi\VaccinationsClient as PowerBiVaccinationsClient;
+use App\Entity\TimeSeries\Vaccinations;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -42,9 +43,16 @@ class VaccinationsImport extends AbstractImport
 
         $output->writeln($this->log('Updating powerBi/NCZI/IZA vaccinactions.'));
         $this->persist($this->powerBiClient->findAllByRegionAndVaccine(), $this->powerBiClient->entitiesByRegionAndVaccine());
-        $this->persist($this->powerBiClient->findAllByRegion(), $this->powerBiClient->entitiesByRegion());
+//        $this->persist($this->powerBiClient->findAllByRegion(), $this->powerBiClient->entitiesByRegion());
         $this->persist($this->ncziClient->findAll(), $this->ncziClient->entities());
         $this->persist($this->izaClient->findAll(), $this->izaClient->entities());
+        $output->writeln($this->log('DONE.'));
+
+        $vaccinationsRepository = $this->entityManager->getRepository(Vaccinations::class);
+
+        $output->writeln($this->log('Updating Vaccinactions.'));
+//        $this->persist($vaccinationsRepository->vaccinationsFromRawEntities(), $vaccinationsRepository->vaccinationsEntities());
+//        $this->persist($vaccinationsRepository->slovakiaVaccinations(), $vaccinationsRepository->slovakiaVaccinationsEntities());
         $output->writeln($this->log('DONE.'));
 
         return self::SUCCESS;

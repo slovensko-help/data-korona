@@ -32,13 +32,30 @@ final class EntityPersister
         $this->propertyAccessor = $propertyAccessor;
     }
 
-    private function isInt($value)
+    public function initializeEntitiesConfig(callable $entityUpdatersGenerator): array
     {
-        return strval($value) === strval(intval($value));
-    }
+        $parameters = (new ReflectionFunction($entityUpdatersGenerator))->getParameters();
 
-    public function initializeEntitiesConfig(Generator $entitiesMapping): array
-    {
+        if (1 !== count($parameters)) {
+            throw new Exception('Mapping generator function must have one parameter.');
+        }
+
+        if (null === $parameters[0]->getType()) {
+            throw new Exception('Mapping generator function parameter must have type annotation in ' . $parameters[0]->getDeclaringClass()->getName() . '.');
+        }
+
+        if ('array' === $parameters[0]->getType()->getName()) {
+            $initValue = [];
+        } elseif (class_exists($parameters[0]->getType()->getName())) {
+            $initClassName = $parameters[0]->getType()->getName();
+            $initValue = new $initClassName();
+        } else {
+            throw new Exception('Mapping generator function parameter must be array or object.');
+        }
+
+        $entitiesMapping = $entityUpdatersGenerator($initValue);
+
+
         $result = [];
         $classPositions = [];
         $index = 0;
@@ -105,13 +122,13 @@ final class EntityPersister
         return $result;
     }
 
-    public function persist(Generator $rows, callable $entityUpdatersGenerator, int $batchSize = 512)
+    public function persist(iterable $rows, callable $entityUpdatersGenerator, int $batchSize = 512)
     {
         if ($this->closed) {
             throw new Exception('Cannot persist closed persister.');
         }
 
-        $entitiesConfig = $this->initializeEntitiesConfig($entityUpdatersGenerator([]));
+        $entitiesConfig = $this->initializeEntitiesConfig($entityUpdatersGenerator);
 
         foreach ($this->batches($rows, $batchSize) as $rows) {
             $this->trackedEntities = [];
@@ -177,14 +194,6 @@ final class EntityPersister
         return $entity;
     }
 
-    private function persistAndTrackEntity(int $rowIndex, int $colIndex, object $entity, array $entityConfig): void
-    {
-        $this->entityManager->persist($entity);
-        $this->entityKeys[$rowIndex][$colIndex] = $this->propertyAccessor->getValue($entity, $entityConfig['keyField']);
-        $this->trackedEntities[$entityConfig['class']][$this->entityKeys[$rowIndex][$colIndex]] = $entity;
-    }
-
-
     public function entityKey(int $rowIndex, int $colIndex, array $entityConfig)
     {
         $this->associatedEntities[$rowIndex][$colIndex] = [];
@@ -205,7 +214,7 @@ final class EntityPersister
         return $this->entityKeys[$rowIndex][$colIndex] = $this->propertyAccessor->getValue($entity, $entityConfig['keyField']);
     }
 
-    protected function batches(Generator $dataItems, $batchSize = 128)
+    protected function batches(iterable $dataItems, $batchSize = 128)
     {
         $result = [];
         $index = 0;
@@ -231,6 +240,18 @@ final class EntityPersister
         }
 
         return null;
+    }
+
+    private function isInt($value)
+    {
+        return strval($value) === strval(intval($value));
+    }
+
+    private function persistAndTrackEntity(int $rowIndex, int $colIndex, object $entity, array $entityConfig): void
+    {
+        $this->entityManager->persist($entity);
+        $this->entityKeys[$rowIndex][$colIndex] = $this->propertyAccessor->getValue($entity, $entityConfig['keyField']);
+        $this->trackedEntities[$entityConfig['class']][$this->entityKeys[$rowIndex][$colIndex]] = $entity;
     }
 
     private function initializeRowEntityUpdaters(int $rowIndex, Generator $entityUpdaters): void

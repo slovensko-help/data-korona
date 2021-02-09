@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity()
@@ -24,6 +25,7 @@ class Vaccine
 
     /**
      * @ORM\Column(type="string", unique=true, options={"charset"="ascii"})
+     * @Serializer\Exclude()
      *
      * @var string
      */

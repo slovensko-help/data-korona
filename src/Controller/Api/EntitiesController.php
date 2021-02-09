@@ -7,6 +7,7 @@ use App\Entity\Hospital;
 use App\Entity\City;
 use App\Entity\District;
 use App\Entity\Region;
+use App\Entity\Vaccine;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -99,8 +100,29 @@ class EntitiesController extends AbstractController {
      *
      * @return Response
      */
+
     public function regions()
     {
         return $this->handleView($this->view($this->getRepository(Region::class)->findAll(), 200));
+    }
+    /**
+     * Zoznam vakcinačných látok
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Vráti zoznam vakcinačných látok.",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Vaccine::class))
+     *     )
+     * )
+     *
+     * @Route("/new-api/vaccines", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function vaccines()
+    {
+        return $this->handleView($this->view($this->getRepository(Vaccine::class)->findAll(), 200));
     }
 }
