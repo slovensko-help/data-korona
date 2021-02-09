@@ -74,8 +74,8 @@ abstract class AbstractClient extends \App\Client\AbstractClient
 
     protected function execute(PowerBiQueryBuilder $queryBuilder): PowerBiQueryResult
     {
-        return new PowerBiQueryResult($this->cachedApiContent($this->queryUrl(), $queryBuilder->build()));
-        //return new PowerBiQueryResult($this->apiContent($this->queryUrl(), $queryBuilder->build()));
+//        return new PowerBiQueryResult($this->cachedApiContent($this->queryUrl(), $queryBuilder->build()));
+        return new PowerBiQueryResult($this->apiContent($this->queryUrl(), $queryBuilder->build()));
     }
 
     private function modelId(): int

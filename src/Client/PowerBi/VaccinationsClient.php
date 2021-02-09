@@ -15,7 +15,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class VaccinationsClient extends AbstractClient
 {
     const REPORT_URL = 'https://app.powerbi.com//view?r=eyJrIjoiMzk4ZmRjNmEtYmZiNC00NGRiLWE2NDEtNWRjNjFhMDM4Nzk1IiwidCI6IjMxMGJhNTk1LTAxM2MtNDAyZC05ZWYyLWI1N2Q1ZjFkY2Q2MyIsImMiOjl9';
-    const REPORT_BEGINNING = '2020-01-01';
+    const REPORT_BEGINNING = '2021-01-01';
 
     /** @var SluggerInterface */
     private $slugger;
