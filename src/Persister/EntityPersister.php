@@ -2,24 +2,29 @@
 
 namespace App\Persister;
 
-use App\Entity\Vaccine;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Generator;
 use ReflectionFunction;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-final class EntityPersister
+class EntityPersister
 {
-    // all entities tracked by orm in 2 dimensional array [class][key]
+    const FIRST_BATCH = 1;
+    const LAST_BATCH = 2;
+
+    // all entities tracked by orm (as 2 dimensional array [class][key])
     private $trackedEntities = [];
 
-    // persisted entities (or null values) in 2 dimensional array [row][column]
+    // persisted entities (or null values) (as 2 dimensional array [row][column])
     private $entityTable = [];
 
     private $associatedEntities = [];
     private $updaterTable = [];
     private $entityKeys = [];
+    private $classKeys = [];
+    private $maxKeys = [];
+    private $minKeys = [];
 
     private $closed = false;
 
@@ -32,7 +37,7 @@ final class EntityPersister
         $this->propertyAccessor = $propertyAccessor;
     }
 
-    public function initializeEntitiesConfig(callable $entityUpdatersGenerator): array
+    public function initializeEntitiesConfig(callable $entityUpdatersGenerator, ?array $deletionConfig = null): array
     {
         $parameters = (new ReflectionFunction($entityUpdatersGenerator))->getParameters();
 
@@ -54,7 +59,6 @@ final class EntityPersister
         }
 
         $entitiesMapping = $entityUpdatersGenerator($initValue);
-
 
         $result = [];
         $classPositions = [];
@@ -107,11 +111,22 @@ final class EntityPersister
 
             $class = $parameters[0]->getType()->getName();
 
+            if (isset($deletionConfig[$class])) {
+                $deletions = [
+                    'startKey' => $deletionConfig[$class][0],
+                    'endKey' => $deletionConfig[$class][1],
+                ];
+            }
+            else {
+                $deletions = null;
+            }
+
             $result[] = [
                 'repository' => $this->entityManager->getRepository($class),
                 'class' => $class,
                 'keyField' => $keyField,
                 'associationIndices' => $associationIndices,
+                'deletions' => $deletions,
             ];
 
             $classPositions[$class][] = $index;
@@ -122,13 +137,14 @@ final class EntityPersister
         return $result;
     }
 
-    public function persist(iterable $rows, callable $entityUpdatersGenerator, int $batchSize = 512)
+    public function persist(iterable $rows, callable $entityUpdatersGenerator, ?array $deletionConfig = null, int $batchSize = 512)
     {
         if ($this->closed) {
             throw new Exception('Cannot persist closed persister.');
         }
 
-        $entitiesConfig = $this->initializeEntitiesConfig($entityUpdatersGenerator);
+        $entitiesConfig = $this->initializeEntitiesConfig($entityUpdatersGenerator, $deletionConfig);
+        $isFirstBatch = true;
 
         foreach ($this->batches($rows, $batchSize) as $rows) {
             $this->trackedEntities = [];
@@ -139,6 +155,8 @@ final class EntityPersister
 
             foreach ($entitiesConfig as $colIndex => $entityConfig) {
                 $entityKeys = [];
+                $this->minKeys[$entityConfig['class']] = $this->maxKeys[$entityConfig['class']] ?? null;
+
                 foreach ($rows as $rowIndex => $row) {
                     if (0 === $colIndex) {
                         $this->initializeRowEntityUpdaters($rowIndex, $entityUpdatersGenerator($row));
@@ -147,6 +165,10 @@ final class EntityPersister
                     $entityKey = $this->entityKey($rowIndex, $colIndex, $entityConfig);
 
                     if (null !== $entityKey) {
+                        if (!isset($this->maxKeys[$entityConfig['class']]) || $entityKey > $this->maxKeys[$entityConfig['class']]) {
+                            $this->maxKeys[$entityConfig['class']] = $entityKey;
+                        }
+
                         $entityKeys[$entityKey] = $entityKey;
                     }
                 }
@@ -159,15 +181,72 @@ final class EntityPersister
                 foreach ($rows as $rowIndex => $row) {
                     $this->entityTable[$rowIndex][$colIndex] = $this->persistedEntity($rowIndex, $colIndex, $entityConfig);
                 }
-
-//                dump(memory_get_usage() / 1024 / 1024);
             }
+
+            $this->deleteMissingEntities($entitiesConfig, $isFirstBatch ? static::FIRST_BATCH : 0);
+            $isFirstBatch = false;
 
             $this->entityManager->flush();
             $this->entityManager->clear();
         }
 
+        $this->deleteMissingEntities($entitiesConfig, static::LAST_BATCH | ($isFirstBatch ? static::FIRST_BATCH : 0));
+
         $this->closed = true;
+    }
+
+    private function deleteMissingEntities(array $entitiesConfig, int $flags = 0)
+    {
+        foreach ($entitiesConfig as $entityConfig)
+        {
+            if (null !== $entityConfig['deletions']) {
+                if ($this->hasMultipleEntitiesOfTheSameClass($entityConfig['class'], $entitiesConfig)) {
+                    throw new Exception('There are multiple entities of class ' . $entityConfig['class'] . '. Automatic deletion of missing entities is not possible.');
+                }
+
+                if ($flags & static::FIRST_BATCH) {
+                    $minKey = $entityConfig['deletions']['startKey'];
+                }
+                else {
+                    $minKey = $this->minKeys[$entityConfig['class']];
+                }
+
+                if ($flags & static::LAST_BATCH) {
+                    $maxKey = $entityConfig['deletions']['endKey'];
+                }
+                else {
+                    $maxKey = $this->maxKeys[$entityConfig['class']];
+                }
+
+                $missingEntities = $entityConfig['repository']->findAllByKeyForDeletion(
+                    $entityConfig['keyField'],
+                    $this->classKeys[$entityConfig['class']],
+                    $minKey,
+                    $maxKey
+                );
+
+                foreach ($missingEntities as $missingEntity) {
+                    $this->entityManager->remove($missingEntity);
+                }
+            }
+        }
+    }
+
+    private function hasMultipleEntitiesOfTheSameClass(string $entityClass, array $entitiesConfig)
+    {
+        $count = 0;
+
+        foreach ($entitiesConfig as $entityConfig) {
+            if ($entityConfig['class'] === $entityClass) {
+                $count++;
+            }
+
+            if ($count > 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function persistedEntity(int $rowIndex, int $colIndex, array $entityConfig): ?object
@@ -211,7 +290,15 @@ final class EntityPersister
             return null;
         }
 
-        return $this->entityKeys[$rowIndex][$colIndex] = $this->propertyAccessor->getValue($entity, $entityConfig['keyField']);
+        $key = $this->propertyAccessor->getValue($entity, $entityConfig['keyField']);;
+
+        if (!isset($this->classKeys[$entityConfig['class']])) {
+            $this->classKeys[$entityConfig['class']] = [];
+        }
+
+        $this->classKeys[$entityConfig['class']][] = $key;
+
+        return $this->entityKeys[$rowIndex][$colIndex] = $key;
     }
 
     protected function batches(iterable $dataItems, $batchSize = 128)

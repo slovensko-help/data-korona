@@ -51,9 +51,9 @@ abstract class AbstractImport extends Command
         $this->entityManager->getConnection()->getConfiguration()->setSQLLogger();
     }
 
-    protected function persist(iterable $rows, callable $entityUpdatersGenerator, int $batchSize = 512)
+    protected function persist(iterable $rows, callable $entityUpdatersGenerator, ?array $deletionConfig = null, int $batchSize = 512)
     {
-        $this->persisterFactory->createPersister()->persist($rows, $entityUpdatersGenerator, $batchSize);
+        $this->persisterFactory->createPersister()->persist($rows, $entityUpdatersGenerator, $deletionConfig, $batchSize);
     }
 
 //    protected function region(array $record): ?Region

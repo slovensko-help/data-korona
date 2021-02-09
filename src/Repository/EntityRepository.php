@@ -23,10 +23,33 @@ class EntityRepository extends DefaultEntityRepository
     public function findAllByKey(string $keyField, array $values)
     {
         $prefixedKeyField = 'o.' . $keyField;
-        $queryBuilder = $this->createQueryBuilder('o', $prefixedKeyField);
-        return $queryBuilder
+        return $this->createQueryBuilder('o', $prefixedKeyField)
             ->andWhere($prefixedKeyField . ' IN (:values)')
             ->setParameter('values', $values)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllByKeyForDeletion(string $keyField, array $excludedKeys, $minKey, $maxKey)
+    {
+        $prefixedKeyField = 'o.' . $keyField;
+        $queryBuilder = $this->createQueryBuilder('o', $prefixedKeyField)
+            ->andWhere($prefixedKeyField . ' NOT IN (:values)')
+            ->setParameter('values', $excludedKeys);
+
+        if (null !== $minKey) {
+            $queryBuilder
+                ->andWhere($prefixedKeyField . ' >= :minKey')
+                ->setParameter('minKey', $minKey);
+        }
+
+        if (null !== $maxKey) {
+            $queryBuilder
+                ->andWhere($prefixedKeyField . ' < :maxKey')
+                ->setParameter('maxKey', $maxKey);
+        }
+
+        return $queryBuilder
             ->getQuery()
             ->getResult();
     }
