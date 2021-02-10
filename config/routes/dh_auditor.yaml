@@ -1,13 +1,13 @@
 dh_auditor_list_audits:
-    path: changes
+    path: h
     controller: DH\AuditorBundle\Controller\ViewerController::listAuditsAction
 
 dh_auditor_show_transaction:
-    path: changes/transaction/{hash}
+    path: h/transaction/{hash}
     controller: DH\AuditorBundle\Controller\ViewerController::showTransactionAction
 
 dh_auditor_show_entity_history:
-    path: changes/{entity}/{id}
+    path: h/{entity}/{id}
     defaults:
         id: null
     controller: DH\AuditorBundle\Controller\ViewerController::showEntityHistoryAction
