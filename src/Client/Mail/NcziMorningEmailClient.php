@@ -369,7 +369,9 @@ class NcziMorningEmailClient extends \App\Client\AbstractClient
         $publishedOnFormatted = $publishedOn->format('Y-m-d');
 
         foreach (self::ATTRIBUTE_PATTERNS as $validInterval => $attributePatterns) {
-            list($validSince, $validUntil) = explode(':', $validInterval);
+            $validIntervalParts = explode(':', $validInterval);
+            $validSince = $validIntervalParts[0];
+            $validUntil = $validIntervalParts[0] ?? null;
 
             if ($validSince <= $publishedOnFormatted && (null === $validUntil || $publishedOnFormatted <= $validUntil)) {
                 $result += $attributePatterns;

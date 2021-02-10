@@ -40,11 +40,11 @@ class VaccinationsClient extends AbstractClient
 //        yield from $this->all($this->createQueryBuilder()
 //            ->selectColumn('COVID-19 Vakciny', 'DATUM_VYPL')
 //            ->selectColumn('COVID-19 Vakciny', 'SIDZAR_KRAJ_KOD_ST')
-//            ->selectColumn('COVID-19 Vakciny', 'ZASOBY_APLIKOVANE_1', PowerBiQueryBuilder::AGGREGATION_SUM)
+//            ->selectColumn('COVID-19 Vakciny', 'Kumulat_ZASOB_APLIK_1')
 ////            ->selectColumn('COVID-19 Vakciny', 'ZASOBY_APLIKOVANE_2', PowerBiQueryBuilder::AGGREGATION_SUM)
 ////            ->selectColumn('COVID-19 Vakciny', 'SIDZAR_KRAJ_KOD_ST', PowerBiQueryBuilder::AGGREGATION_COUNT)
-//            ->selectColumn('COVID-19 Vakciny', 'SIDZAR_KRAJ_KOD_ST', PowerBiQueryBuilder::AGGREGATION_COUNT)
-//        ->andWhere('COVID-19 Vakciny', 'DATUM_VYPL', PowerBiQueryBuilder::COMPARISON_EQUAL, 'datetime\'2021-01-09T00:00:00\'')
+////            ->selectColumn('COVID-19 Vakciny', 'SIDZAR_KRAJ_KOD_ST', PowerBiQueryBuilder::AGGREGATION_COUNT)
+//        ->andWhere('COVID-19 Vakciny', 'DATUM_VYPL', PowerBiQueryBuilder::COMPARISON_LESS_THAN_OR_EQUAL, 'datetime\'2021-02-10T00:00:00\'')
 //,
 //            new DatePaginationHint('COVID-19 Vakciny', 'DATUM_VYPL', DateTimeImmutable::createFromFormat('Y-m-d', self::REPORT_BEGINNING), 60)
 //        );

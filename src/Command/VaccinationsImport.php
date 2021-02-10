@@ -11,6 +11,7 @@ use App\Entity\Raw\IzaVaccinations;
 use App\Entity\Raw\NcziVaccinations;
 use App\Entity\Raw\PowerBiVaccinations;
 use App\Entity\TimeSeries\Vaccinations;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -34,6 +35,7 @@ class VaccinationsImport extends AbstractImport
         parent::configure();
 
         $this->addOption('dump-powerbi-schema');
+        $this->addOption('debug-powerbi');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -42,6 +44,15 @@ class VaccinationsImport extends AbstractImport
 
         if ($input->getOption('dump-powerbi-schema')) {
             $this->dumpPowerBiSchema($this->powerBiClient, $output);
+            return self::SUCCESS;
+        }
+
+        if ($input->getOption('debug-powerbi')) {
+            $rows = $this->powerBiClient->findAllByRegionAndVaccine();
+
+            (new Table($output))
+                ->setRows(iterator_to_array($rows))
+                ->render();
             return self::SUCCESS;
         }
 
