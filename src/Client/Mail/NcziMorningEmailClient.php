@@ -371,7 +371,7 @@ class NcziMorningEmailClient extends \App\Client\AbstractClient
         foreach (self::ATTRIBUTE_PATTERNS as $validInterval => $attributePatterns) {
             $validIntervalParts = explode(':', $validInterval);
             $validSince = $validIntervalParts[0];
-            $validUntil = $validIntervalParts[0] ?? null;
+            $validUntil = $validIntervalParts[1] ?? null;
 
             if ($validSince <= $publishedOnFormatted && (null === $validUntil || $publishedOnFormatted <= $validUntil)) {
                 $result += $attributePatterns;
