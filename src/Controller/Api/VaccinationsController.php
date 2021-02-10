@@ -18,16 +18,12 @@ use OpenApi\Annotations as OA;
 class VaccinationsController extends AbstractController
 {
     /**
-     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach v časovej rade po dňoch od 30. apríla 2020
-     *
-     * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
-     *
      * @OA\Parameter(name="offset", in="query", description="Stránkovanie po 1000 (v deme 20) záznamov na stránku.")
      * @OA\Parameter(name="updated_since", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach po dňoch",
+     *     description="Vráti stránkovaný zoznam",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
@@ -83,16 +79,12 @@ class VaccinationsController extends AbstractController
     }
 
     /**
-     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach v časovej rade po dňoch od 30. apríla 2020
-     *
-     * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
-     *
      * @OA\Parameter(name="offset", in="query", description="Stránkovanie po 1000 (v deme 20) záznamov na stránku.")
      * @OA\Parameter(name="updated_since", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach po dňoch",
+     *     description="Vráti stránkovaný zoznam",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
@@ -148,16 +140,12 @@ class VaccinationsController extends AbstractController
     }
 
     /**
-     * Kapacita a obsadenosť rôznych typov lôžok v nemocniciach v časovej rade po dňoch od 30. apríla 2020
-     *
-     * Záznamy sú aktualizované každý **pracovný** deň okolo obeda a podvečer. Záznamy sú zoradené podľa dňa publikovania (published_on) od najnovších po najstaršie.
-     *
      * @OA\Parameter(name="offset", in="query", description="Stránkovanie po 1000 (v deme 20) záznamov na stránku.")
      * @OA\Parameter(name="updated_since", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
      *
      * @OA\Response(
      *     response=200,
-     *     description="Vráti stránkovaný zoznam kapacít a obsadenosti lôžok v nemocniciach po dňoch",
+     *     description="Vráti stránkovaný zoznam",
      *      @OA\JsonContent(
      *        type="object",
      *        @OA\Property(
