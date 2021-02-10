@@ -1,3 +1,13 @@
-dh_auditor:
-    resource: "@DHAuditorBundle/Controller/"
-    type: auditor
+dh_auditor_list_audits:
+    path: changes
+    controller: DH\AuditorBundle\Controller\ViewerController::listAuditsAction
+
+dh_auditor_show_transaction:
+    path: changes/transaction/{hash}
+    controller: DH\AuditorBundle\Controller\ViewerController::showTransactionAction
+
+dh_auditor_show_entity_history:
+    path: changes/{entity}/{id}
+    defaults:
+        id: null
+    controller: DH\AuditorBundle\Controller\ViewerController::showEntityHistoryAction
