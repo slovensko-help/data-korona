@@ -44,8 +44,8 @@ class HospitalsClient extends AbstractClient
 
     private function district(array $_): callable
     {
-        return function (District $district, Region $region) use ($_) {
-            if ($this->isInvalidCode($_['SIDOU_OKRES_KOD_ST'])) {
+        return function (District $district, ?Region $region) use ($_) {
+            if (null === $region || $this->isInvalidCode($_['SIDOU_OKRES_KOD_ST'])) {
                 return null;
             }
             return $district
@@ -57,8 +57,8 @@ class HospitalsClient extends AbstractClient
 
     private function city(array $_): callable
     {
-        return function (City $city, District $district) use ($_) {
-            if ($this->isInvalidCode($_['SIDOU_OBEC_KOD_ST'])) {
+        return function (City $city, ?District $district) use ($_) {
+            if (null === $district || $this->isInvalidCode($_['SIDOU_OBEC_KOD_ST'])) {
                 return null;
             }
             return $city
@@ -70,7 +70,11 @@ class HospitalsClient extends AbstractClient
 
     private function hospital(array $_): callable
     {
-        return function (Hospital $hospital, City $city) use ($_) {
+        return function (Hospital $hospital, ?City $city) use ($_) {
+            if (null === $city) {
+                return null;
+            }
+
             return $hospital
                 ->setCity($city)
                 ->setCode($this->fixedHospitalCode($_['KODPZS'], $_['NAZOV']))
@@ -80,7 +84,11 @@ class HospitalsClient extends AbstractClient
 
     private function hospitalBeds(array $_): callable
     {
-        return function (HospitalBeds $hospitalBeds, Hospital $hospital) use ($_) {
+        return function (HospitalBeds $hospitalBeds, ?Hospital $hospital) use ($_) {
+            if (null === $hospital) {
+                return null;
+            }
+
             $publishedOn = DateTime::dateTimeFromString($_['DAT_SPRAC'], 'Y-m-d H:i:s', true);
             return $hospitalBeds
                 ->setId(Id::fromDateTimeAndInt($publishedOn, $hospital->getId()))
@@ -99,7 +107,11 @@ class HospitalsClient extends AbstractClient
 
     private function hospitalPatients(array $_): callable
     {
-        return function (HospitalPatients $hospitalPatients, Hospital $hospital) use ($_) {
+        return function (HospitalPatients $hospitalPatients, ?Hospital $hospital) use ($_) {
+            if (null === $hospital) {
+                return null;
+            }
+
             $publishedOn = DateTime::dateTimeFromString($_['DAT_SPRAC'], 'Y-m-d H:i:s', true);
             return $hospitalPatients
                 ->setId(Id::fromDateTimeAndInt($publishedOn, $hospital->getId()))
@@ -115,7 +127,11 @@ class HospitalsClient extends AbstractClient
 
     private function hospitalStaff(array $_): callable
     {
-        return function (HospitalStaff $hospitalStaff, Hospital $hospital) use ($_) {
+        return function (HospitalStaff $hospitalStaff, ?Hospital $hospital) use ($_) {
+            if (null === $hospital) {
+                return null;
+            }
+
             $publishedOn = DateTime::dateTimeFromString($_['DAT_SPRAC'], 'Y-m-d H:i:s', true);
             return $hospitalStaff
                 ->setId(Id::fromDateTimeAndInt($publishedOn, $hospital->getId()))
