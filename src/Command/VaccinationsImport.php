@@ -48,10 +48,15 @@ class VaccinationsImport extends AbstractImport
         }
 
         if ($input->getOption('debug-powerbi')) {
-            $rows = $this->powerBiClient->findAllByRegionAndVaccine();
+            $rows = [];
+
+            foreach ($this->powerBiClient->findAllByRegionAndVaccine() as $row) {
+                $row[0] = date('Y-m-d', $row[0] / 1000);
+                $rows[] = $row;
+            }
 
             (new Table($output))
-                ->setRows(iterator_to_array($rows))
+                ->setRows($rows)
                 ->render();
             return self::SUCCESS;
         }

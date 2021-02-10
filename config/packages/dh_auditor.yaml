@@ -2,7 +2,11 @@
 # https://damienharper.github.io/auditor-docs/docs/auditor-bundle/configuration/reference.html
 dh_auditor:
     enabled: true
+    timezone: 'Europe/Bratislava'
     providers:
         doctrine:
-            table_prefix: null
-            table_suffix: '_audit'
+            table_prefix: 'audit_'
+            table_suffix: ''
+            ignored_columns:
+                - 'createdAt'
+                - 'updatedAt'

@@ -10,6 +10,7 @@ use App\Entity\Traits\HospitalPatientsData;
 use App\Entity\Traits\Publishable;
 use App\Entity\Traits\Timestampable;
 use DateTimeImmutable;
+use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use OpenApi\Annotations\Property;
@@ -17,6 +18,7 @@ use OpenApi\Annotations\Property;
 /**
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
+ * @Auditable()
  *
  * data source: https://raw.githubusercontent.com/Institut-Zdravotnych-Analyz/covid19-data/main/OpenData_Slovakia_Covid_Hospital_Details.csv
  */
