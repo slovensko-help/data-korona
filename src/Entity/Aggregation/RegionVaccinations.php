@@ -7,11 +7,13 @@ namespace App\Entity\Aggregation;
 use App\Entity\Traits\Publishable;
 use App\Entity\Traits\Regional;
 use App\Entity\Traits\Timestampable;
+use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
+ * @Auditable()
  */
 class RegionVaccinations
 {

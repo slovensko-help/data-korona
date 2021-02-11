@@ -10,11 +10,11 @@ abstract class AbstractKpiDataClient extends AbstractClient
 {
     const KPI_ID = null;
 
-    public function findAll()
+    public function findAll(DateTimeImmutable $from, DateTimeImmutable $to)
     {
         $response = $this->apiContent('https://covid-19.nczisk.sk/webapi/v1/kpi/' . static::KPI_ID . '/data', [
-            'from' => (new DateTimeImmutable('-60 days', new DateTimeZone('Europe/Bratislava')))->setTime(0, 0, 0)->format('Y-m-d'),
-            'to' => (new DateTimeImmutable('tomorrow', new DateTimeZone('Europe/Bratislava')))->setTime(0, 0, 0)->format('Y-m-d'),
+            'from' => $from->format('Y-m-d'),
+            'to' => $to->format('Y-m-d'),
             'period' => 'd',
         ]);
 

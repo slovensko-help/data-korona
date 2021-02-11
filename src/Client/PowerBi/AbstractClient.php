@@ -49,26 +49,18 @@ abstract class AbstractClient extends \App\Client\AbstractClient
     protected function all(PowerBiQueryBuilder $queryBuilder, ?PaginationHintInterface $paginationHint = null): Generator
     {
         if ($paginationHint instanceof PaginationHintInterface) {
-            $queryBuildersGenerator = $paginationHint->queryBuildersGenerator($queryBuilder);
+            $pagination = clone $paginationHint;
 
-            $lastItem = null;
-            do {
-                $pageQueryBuilder = $queryBuildersGenerator->send($lastItem);
-                $lastItem = null;
-
-                if ($pageQueryBuilder instanceof PowerBiQueryBuilder) {
-                    foreach ($this->execute($pageQueryBuilder)->items() as $item) {
-                        yield $item;
-                    }
-
-                    if (isset($item)) {
-                        $lastItem = $item;
-                    }
+            foreach ($pagination->pageQueryBuilders($queryBuilder) as $pageQueryBuilder) {
+                foreach ($this->execute($pageQueryBuilder)->items() as $item) {
+                    yield $item;
+                    $pagination->pageHasItems();
                 }
 
-            } while (null !== $lastItem);
+                usleep(500000 - rand(0, 25000));
+            }
         } else {
-            yield from $this->execute($queryBuilder);
+            yield from $this->execute($queryBuilder)->items();
         }
     }
 

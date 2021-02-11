@@ -91,7 +91,7 @@ class VaccinationsRepository extends ServiceEntityRepository
                     }
                 }
 
-                // if yesterday's update from nczi doesn't exist then take first available update in this order: power_bi, iza, nczi
+                // if it is not yesterday's update from nczi then take first available update in this order: power_bi, iza, nczi
                 if (null === $update) {
                     if (null !== $_['power_bi']) {
                         $update = $_['power_bi'];

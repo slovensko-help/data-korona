@@ -5,11 +5,13 @@ namespace App\Entity\Raw;
 use App\Entity\Traits\Datetimeable;
 use App\Entity\Traits\Timestampable;
 use DateTimeImmutable;
+use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
+ * @Auditable()
  */
 class NcziVaccinations
 {
@@ -45,15 +47,14 @@ class NcziVaccinations
      */
     private $dose2Sum;
 
+    public static function calculateId(DateTimeImmutable $publishedOn): int
+    {
+        return (int)$publishedOn->format('Ymd');
+    }
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -79,6 +80,12 @@ class NcziVaccinations
     public function getDose2Sum(): int
     {
         return $this->dose2Sum;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     /**

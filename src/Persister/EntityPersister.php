@@ -216,6 +216,7 @@ class EntityPersister
                 if (isset($this->maxKeys[$entityConfig['class']])) {
                     if ($flags & static::FIRST_BATCH) {
                         $minKey = $entityConfig['deletions']['startKey'];
+                        $this->minKeys[$entityConfig['class']] = $minKey;
                     }
                     else {
                         $minKey = $this->minKeys[$entityConfig['class']];
@@ -223,6 +224,7 @@ class EntityPersister
 
                     if ($flags & static::LAST_BATCH) {
                         $maxKey = $entityConfig['deletions']['endKey'];
+                        $this->maxKeys[$entityConfig['class']] = $maxKey;
                     }
                     else {
                         $maxKey = $this->maxKeys[$entityConfig['class']];

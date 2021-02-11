@@ -7,12 +7,14 @@ use DateInterval;
 use DateTimeImmutable;
 use Generator;
 
-class DatePaginationHint implements PaginationHintInterface
+class DatePaginationHint extends AbstractPaginationHint
 {
     private $entityName;
     private $propertyName;
     private $fromDate;
     private $pageSizeInDays;
+    private $pageSizeMultiplier = 1;
+    private $today;
 
     public function __construct(string $entityName, string $propertyName, DateTimeImmutable $fromDate, $pageSizeInDays = 30)
     {
@@ -20,50 +22,32 @@ class DatePaginationHint implements PaginationHintInterface
         $this->propertyName = $propertyName;
         $this->fromDate = $fromDate;
         $this->pageSizeInDays = $pageSizeInDays;
+        $this->today = (new DateTimeImmutable())->setTime(0, 0);
     }
 
-    public function queryBuildersGenerator(PowerBiQueryBuilder $queryBuilder): Generator
+    public function pageQueryBuilders(PowerBiQueryBuilder $queryBuilder): Generator
     {
-        $dateFieldIndex = $queryBuilder->fieldIndex($this->entityName, $this->propertyName);
+        while (null !== $this->fromDate) {
+            $toDate = $this->fromDate->add(new DateInterval('P' . min(static::MAX_PAGE_SIZE, $this->pageSizeInDays * $this->pageSizeMultiplier) . 'D'));
 
-        $fromDate = $this->fromDate;
-        $lastItem = false;
+            // TODO: implement boundaries when $queryBuilder already has where condition with the same entityName.propertyName
+            yield (clone clone $queryBuilder)
+                ->andWhere($this->entityName, $this->propertyName, PowerBiQueryBuilder::COMPARISON_GREATER_THAN_OR_EQUAL, "datetime'{$this->fromDate->format('Y-m-d')}T00:00:00'")
+                ->andWhere($this->entityName, $this->propertyName, PowerBiQueryBuilder::COMPARISON_LESS_THAN_OR_EQUAL, "datetime'{$toDate->format('Y-m-d')}T00:00:00'")
+                ->orderBy($this->entityName, $this->propertyName, PowerBiQueryBuilder::ORDER_ASC);
 
-        while (true) {
-            if (null === $fromDate) {
-                yield null;
-            }
-
-            $toDate = $fromDate->add(new DateInterval('P' . ($this->pageSizeInDays - 1) . 'D'));
-
-            $lastItem = yield $this->pageQueryBuilder($queryBuilder, $lastItem, $fromDate, $toDate);
-
-            if (null !== $lastItem) {
-                $fromDate = $this->newFromDate($lastItem, $toDate, $dateFieldIndex);
-            }
+            $this->fromDate = $this->newFromDate($toDate);
+            $this->pageSizeMultiplier = null !== $this->pageHasItems && $this->pageHasItems ? 1 : 3; // let's widen the page next for the next page to minimize request in case of large gaps
+            $this->pageHasItems = false; // a caller which iterates over this generator must call PaginationHintInterface#pageHasItems() if queryBuilder yields any result
         }
     }
 
-    private function newFromDate($lastItem, DateTimeImmutable $toDate, int $dateFieldIndex)
+    private function newFromDate(DateTimeImmutable $toDate)
     {
-        $lastItemDate = (new DateTimeImmutable())->setTimestamp($lastItem[$dateFieldIndex] / 1000);
-
-        if ($lastItemDate->format('Y-m-d') === $toDate->format('Y-m-d')) {
-            usleep(500000 - rand(0, 25000));
+        if ($toDate < $this->today) {
             return $toDate->add(new DateInterval('P1D'));
         }
 
         return null;
-    }
-
-    private function pageQueryBuilder(PowerBiQueryBuilder $queryBuilder, $lastItem, DateTimeImmutable $fromDate, DateTimeImmutable $toDate)
-    {
-        $from = $fromDate->format('Y-m-d');
-        $to = $toDate->format('Y-m-d');
-
-        return false === $lastItem ? null : (clone $queryBuilder)
-            ->andWhere($this->entityName, $this->propertyName, PowerBiQueryBuilder::COMPARISON_GREATER_THAN_OR_EQUAL, "datetime'{$from}T00:00:00'")
-            ->andWhere($this->entityName, $this->propertyName, PowerBiQueryBuilder::COMPARISON_LESS_THAN_OR_EQUAL, "datetime'{$to}T00:00:00'")
-            ->orderBy($this->entityName, $this->propertyName, PowerBiQueryBuilder::ORDER_ASC);
     }
 }

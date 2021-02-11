@@ -15,7 +15,7 @@ class VaccinationsClient extends AbstractKpiDataClient
             yield 'id' => function(NcziVaccinations $vaccinations) use ($_) {
                 $publishedOn = DateTime::dateTimeFromString($_['date'], 'Y-m-d', true);
                 return $vaccinations
-                    ->setId((int)$publishedOn->format('Ymd'))
+                    ->setId(NcziVaccinations::calculateId($publishedOn))
                     ->setPublishedOn($publishedOn)
                     ->setDose1Sum($this->nullOrInt($_['v']) + $this->nullOrInt($_['v1']))
                     ->setDose2Sum($this->nullOrInt($_['v1']));

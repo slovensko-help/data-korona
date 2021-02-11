@@ -11,14 +11,15 @@ use App\Entity\Raw\IzaVaccinations;
 use App\Entity\Raw\NcziVaccinations;
 use App\Entity\Raw\PowerBiVaccinations;
 use App\Entity\TimeSeries\Vaccinations;
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeZone;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class VaccinationsImport extends AbstractImport
 {
-    const CSV_FILE = 'https://raw.githubusercontent.com/Institut-Zdravotnych-Analyz/covid19-data/main/OpenData_Slovakia_Vaccinations.csv';
-
     protected static $defaultName = 'app:import:vaccinations';
 
     /** @var PowerBiVaccinationsClient */
@@ -67,10 +68,14 @@ class VaccinationsImport extends AbstractImport
             $this->powerBiClient->entitiesByRegionAndVaccine(),
             [PowerBiVaccinations::class => [null, null],]
         );
+
+        $ncziFrom = (new DateTimeImmutable('-40 days', new DateTimeZone('Europe/Bratislava')))->setTime(0, 0);
+        $ncziTo = (new DateTimeImmutable('tomorrow', new DateTimeZone('Europe/Bratislava')))->setTime(0, 0);
+
         $this->persist(
-            $this->ncziClient->findAll(),
+            $this->ncziClient->findAll($ncziFrom, $ncziTo),
             $this->ncziClient->entities(),
-            [NcziVaccinations::class => [null, null],]
+            [NcziVaccinations::class => [NcziVaccinations::calculateId($ncziFrom), NcziVaccinations::calculateId($ncziTo->sub(new DateInterval('P1D')))],]
         );
         $this->persist(
             $this->izaClient->findAll(),

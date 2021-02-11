@@ -7,12 +7,14 @@ use App\Entity\Traits\Datetimeable;
 use App\Entity\Traits\Timestampable;
 use App\Entity\Vaccine;
 use DateTimeImmutable;
+use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
+ * @Auditable()
  */
 class PowerBiVaccinations
 {

@@ -10,3 +10,4 @@ dh_auditor:
             ignored_columns:
                 - 'createdAt'
                 - 'updatedAt'
+                - 'reportedAt'
