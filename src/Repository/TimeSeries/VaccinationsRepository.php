@@ -71,7 +71,7 @@ class VaccinationsRepository extends ServiceEntityRepository
                     ->setVaccine($_->getVaccine())
                     ->setPublishedOn($_->getPublishedOn())
                     ->setDose1Count($_->getDose1Count())
-                    ->setDose2Count($_->getDose1Count());
+                    ->setDose2Count($_->getDose2Count());
             };
         };
     }

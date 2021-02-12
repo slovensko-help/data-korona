@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\Content;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -100,9 +101,23 @@ class NcziProxyController extends AbstractController
 
     private function ncziResponse(string $url, Request $request): JsonResponse
     {
-        $body = 0 === $request->query->count() ? null : ['json' => $request->query->all(),];
-        $this->ncziProxyLogger->info(sprintf('[NCZI PROXY MISS] URL=%s, BODY=%s', $url, json_encode($body)));
-        return JsonResponse::fromJsonString($this->content->load($url, $body));
+        try {
+            $body = 0 === $request->query->count() ? null : ['json' => $request->query->all(),];
+            $this->ncziProxyLogger->info(sprintf('[NCZI PROXY MISS] URL=%s, BODY=%s', $url, json_encode($body)));
+            $content = $this->content->load($url, $body);
+
+            if (empty($content)) {
+                throw new TransportException('Empty content received from NCZI API.');
+            }
+
+            return JsonResponse::fromJsonString($this->content->load($url, $body));
+
+        } catch (TransportException $exception) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => [$exception->getMessage()],
+            ], Response::HTTP_NO_CONTENT);
+        }
     }
 
     private function requiredParameters(array $allowedParams): array

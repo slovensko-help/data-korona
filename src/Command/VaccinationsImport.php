@@ -5,8 +5,6 @@ namespace App\Command;
 use App\Client\Iza\VaccinationsClient as IzaVaccinationsClient;
 use App\Client\Nczi\VaccinationsClient as NcziVaccinationsClient;
 use App\Client\PowerBi\VaccinationsClient as PowerBiVaccinationsClient;
-use App\Entity\Aggregation\RegionVaccinations;
-use App\Entity\Aggregation\SlovakiaVaccinations;
 use App\Entity\Raw\IzaVaccinations;
 use App\Entity\Raw\NcziVaccinations;
 use App\Entity\Raw\PowerBiVaccinations;
