@@ -27,3 +27,8 @@ See https://symfony.com/blog/new-in-symfony-3-4-improved-the-overriding-of-templ
 {% block header %}
     {% include '_partials/header.html.twig' %}
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
