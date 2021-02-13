@@ -52,7 +52,7 @@ class Vaccine
         return $this->code;
     }
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
