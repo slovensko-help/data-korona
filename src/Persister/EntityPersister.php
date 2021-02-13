@@ -187,6 +187,8 @@ class EntityPersister
                 foreach ($rows as $rowIndex => $row) {
                     $this->entityTable[$rowIndex][$colIndex] = $this->persistedEntity($rowIndex, $colIndex, $entityConfig);
                 }
+
+                $this->entityManager->flush();
             }
 
             $this->deleteMissingEntities($entitiesConfig, $isFirstBatch ? static::FIRST_BATCH : 0);
