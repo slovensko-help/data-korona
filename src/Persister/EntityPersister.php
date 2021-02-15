@@ -37,7 +37,7 @@ class EntityPersister
         $this->propertyAccessor = $propertyAccessor;
     }
 
-    public function initializeEntitiesConfig(callable $entityUpdatersGenerator, ?array $deletionConfig = null): array
+    private function initializeEntitiesConfig(callable $entityUpdatersGenerator, ?array $deletionConfig = null): array
     {
         $parameters = (new ReflectionFunction($entityUpdatersGenerator))->getParameters();
 
@@ -194,13 +194,11 @@ class EntityPersister
             $this->deleteMissingEntities($entitiesConfig, $isFirstBatch ? static::FIRST_BATCH : 0);
             $isFirstBatch = false;
 
-            $this->entityManager->flush();
             $this->entityManager->clear();
         }
 
         $this->deleteMissingEntities($entitiesConfig, static::LAST_BATCH | ($isFirstBatch ? static::FIRST_BATCH : 0));
 
-        $this->entityManager->flush();
         $this->entityManager->clear();
 
         $this->closed = true;
@@ -245,6 +243,8 @@ class EntityPersister
                 }
             }
         }
+
+        $this->entityManager->flush();
     }
 
     private function hasMultipleEntitiesOfTheSameClass(string $entityClass, array $entitiesConfig)
