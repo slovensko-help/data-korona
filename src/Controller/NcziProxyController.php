@@ -18,45 +18,45 @@ class NcziProxyController extends AbstractController
             'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_vaccination_groups',
             'allowed_parameters' => [],
         ],
-        'get_driveins_vacc' => [
-            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_driveins_vacc',
-            'allowed_parameters' => [],
-        ],
-        'validate_drivein_times_vacc' => [
-            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/validate_drivein_times_vacc',
-            'allowed_parameters' => [
-                'drivein_id' => [
-                    'required' => true,
-                    'type' => 'int',
-                ],
-            ],
-        ],
         'get_all_drivein_times_vacc' => [
             'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_all_drivein_times_vacc',
             'allowed_parameters' => [],
-        ],
-        // ag tests
-        'mom_ag.json' => [
-            'origin_url' => 'https://www.old.korona.gov.sk/mom_ag.json',
-            'allowed_parameters' => [],
-        ],
-        'validate_drivein_times' => [
-            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/validate_drivein_times',
-            'allowed_parameters' => [
-                'drivein_id' => [
-                    'required' => true,
-                    'type' => 'int',
-                ],
-            ],
         ],
         'get_all_drivein_times' => [
             'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_all_drivein_times',
             'allowed_parameters' => [],
         ],
-        'get_driveins' => [
-            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_driveins',
-            'allowed_parameters' => [],
-        ],
+//        'get_driveins_vacc' => [
+//            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_driveins_vacc',
+//            'allowed_parameters' => [],
+//        ],
+//        'validate_drivein_times_vacc' => [
+//            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/validate_drivein_times_vacc',
+//            'allowed_parameters' => [
+//                'drivein_id' => [
+//                    'required' => true,
+//                    'type' => 'int',
+//                ],
+//            ],
+//        ],
+        // ag tests
+//        'mom_ag.json' => [
+//            'origin_url' => 'https://www.old.korona.gov.sk/mom_ag.json',
+//            'allowed_parameters' => [],
+//        ],
+//        'validate_drivein_times' => [
+//            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/validate_drivein_times',
+//            'allowed_parameters' => [
+//                'drivein_id' => [
+//                    'required' => true,
+//                    'type' => 'int',
+//                ],
+//            ],
+//        ],
+//        'get_driveins' => [
+//            'origin_url' => 'https://mojeezdravie.nczisk.sk/api/v1/web/get_driveins',
+//            'allowed_parameters' => [],
+//        ],
     ];
 
     private $content;
