@@ -15,6 +15,7 @@ use League\Csv\Statement;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Mailer\MailerInterface;
 
 abstract class AbstractImport extends Command
@@ -25,6 +26,7 @@ abstract class AbstractImport extends Command
 
     protected $mailer;
     protected $persisterFactory;
+    protected $parameters;
 
     public function __construct(
         EntityManagerInterface $managerRegistry,
@@ -32,6 +34,7 @@ abstract class AbstractImport extends Command
         MailerInterface $mailer,
         Content $content,
         EntityPersisterFactory $persisterFactory,
+        ParameterBagInterface $parameters,
 
         string $name = null
     )
@@ -44,6 +47,7 @@ abstract class AbstractImport extends Command
         $this->persisterFactory = $persisterFactory;
 
         $this->mailer = $mailer;
+        $this->parameters = $parameters;
     }
 
     protected function disableDoctrineLogger()

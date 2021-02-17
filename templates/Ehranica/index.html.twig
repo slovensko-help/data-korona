@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+{% block title %}ehranica{% endblock %}
+{% block body %}
+    <div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>
+                Úspešnosť registrácií cez formulár ehranica
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table table-striped table-hover table-sm mt-3">
+                    <thead>
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th class="table-cell-left-column">
+                            Akceptované
+                        </th>
+                        <th class="table-cell-left-column" colspan="2">
+                            Odmietnuté
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            Deň
+                        </th>
+                        <th class="table-cell-left-column">
+                            Počet
+                        </th>
+                        <th class="table-cell-left-column">
+                            Počet
+                        </th>
+                        <th>
+                            Podiel
+                        </th>
+                    </tr>
+                    </thead>
+                    {% for day in days %}
+                        <tr>
+                            <td>{{ day.day }}</td>
+                            <td class="table-cell-left-column">{{ day.success_count }}</td>
+                            <td class="table-cell-left-column">{{ day.fail_count }}</td>
+                            <td>{{ (day.fail_count / (day.success_count + day.fail_count) * 100)|round(2) }}%</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col">
+                <table class="table table-striped table-hover table-sm mt-3">
+                    <thead>
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th class="table-cell-left-column">
+                            Akceptované
+                        </th>
+                        <th class="table-cell-left-column" colspan="2">
+                            Odmietnuté
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            Týždeň
+                        </th>
+                        <th class="table-cell-left-column">
+                            Počet
+                        </th>
+                        <th class="table-cell-left-column">
+                            Počet
+                        </th>
+                        <th>
+                            Podiel
+                        </th>
+                    </tr>
+                    </thead>
+                    {% for week in weeks %}
+                        <tr>
+                            <td>{{ week.week }}</td>
+                            <td class="table-cell-left-column">{{ week.success_count }}</td>
+                            <td class="table-cell-left-column">{{ week.fail_count }}</td>
+                            <td>{{ (week.fail_count / (week.success_count + week.fail_count) * 100)|round(2) }}%</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            {# <div style="position: relative;"> #}
+            {# <canvas id="success-rate-chart" width="100" height="33"></canvas> #}
+            {# </div> #}
+        </div>
+    </div>
+{% endblock %}

@@ -10,6 +10,7 @@ parameters:
   korona_email_user: '%env(resolve:KORONA_EMAIL_USER)%'
   korona_email_password: '%env(resolve:KORONA_EMAIL_PASSWORD)%'
   korona_email_valid_senders: '%env(resolve:KORONA_EMAIL_VALID_SENDERS)%'
+  ehranica-log-files-glob: '%env(resolve:EHRANICA_LOG_FILES_GLOB)%'
 
 services:
   # default configuration for services in *this* file
