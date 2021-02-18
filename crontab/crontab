@@ -20,6 +20,8 @@
 PHP="php"
 DOCROOT=""
 
+* * * * * $PHP $DOCROOT/bin/console app:import:ehranica --no-debug >/dev/null 2>&1
+
 13 * * * * $PHP $DOCROOT/bin/console app:import:hospitals --no-debug >/dev/null 2>&1
 
 * 9 * * * $PHP $DOCROOT/bin/console app:import:nczi-morning-email --no-debug >/dev/null 2>&1
