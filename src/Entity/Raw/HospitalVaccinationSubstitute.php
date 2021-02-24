@@ -16,9 +16,12 @@ class HospitalVaccinationSubstitute
     use Timestampable;
 
     /**
+     * Interné id záznamu
+     *
      * @ORM\Id
-     * @ORM\Column(type="string", options={"charset"="ascii"})
-     * @var string|null
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     * @var int|null
      */
     private $id = null;
 
@@ -32,17 +35,7 @@ class HospitalVaccinationSubstitute
     private $hospital;
 
     /**
-     * @ORM\Column(type="string")
-     */
-    private $regionName;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $cityName;
-
-    /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     private $hospitalName;
 
@@ -66,12 +59,28 @@ class HospitalVaccinationSubstitute
      */
     private $email;
 
-    public function getId(): ?string
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isAcceptingNewRegistrations = true;
+
+    public function isAcceptingNewRegistrations(): bool
+    {
+        return $this->isAcceptingNewRegistrations;
+    }
+
+    public function setIsAcceptingNewRegistrations(bool $isAcceptingNewRegistrations): self
+    {
+        $this->isAcceptingNewRegistrations = $isAcceptingNewRegistrations;
+        return $this;
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(?string $id): self
+    public function setId(?int $id): self
     {
         $this->id = $id;
         return $this;
@@ -88,34 +97,12 @@ class HospitalVaccinationSubstitute
         return $this;
     }
 
-    public function getRegionName(): string
-    {
-        return $this->regionName;
-    }
-
-    public function setRegionName(string $regionName): self
-    {
-        $this->regionName = $regionName;
-        return $this;
-    }
-
-    public function getCityName(): string
-    {
-        return $this->cityName;
-    }
-
-    public function setCityName(string $cityName): self
-    {
-        $this->cityName = $cityName;
-        return $this;
-    }
-
-    public function getHospitalName(): string
+    public function getHospitalName(): ?string
     {
         return $this->hospitalName;
     }
 
-    public function setHospitalName(string $hospitalName): self
+    public function setHospitalName(?string $hospitalName): self
     {
         $this->hospitalName = $hospitalName;
         return $this;

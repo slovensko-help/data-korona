@@ -71,6 +71,7 @@ class VaccinationSubstitutesImport extends AbstractImport
                     }
                     return $vaccinationContact
                         ->setId($_->getHospital()->getId())
+                        ->setIsAcceptingNewRegistrations($_->isAcceptingNewRegistrations())
                         ->setHospital($_->getHospital())
                         ->setSubstitutesEmails($_->getEmail())
                         ->setSubstitutesPhones($_->getPhones())

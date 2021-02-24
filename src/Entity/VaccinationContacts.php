@@ -60,6 +60,22 @@ class VaccinationContacts
      */
     private $substitutesNote;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isAcceptingNewRegistrations = true;
+
+    public function isAcceptingNewRegistrations(): bool
+    {
+        return $this->isAcceptingNewRegistrations;
+    }
+
+    public function setIsAcceptingNewRegistrations(bool $isAcceptingNewRegistrations): self
+    {
+        $this->isAcceptingNewRegistrations = $isAcceptingNewRegistrations;
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

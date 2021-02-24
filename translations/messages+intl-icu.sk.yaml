@@ -57,5 +57,14 @@ audit:
     last: Last
     next: Next
     current: Current
+HospitalVaccinationSubstitute: Kontakty poskytovateľa zdravotnej starostlivosti
+hospital: Poskytovateľ zdravotnej starostlivosti
+substitutesPhones: Telefónne čísla na registráciu náhradníkov
+substitutesEmail: Email na registráciu náhradníkov
+substitutesLink: Url s informáciami pre náhradníkov
+substitutesNote: Verejná poznámka
+hospitalName: Interný názov PZS
+isAcceptingNewRegistrations: Akceptuje registrácie?
+password_help: Ak nezadáte žiadne heslo, tak zostane zachované pôvodné
 
 

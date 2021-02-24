@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Raw\HospitalVaccinationSubstitute;
 use App\Entity\Raw\NcziMorningEmail;
+use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -36,7 +37,7 @@ class DashboardController extends AbstractDashboardController
                 ->build([
                     'menuIndex' => 0
                 ])
-                ->setController(NcziMorningEmailCrudController::class)
+                ->setController($this->isGranted('ROLE_ADMIN') ? NcziMorningEmailCrudController::class : HospitalVaccinationSubstituteCrudController::class)
                 ->generateUrl()
         );
     }
@@ -50,8 +51,12 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
 //        yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
-        yield MenuItem::linkToCrud('Ranné emaily z NCZI', 'fa fa-home', NcziMorningEmail::class);
-        yield MenuItem::linkToCrud('Náhradníci', 'fa fa-home', HospitalVaccinationSubstitute::class);
+        yield MenuItem::linkToCrud('Ranné emaily z NCZI', 'fa fa-home', NcziMorningEmail::class)
+            ->setPermission('ROLE_ADMIN');
+        yield MenuItem::linkToCrud('Náhradníci', 'fa fa-edit', HospitalVaccinationSubstitute::class)
+            ->setPermission('ROLE_SUBSTITUTES_EDITOR');
+        yield MenuItem::linkToCrud('Administrátori', 'fa fa-user', User::class)
+            ->setPermission('ROLE_ADMIN');
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }
 }
