@@ -90,4 +90,9 @@ class Vaccine
         $this->manufacturer = $manufacturer;
         return $this;
     }
+
+    public function __toString()
+    {
+        return (string) $this->code;
+    }
 }

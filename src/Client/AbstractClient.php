@@ -93,11 +93,7 @@ abstract class AbstractClient
 
     protected function fixedHospitalCode(string $code, string $name): string
     {
-        if ('P99999999999' !== $code) {
-            return $code;
-        }
-
-        return $code . '_' . substr(sha1($name), 0, 8);
+        return substr(sha1($name), 0, 16);
     }
 
     /**

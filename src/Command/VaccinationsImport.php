@@ -49,7 +49,7 @@ class VaccinationsImport extends AbstractImport
         if ($input->getOption('debug-powerbi')) {
             $rows = [];
 
-            foreach ($this->powerBiClient->findAllByRegionAndVaccine() as $row) {
+            foreach ($this->powerBiClient->debug() as $row) {
                 $row[0] = date('Y-m-d', $row[0] / 1000);
                 $rows[] = $row;
             }
@@ -60,21 +60,26 @@ class VaccinationsImport extends AbstractImport
             return self::SUCCESS;
         }
 
-        $output->writeln($this->log('Updating powerBi/NCZI/IZA vaccinactions.'));
+        $output->writeln($this->log('Updating powerBi vaccinactions.'));
         $this->persist(
             $this->powerBiClient->findAllByRegionAndVaccine(),
             $this->powerBiClient->entitiesByRegionAndVaccine(),
             [PowerBiVaccinations::class => [null, null],]
         );
+        $output->writeln($this->log('DONE.'));
 
         $ncziFrom = (new DateTimeImmutable('-40 days', new DateTimeZone('Europe/Bratislava')))->setTime(0, 0);
         $ncziTo = (new DateTimeImmutable('tomorrow', new DateTimeZone('Europe/Bratislava')))->setTime(0, 0);
 
+        $output->writeln($this->log('Updating NCZI vaccinactions.'));
         $this->persist(
             $this->ncziClient->findAll($ncziFrom, $ncziTo),
             $this->ncziClient->entities(),
             [NcziVaccinations::class => [NcziVaccinations::calculateId($ncziFrom), NcziVaccinations::calculateId($ncziTo->sub(new DateInterval('P1D')))],]
         );
+        $output->writeln($this->log('DONE.'));
+
+        $output->writeln($this->log('Updating IZA vaccinactions.'));
         $this->persist(
             $this->izaClient->findAll(),
             $this->izaClient->entities(),

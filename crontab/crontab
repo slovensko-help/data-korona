@@ -20,6 +20,8 @@
 PHP="php"
 DOCROOT=""
 
+*/5 * * * * $PHP $DOCROOT/bin/console app:import:vaccination-substitutes --no-debug >/dev/null 2>&1
+
 * * * * * $PHP $DOCROOT/bin/console app:import:ehranica --no-debug >/dev/null 2>&1
 
 13 * * * * $PHP $DOCROOT/bin/console app:import:hospitals --no-debug >/dev/null 2>&1

@@ -65,6 +65,11 @@ class VaccinationsRepository extends ServiceEntityRepository
                 if (null === $slovakiaVaccinations) {
                     return null;
                 }
+                $uow = $this->getEntityManager()->getUnitOfWork();
+                if ($uow->getEntityState($_) !== 1) {
+                    dump([$_, $uow->getEntityState($_->getVaccine()), $uow->getEntityState($_->getRegion())]);
+                    die;
+                }
                 return $vaccinations
                     ->setId($_->getCode())
                     ->setRegion($_->getRegion())

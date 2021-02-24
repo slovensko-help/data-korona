@@ -98,4 +98,9 @@ class Hospital
         $this->city = $city;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->title;
+    }
 }

@@ -33,6 +33,22 @@ class VaccinationsClient extends AbstractClient
         );
     }
 
+    public function debug(): Generator
+    {
+        yield from $this->all($this->createQueryBuilder()
+            ->selectColumn('Umrtia', 'DATUM_ZAR')
+            ->selectColumn('Umrtia', 'POC_VYLIECENI', PowerBiQueryBuilder::AGGREGATION_SUM)
+            ->selectColumn('Umrtia', 'POC_NEAKTIVNI', PowerBiQueryBuilder::AGGREGATION_SUM)
+            ->selectColumn('Umrtia', 'POC_AKTIVNI', PowerBiQueryBuilder::AGGREGATION_SUM)
+//            ->selectColumn('COVID-19 Vakciny', 'ZASOBY_APLIKOVANE_1', PowerBiQueryBuilder::AGGREGATION_SUM)
+//            ->selectColumn('COVID-19 Vakciny', 'ZASOBY_APLIKOVANE_2', PowerBiQueryBuilder::AGGREGATION_SUM)
+//            ->selectColumn('COVID-19 Vakciny', 'VAKC_VYROBCA_POPIS')
+//            ->selectColumn('COVID-19 Vakciny', 'VAKC_POPIS')
+//            ->selectColumn('COVID-19 Vakciny', 'SIDZAR_KRAJ_KOD_ST', PowerBiQueryBuilder::AGGREGATION_COUNT),
+            , new DatePaginationHint('Umrtia', 'DATUM_ZAR', DateTimeImmutable::createFromFormat('Y-m-d', self::REPORT_BEGINNING), 60)
+        );
+    }
+
     public function entitiesByRegionAndVaccine(): callable
     {
         return function (array $_) {

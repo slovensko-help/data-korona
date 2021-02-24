@@ -1,0 +1,568 @@
+[
+  {
+    "name": "Banskobystrický kraj",
+    "id": "bb",
+    "places": [
+      {
+        "city": "Banská Bystrica",
+        "name": "Fakultná nemocnica s poliklinikou F. D. Roosevelta Banská Bystrica",
+        "link": "https://www.fnspfdr.sk/covid-19/ockovanie/",
+        "phone": [
+          "0907818063"
+        ],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Veľký Krtíš",
+        "name": "Všeobecná nemocnica s poliklinikou, n. o. - Veľký Krtíš",
+        "link": "http://www.nspvk.sk/?ockovanie-covid-19%2C128=",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Rimavská Sobota",
+        "name": "Svet zdravia, a.s., Všeobecná nemocnica Rimavská Sobota",
+        "link": "https://www.procare.sk/nemocnica/vseobecna-nemocnica-rimavska-sobota/",
+        "phone": [
+          "0918969985"
+        ],
+        "email": "nahradnik.rs@svetzdravia.com",
+        "note": "v čase: 9:00-12:00, 12:45-15:30"
+      },
+      {
+        "city": "Brezno",
+        "name": "Nemocnica s poliklinikou n.o. Brezno",
+        "link": "https://www.nspbr.sk/web/zoznam-nahradnikov-na-ockovanie-a-dalsie-informacie/",
+        "phone": [
+          "048/2820110"
+        ],
+        "email": "srnkova@nspbr.sk",
+        "note": "v čase: 8:00-14:00"
+      },
+      {
+        "city": "Zvolen",
+        "name": "Nemocnica AGEL Zvolen a.s.",
+        "link": null,
+        "phone": [
+          "0907852979"
+        ],
+        "email": "marcela.majerova@nzv.agel.sk",
+        "note": null
+      },
+      {
+        "city": "Zvolen",
+        "name": "Poliklinika ProCare Zvolen",
+        "link": "https://www.procare.sk/poliklinika/procare-zvolen/",
+        "phone": [
+          "0903168965"
+        ],
+        "email": "nahradnik.zv@procare.sk",
+        "note": "v čase: 12:00-15:00"
+      }
+    ]
+  },
+  {
+    "name": "Bratislavský kraj",
+    "id": "ba",
+    "places": [
+      {
+        "city": "Bratislava",
+        "name": "Univerzitná nemocnica BA",
+        "link": "https://sites.google.com/view/unb-ockovanie/",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Malacky",
+        "name": "Nemocnica Malacky",
+        "link": "http://www.nemocnicamalacky.sk/pre-pacientov/aktuality/1340/pozastavujeme-registraciu-nahradnikov-na-ockovanie-proti-covid-19",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Bratislava",
+        "name": "CINRE",
+        "link": null,
+        "phone": [
+          "02/32302087"
+        ],
+        "email": "peter.michalka@cinre.sk",
+        "note": "v čase: 14:30-16:00"
+      },
+      {
+        "city": "Bratislava",
+        "name": "Poliklinika Mýtna",
+        "link": "http://www.poliklinikamytna.sk/#comp-kf3n6z0d",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Bratislava",
+        "name": "Univerzitná nemocnica s poliklinikou Milosrdní bratia, spol. s r.o.",
+        "link": "https://www.milosrdni.eu/site/bratislava/home/article/2233.html",
+        "phone": [
+          "0910277690"
+        ],
+        "email": null,
+        "note": null
+      }
+    ]
+  },
+  {
+    "name": "Košický kraj",
+    "id": "ke",
+    "places": [
+      {
+        "city": "Kráľovský Chlmec",
+        "name": "Nemocnica Kraľovský Chlmec",
+        "link": "https://www.nspkch.sk/aktuality/zoznam-nahradnikov-na-ockovanie-aktualizovane",
+        "phone": [
+          "056/6866343"
+        ],
+        "email": "maria.sackova@nspkch.sk",
+        "note": "v čase: 13:00-15:00"
+      },
+      {
+        "city": "Topoľčany",
+        "name": "Svet zdravia Nemocnica Topoľčany, a.s.",
+        "link": "https://www.procare.sk/nemocnica/svet-zdravia-nemocnica-topolcany-s/",
+        "phone": [
+          "0901795040"
+        ],
+        "email": null,
+        "note": "v čase: 8:00-15:00"
+      },
+      {
+        "city": "Trebišov",
+        "name": "Nemocnica s poliklinikou Trebišov, a.s.",
+        "link": "https://www.procare.sk/nemocnica/nemocnica-s-poliklinikou-trebisov-s/",
+        "phone": [
+          "0905803122"
+        ],
+        "email": "nahradnik.tv@svetzdravia.com",
+        "note": "v čase: 8:00-12:00-13:00-15:00  "
+      },
+      {
+        "city": "Košice",
+        "name": "Železničné zdravotníctvo Košice, s.r.o.",
+        "link": "https://www.procare.sk/zzke-nahradnici-na-vakcinaciu/",
+        "phone": [],
+        "email": "nahradnik.ke@svetzdravia.com",
+        "note": null
+      },
+      {
+        "city": "Rožňava",
+        "name": "Svet zdravia, Nemocnica s poliklinikou sv. Barbory Rožňava, a.s.",
+        "link": null,
+        "phone": [
+          "058/7771125"
+        ],
+        "email": "recepcia.rv@svetzdravia.com",
+        "note": "v čase: 12:30-15:30"
+      },
+      {
+        "city": "Košice",
+        "name": "Univerzitná nemocnica L.Pasteura Košice - stredisko Rastislavova",
+        "link": null,
+        "phone": [],
+        "email": "vakcinacne.nahradnik@unlp.sk",
+        "note": null
+      },
+      {
+        "city": "Michalovce",
+        "name": "Svet zdravia, a.s., Nemocnica s poliklinikou Štefana Kukuru Michalovce, a.s.",
+        "link": "https://www.procare.sk/nemocnica/nemocnica-s-poliklinikou-stefana-kukuru-michalovce-s/",
+        "phone": [
+          "056/6416702"
+        ],
+        "email": null,
+        "note": "v čase: 8:00-15:00"
+      },
+      {
+        "city": "Gelnica",
+        "name": "PRO VITAE n.o. Gelnica",
+        "link": "https://docs.google.com/forms/d/e/1FAIpQLSdDZNTn8wjFqHYw-_sYwq1Z0E148eTuHIecGBcUZb57grcLeg/viewform",
+        "phone": [],
+        "email": null,
+        "note": null
+      }
+    ]
+  },
+  {
+    "name": "Nitriansky kraj",
+    "id": "nr",
+    "places": [
+      {
+        "city": "Nitra",
+        "name": "Fakultná nemocnica Nitra",
+        "link": "https://fnnitra.sk/ockovanie-nahradnici/",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Komárno",
+        "name": "Nemocnica AGEL Komárno s.r.o.",
+        "link": "https://nemocnicakomarno.agel.sk/index.html",
+        "phone": [],
+        "email": "sekretariat@nko.agel.sk",
+        "note": null
+      },
+      {
+        "city": "Levice",
+        "name": "Nemocnica AGEL Levice s.r.o.",
+        "link": "https://nemocnicalevice.agel.sk/index.html",
+        "phone": [
+          "0910386081"
+        ],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Zlaté Moravce",
+        "name": "Nemocnica AGEL Zlaté Moravce a.s.",
+        "link": null,
+        "phone": [
+          "0910491438",
+          "037/6905217"
+        ],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Nové Zámky",
+        "name": "Fakultná nemocnica s poliklinikou Nové Zámky",
+        "link": "https://www.nspnz.sk/ockovanie-send.php",
+        "phone": [
+          "0907813594"
+        ],
+        "email": null,
+        "note": "v čase: 12:00-14:00"
+      }
+    ]
+  },
+  {
+    "name": "Prešovský kraj",
+    "id": "po",
+    "places": [
+      {
+        "city": "Vranov nad Topľou",
+        "name": "Vranovská nemocnica, a.s.",
+        "link": "https://www.procare.sk/nemocnica/vranovska-nemocnica-s/",
+        "phone": [
+          "0918931962"
+        ],
+        "email": "katarina.sojkova@svetzdravia.com",
+        "note": "v čase: 8:00-15:00"
+      },
+      {
+        "city": "Stará Ľubovňa",
+        "name": "Ľubovnianska nemocnica, n.o",
+        "link": "https://lubovnianskanemocnica.sk/ockovanie-covid-19/",
+        "phone": [
+          "052/4317111"
+        ],
+        "email": null,
+        "note": "v čase: 7:00-15:00"
+      },
+      {
+        "city": "Svidník",
+        "name": "Nemocnica arm. generála L. Svobodu Svidník, a.s.",
+        "link": null,
+        "phone": [
+          "0907260147"
+        ],
+        "email": "nahradnik.sk@svetzdravia.com",
+        "note": "v čase: 8:00-15:00"
+      },
+      {
+        "city": "Spišská Nová Ves",
+        "name": "Nemocnica s poliklinikou Spišská Nová Ves, a.s.",
+        "link": "https://www.procare.sk/nemocnica/nemocnica-s-poliklinikou-spisska-nova-ves-s/",
+        "phone": [
+          "053/4199115"
+        ],
+        "email": null,
+        "note": "v čase: 7:15-12:0,13:00-15:00"
+      },
+      {
+        "city": "Žiar nad Hronom",
+        "name": "Svet zdravia, a.s., Všeobecná nemocnica Žiar nad Hronom",
+        "link": null,
+        "phone": [
+          "045/6709103"
+        ],
+        "email": "vlasta.mlatecova@svetzdravia.com",
+        "note": "v čase: 9:30-12:30"
+      },
+      {
+        "city": "Snina",
+        "name": "Nemocnica Snina,s.r.o.",
+        "link": "https://www.nemocnicasnina.sk/sk/-span-class-red-ockovanie-covid-19-span-.html",
+        "phone": [
+          "057/7871229"
+        ],
+        "email": null,
+        "note": "v čase 8:00-14:00"
+      },
+      {
+        "city": "Bardejov",
+        "name": "NsP Sv. Jakuba, n.o., Bardejov (Nemocnica s poliklinikou sv. Jakuba, n.o.)",
+        "link": null,
+        "phone": [
+          "054/4788205"
+        ],
+        "email": "vakcinacnecentrum@nsp-bardejov.sk",
+        "note": null
+      },
+      {
+        "city": "Prešov",
+        "name": "Fakultná nemocnica s poliklinikou J.A. Reimana Prešov",
+        "link": "https://www.fnsppresov.sk/aktuality/zoznam-nahradnikov-naplneny/",
+        "phone": [
+          "051/7711275"
+        ],
+        "email": null,
+        "note": "v čase: 8:00-14:00"
+      },
+      {
+        "city": "Prešov",
+        "name": "ProCare Prešov",
+        "link": "https://www.procare.sk/pcpo-nahradnici-na-vakcinaciu/",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Humenné",
+        "name": "Svet zdravia, a.s - Nemocnica A. Leňa Humenné, a.s.",
+        "link": "https://www.procare.sk/nemocnica/nemocnica-lena-humenne-s/",
+        "phone": [
+          "0908389802"
+        ],
+        "email": "veronika.zuscakova@svetzdravia.com",
+        "note": "v čase: 8:00-12:00, 13:00-15:00"
+      },
+      {
+        "city": "Poprad",
+        "name": "Nemocnica Poprad, a.s.",
+        "link": "https://www.nemocnicapp.sk/?p=20540",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Sabinov",
+        "name": "Poliklinika Sabinov n.o.",
+        "link": "https://www.poliklinikasabinov.sk/oznam/35",
+        "phone": [],
+        "email": null,
+        "note": null
+      }
+    ]
+  },
+  {
+    "name": "Trnavský kraj",
+    "id": "tt",
+    "places": [
+      {
+        "city": "Trnava",
+        "name": "Fakultná nemocnica Trnava",
+        "link": "http://fntt.sk/nahradnici-na-ockovanie-proti-covid-19/",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Skalica",
+        "name": "Fakultná nemocnica s poliklinikou Skalica",
+        "link": null,
+        "phone": [],
+        "email": "sekretariat@nspskalica.sk",
+        "note": null
+      },
+      {
+        "city": "Piešťany",
+        "name": "Nemocnica Alexandra Wintera n.o. Piešťany",
+        "link": "https://nawpiestany.sk/ockovanie-nahradnici",
+        "phone": [
+          "0902119607"
+        ],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Galanta",
+        "name": "Nemocnica s poliklinikou Sv. Lukáša Galanta, a.s.",
+        "link": "https://www.procare.sk/nemocnica/nemocnica-poliklinikou-sv-lukasa-galanta-s/",
+        "phone": [
+          "0907961838"
+        ],
+        "email": "zuzana.lakner@svetzdravia.com",
+        "note": "v čase: 8:00-15:00"
+      },
+      {
+        "city": "Dunajská Streda",
+        "name": "Nemocnica s poliklinikou Dunajská Streda, a.s.",
+        "link": "https://www.procare.sk/nemocnica/nemocnica-s-poliklinikou-dunajska-streda-s/",
+        "phone": [
+          "0908347003"
+        ],
+        "email": null,
+        "note": "v čase: 8:00-15:00"
+      }
+    ]
+  },
+  {
+    "name": "Trenčiansky kraj",
+    "id": "tn",
+    "places": [
+      {
+        "city": "Bánovce nad Bebravou",
+        "name": "AGEL Bánovce s.r.o.",
+        "link": null,
+        "phone": [
+          "0903491501"
+        ],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Myjava",
+        "name": "NsP Myjava",
+        "link": null,
+        "phone": [
+          "0908651808"
+        ],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Partizánske",
+        "name": "Nemocnica na okraji mesta, n.o.",
+        "link": "https://www.fntn.sk/index.php/sk/aktuality-uvod/docasne-pozastavenie-prihlasovanie-sa-do-zoznamu-nahradnikov",
+        "phone": [
+          "038/7473120"
+        ],
+        "email": "nahradnik.pe@svetzdravia.com",
+        "note": "v čase: 8:00-12:00, 13:00-14:00"
+      },
+      {
+        "city": "Bojnice",
+        "name": "Nemocnica s poliklinikou Prievidza so sidlom v Bojniciach",
+        "link": null,
+        "phone": [
+          "0905325482"
+        ],
+        "email": "adriana.masiarova@hospital-bojnice.sk",
+        "note": null
+      },
+      {
+        "city": "Trenčín",
+        "name": "Fakultná nemocnica Trenčín",
+        "link": "https://www.fntn.sk/index.php/sk/aktuality-uvod/docasne-pozastavenie-prihlasovanie-sa-do-zoznamu-nahradnikov",
+        "phone": [
+          "032/6566251",
+          "0949008282"
+        ],
+        "email": "ockovanie@fntn.sk",
+        "note": null
+      }
+    ]
+  },
+  {
+    "name": "Žilinský kraj",
+    "id": "za",
+    "places": [
+      {
+        "city": "Žilina",
+        "name": "Fakultná nemocnica s poliklinikou Žilina",
+        "link": "https://www.fnspza.sk/sk/aktualne/vakcinacne-centrum-fnsp-zilina",
+        "phone": [
+          "041/5110499"
+        ],
+        "email": null,
+        "note": "v čase: 7:00-12:00-12:30-15:00"
+      },
+      {
+        "city": "Martin",
+        "name": "Univerzitná nemocnica Martin",
+        "link": "https://www.unm.sk/zoznamy-nahradnikov-na-ockovanie",
+        "phone": [
+          "0908394100"
+        ],
+        "email": null,
+        "note": "v čase: 13:00-14:30"
+      },
+      {
+        "city": "Ružomberok",
+        "name": "Ústredná vojenská nemocnica SNP Ružomberok FN",
+        "link": null,
+        "phone": [
+          "044/4382048"
+        ],
+        "email": null,
+        "note": "v čase: 13:00 - 15:00"
+      },
+      {
+        "city": "Liptovský Mikuláš",
+        "name": "LNsP Liptovský Mikuláš",
+        "link": "http://nemocnica2.skyweb.sk/nahradnici-ockovanie-covid-19/",
+        "phone": [
+          "044/5563242"
+        ],
+        "email": null,
+        "note": "v čase: 13:00-14:30"
+      },
+      {
+        "city": "Čadca",
+        "name": "Kysucká nemocnica s poliklinikou Čadca",
+        "link": null,
+        "phone": [
+          "041/4604127"
+        ],
+        "email": null,
+        "note": "v čase 13:30 - 14:00"
+      },
+      {
+        "city": "Považská Bystrica",
+        "name": "Nemocnica s poliklinikou Považská Bystrica",
+        "link": "http://www.nemocnicapb.sk/aktuality/oznam-15.html?page_id=6647",
+        "phone": [],
+        "email": "vakcinacia2@nemocnicapb.sk",
+        "note": null
+      },
+      {
+        "city": "Trstená",
+        "name": "Hornooravská nemocnica s poliklinikou Trstená",
+        "link": null,
+        "phone": [
+          "043/5307404"
+        ],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Žilina",
+        "name": "Žilpo sro., Žilina",
+        "link": "https://www.zilpo.sk/vakcinacne-centrum-zilpo-spol-s-r-o-zilina/",
+        "phone": [],
+        "email": null,
+        "note": null
+      },
+      {
+        "city": "Dolný Kubín",
+        "name": "Dolnooravská nemocnica s poliklinikou L.N. Jégeho Dolný Kubín",
+        "link": "http://www.donsp.sk/donsp/?page_id=5240",
+        "phone": [],
+        "email": null,
+        "note": null
+      }
+    ]
+  }
+]

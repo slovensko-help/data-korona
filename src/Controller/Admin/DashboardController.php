@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Raw\HospitalVaccinationSubstitute;
 use App\Entity\Raw\NcziMorningEmail;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -50,6 +51,7 @@ class DashboardController extends AbstractDashboardController
     {
 //        yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToCrud('Ranné emaily z NCZI', 'fa fa-home', NcziMorningEmail::class);
+        yield MenuItem::linkToCrud('Náhradníci', 'fa fa-home', HospitalVaccinationSubstitute::class);
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }
 }

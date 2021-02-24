@@ -23,7 +23,7 @@ class Region
     private $id = null;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true, length=50)
      *
      * @var string
      */
