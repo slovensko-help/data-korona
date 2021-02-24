@@ -6,6 +6,8 @@ use App\Entity\Hospital;
 use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use OpenApi\Annotations\Items;
+use OpenApi\Annotations\Property;
 
 /**
  * @ORM\Entity()
@@ -45,11 +47,15 @@ class VaccinationContacts
     private $substitutesEmails;
 
     /**
+     * Webstránka s informáciami pre registráciu náhradníkov na očkovanie
+     *
      * @ORM\Column(type="string", nullable=true)
      */
     private $substitutesLink;
 
     /**
+     * Dôležitá poznámka pre registráciu náhradníkov na očkovanie
+     *
      * @ORM\Column(type="text", nullable=true)
      */
     private $substitutesNote;
@@ -92,7 +98,7 @@ class VaccinationContacts
      *
      * @Serializer\SerializedName("substitutes_phones")
      * @Serializer\VirtualProperty()
-     * @Serializer\Type("array")
+     * @Property(property="substitutes_phones", type="array", @Items(type="string"))
      */
     public function getSubstitutesPhonesArray(): array
     {
@@ -115,7 +121,7 @@ class VaccinationContacts
      *
      * @Serializer\SerializedName("substitutes_emails")
      * @Serializer\VirtualProperty()
-     * @Serializer\Type("array")
+     * @Property(property="substitutes_emails", type="array", @Items(type="string"))
      */
     public function getSubstitutesEmailsArray(): array
     {

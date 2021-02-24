@@ -202,6 +202,8 @@ class VaccinationsController extends AbstractController
     }
 
     /**
+     * Kontaktné údaje na vakcinačné miesta
+     *
      * @OA\Parameter(name="offset", in="query", description="Stránkovanie po 1000 (v deme 20) záznamov na stránku.")
      * @OA\Parameter(name="updated_since", in="query", description="Vráti len záznamy aktualizované po tomto čase. Príklad: 2021-01-13 12:34:56")
      *
