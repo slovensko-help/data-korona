@@ -25,42 +25,42 @@ class VaccinationSubstitutesImport extends AbstractImport
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln($this->log('Reading hospitals CSV file...'));
-        $csvContent = $this->content->load(self::CSV_FILE);
-        $output->writeln($this->log('DONE.'));
-
-        $output->writeln($this->log('Reading substitutes JSON file...'));
-        $jsonContent = $this->content->load(self::JSON_FILE);
-        $output->writeln($this->log('DONE.'));
-
-        $output->writeln($this->log('Updating vaccination hospitals ...'));
-        $this->persist($this->csvRecords($csvContent),
-            function (array $_) {
-                yield 'code' => $this->region($_);
-                yield 'code' => $this->district($_);
-                yield 'code' => $this->city($_);
-                yield 'code' => $this->hospital($_);
-            }
-        );
-        $output->writeln($this->log('DONE.'));
-
-        $output->writeln($this->log('Updating raw vaccination substitutes...'));
-        $this->persist($this->items($jsonContent),
-            function (array $_) {
-                yield 'id' => function (HospitalVaccinationSubstitute $vaccinationSubstituteHospital) use ($_) {
-                    return $vaccinationSubstituteHospital
-                        ->setId($this->vaccinationSubstituteHospitalId($_['name']))
-                        ->setRegionName($_['region'])
-                        ->setCityName($_['city'])
-                        ->setHospitalName($_['name'])
-                        ->setLink($_['link'])
-                        ->setEmail($_['email'])
-                        ->setPhones(empty($_['phone']) ? null : implode("\n", $_['phone']))
-                        ->setNote($_['note']);
-                };
-            }
-        );
-        $output->writeln($this->log('DONE.'));
+//        $output->writeln($this->log('Reading hospitals CSV file...'));
+//        $csvContent = $this->content->load(self::CSV_FILE);
+//        $output->writeln($this->log('DONE.'));
+//
+//        $output->writeln($this->log('Reading substitutes JSON file...'));
+//        $jsonContent = $this->content->load(self::JSON_FILE);
+//        $output->writeln($this->log('DONE.'));
+//
+//        $output->writeln($this->log('Updating vaccination hospitals ...'));
+//        $this->persist($this->csvRecords($csvContent),
+//            function (array $_) {
+//                yield 'code' => $this->region($_);
+//                yield 'code' => $this->district($_);
+//                yield 'code' => $this->city($_);
+//                yield 'code' => $this->hospital($_);
+//            }
+//        );
+//        $output->writeln($this->log('DONE.'));
+//
+//        $output->writeln($this->log('Updating raw vaccination substitutes...'));
+//        $this->persist($this->items($jsonContent),
+//            function (array $_) {
+//                yield 'id' => function (HospitalVaccinationSubstitute $vaccinationSubstituteHospital) use ($_) {
+//                    return $vaccinationSubstituteHospital
+//                        ->setId($this->vaccinationSubstituteHospitalId($_['name']))
+//                        ->setRegionName($_['region'])
+//                        ->setCityName($_['city'])
+//                        ->setHospitalName($_['name'])
+//                        ->setLink($_['link'])
+//                        ->setEmail($_['email'])
+//                        ->setPhones(empty($_['phone']) ? null : implode("\n", $_['phone']))
+//                        ->setNote($_['note']);
+//                };
+//            }
+//        );
+//        $output->writeln($this->log('DONE.'));
 
         $output->writeln($this->log('Updating vaccination substitutes...'));
         $this->persist($this->entityManager->getRepository(HospitalVaccinationSubstitute::class)->findAll(),
