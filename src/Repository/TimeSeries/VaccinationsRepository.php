@@ -8,6 +8,7 @@ use App\Entity\Aggregation\SlovakiaVaccinations;
 use App\Entity\Raw\PowerBiVaccinations;
 use App\Entity\Region;
 use App\Entity\TimeSeries\Vaccinations;
+use App\Entity\Vaccine;
 use App\Repository\ServiceEntityRepository;
 use App\Service\Vaccination;
 use App\Tool\DateTime;
@@ -61,19 +62,25 @@ class VaccinationsRepository extends ServiceEntityRepository
                     ->setId($_->getPublishedOn()->format('Ymd'));
             };
 
-            yield 'id' => function (Vaccinations $vaccinations, ?SlovakiaVaccinations $slovakiaVaccinations) use ($_) {
+            yield 'id:readonly' => function (Vaccine $vaccine) use ($_) {
+                return $vaccine
+                    ->setId($_->getVaccine()->getId());
+            };
+
+            yield 'id:readonly' => function (Region $region) use ($_) {
+                return $region
+                    ->setId($_->getRegion()->getId());
+            };
+
+            yield 'id' => function (Vaccinations $vaccinations, ?SlovakiaVaccinations $slovakiaVaccinations, Vaccine $vaccine, Region $region) use ($_) {
                 if (null === $slovakiaVaccinations) {
                     return null;
                 }
-                $uow = $this->getEntityManager()->getUnitOfWork();
-                if ($uow->getEntityState($_) !== 1) {
-                    dump([$_, $uow->getEntityState($_->getVaccine()), $uow->getEntityState($_->getRegion())]);
-                    die;
-                }
+
                 return $vaccinations
                     ->setId($_->getCode())
-                    ->setRegion($_->getRegion())
-                    ->setVaccine($_->getVaccine())
+                    ->setVaccine($vaccine)
+                    ->setRegion($region)
                     ->setPublishedOn($_->getPublishedOn())
                     ->setDose1Count($_->getDose1Count())
                     ->setDose2Count($_->getDose2Count());

@@ -88,16 +88,20 @@ class VaccinationsImport extends AbstractImport
 
         $vaccinationsRepository = $this->entityManager->getRepository(Vaccinations::class);
 
-        $output->writeln($this->log('Updating Vaccinactions.'));
+        $output->writeln($this->log('Updating slovakiaVaccinactions.'));
         // slovakiaVaccinations must be imported first because regionVaccinations and vaccinations depend on it
         $this->persist(
             $vaccinationsRepository->slovakiaVaccinations(),
             $vaccinationsRepository->slovakiaVaccinationsEntities()
         );
+        $output->writeln($this->log('DONE.'));
+        $output->writeln($this->log('Updating regionVaccinations.'));
         $this->persist(
             $vaccinationsRepository->regionVaccinations(),
             $vaccinationsRepository->regionVaccinationsEntities()
         );
+        $output->writeln($this->log('DONE.'));
+        $output->writeln($this->log('Updating vaccinactions.'));
         $this->persist(
             $vaccinationsRepository->vaccinationsFromRawEntities(),
             $vaccinationsRepository->vaccinationsEntities(),
