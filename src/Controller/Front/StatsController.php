@@ -13,7 +13,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class StatsController extends AbstractController
 {
-    const FIVE_MINUTES = 1;
+    const FIVE_MINUTES = 300;
 
     /**
      * @Route("/stats/vaccinations/{section}", methods={"GET"})

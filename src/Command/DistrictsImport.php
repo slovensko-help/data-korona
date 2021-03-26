@@ -21,7 +21,7 @@ class DistrictsImport extends AbstractImport
 
         $output->writeln($this->log('Updating districts...'));
         $this->persist($this->csvRecords($csvContent),
-            function ($_) {
+            function (array $_) {
                 yield 'code' => function (Region $region) use ($_) {
                     return $region
                         ->setCode($_['REGION_CODE']);
