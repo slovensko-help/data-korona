@@ -1,0 +1,87 @@
+{% import "_macro/field.html.twig" as macro %}
+
+<p class="mt-4">
+    Postup aktualizácie dát v API (<a href="{{ url('app_api_agtests_regionagtests') }}" target="_blank">{{ path('app_api_agtests_regionagtests') }}</a>):
+</p>
+<ol class="mb-4">
+    <li>
+        Údaje za dnes nie sú dostupné v API. NCZI (Power BI) a IZA (GitHub) zvyknú mať dostupné čiastkové údaje za dnes každý deň doobeda, ale neaktualizujú sa v priebehu dňa.
+    </li>
+    <li>
+        Údaje za včera sa berú z prvého dostupného zdroja v tomto poradí: NCZI (Power BI), IZA (GitHub) ale iba ak sú v API dostupné <a href="{{ path('app_front_stats_agtests', {'section': 'by-day'}) }}">údaje po dňoch</a> za včera.
+    </li>
+    <li>
+        Údaje za dni od predvčera a ďalej do minulosti sa berú z prvého dostupného zdroja v tomto poradí: NCZI (Power BI), IZA (GitHub).
+    </li>
+</ol>
+
+<p>
+    ** Hodnota sa nenachádza v zdroji dát a je vypočítaná ako suma prírastkov v daný a všetky predošlé dni.
+</p>
+
+<table class="table table-striped table-hover table-sm mt-3">
+    {% for row in stats %}
+        {% if loop.first %}
+            <thead>
+            <tr>
+                <th rowspan="2">
+                    Deň
+                </th>
+                <th rowspan="2">
+                    Kraj
+                </th>
+                <th colspan="4" class="table-cell-left-column">
+                    NCZI (Power BI)
+                </th>
+                <th colspan="4" class="table-cell-left-column">
+                    IZA (GitHub)
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    Δ +
+                </th>
+                <th>
+                    Δ -
+                </th>
+                <th>
+                    Σ + **
+                </th>
+                <th>
+                    Σ - **
+                </th>
+                <th class="table-cell-left-column">
+                    Δ +
+                </th>
+                <th>
+                    Δ -
+                </th>
+                <th>
+                    Σ + **
+                </th>
+                <th>
+                    Σ - **
+                </th>
+            </tr>
+            </thead>
+        {% endif %}
+        <tr>
+            <td>
+                {{ row.published_on }}
+            </td>
+            <td>
+                {{ row.region_title }}
+            </td>
+            <!-- POWER BI -->
+            {{ macro.fieldCell(row, 'power_bi', 'positives_count', ['table-cell-left-column']) }}
+            {{ macro.fieldCell(row, 'power_bi', 'negatives_count') }}
+            {{ macro.fieldCell(row, 'power_bi', 'positives_sum') }}
+            {{ macro.fieldCell(row, 'power_bi', 'negatives_sum') }}
+            <!-- IZA -->
+            {{ macro.fieldCell(row, 'iza', 'positives_count', ['table-cell-left-column']) }}
+            {{ macro.fieldCell(row, 'iza', 'negatives_count') }}
+            {{ macro.fieldCell(row, 'iza', 'positives_sum') }}
+            {{ macro.fieldCell(row, 'iza', 'negatives_sum') }}
+        </tr>
+    {% endfor %}
+</table>

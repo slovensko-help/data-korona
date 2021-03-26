@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block title %}Ag testy{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>
+                    Ag testy
+                </h1>
+
+                <ul class="nav nav-tabs">
+                    {% for tab in tabs %}
+                        <li class="nav-item">
+                            <a class="nav-link{{ tab.is_active ? ' active' : '' }}" aria-current="page" href="{{ tab.url }}">{{ tab.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                {% include('AgTests/_partial/' ~ ('' == template ? 'default' : template) ~ '.html.twig') %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

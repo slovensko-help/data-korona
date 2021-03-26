@@ -92,7 +92,6 @@ class EntityPersister
         }
 
         $this->deleteMissingEntities($entitiesConfig, static::LAST_BATCH | ($isFirstBatch ? static::FIRST_BATCH : 0));
-
         $this->entityManager->clear();
 
         $this->closed = true;
@@ -258,6 +257,7 @@ class EntityPersister
                 $deletions = [
                     'startKey' => $deletionConfig[$class][0],
                     'endKey' => $deletionConfig[$class][1],
+                    'onlyIfNotEmpty' => $deletionConfig[$class][2] ?? false,
                 ];
             } else {
                 $deletions = null;
@@ -301,6 +301,10 @@ class EntityPersister
                         $this->maxKeys[$entityConfig['class']] = $maxKey;
                     } else {
                         $maxKey = $this->maxKeys[$entityConfig['class']];
+                    }
+
+                    if ($entityConfig['deletions']['onlyIfNotEmpty'] && empty($this->classKeys[$entityConfig['class']])) {
+                        continue;
                     }
 
                     $missingEntities = $entityConfig['repository']->findAllByKeyForDeletion(

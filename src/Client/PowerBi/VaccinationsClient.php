@@ -13,7 +13,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class VaccinationsClient extends AbstractClient
 {
-    const REPORT_URL = 'https://app.powerbi.com//view?r=eyJrIjoiMzk4ZmRjNmEtYmZiNC00NGRiLWE2NDEtNWRjNjFhMDM4Nzk1IiwidCI6IjMxMGJhNTk1LTAxM2MtNDAyZC05ZWYyLWI1N2Q1ZjFkY2Q2MyIsImMiOjl9';
+    const REPORT_URL = 'https://app.powerbi.com/view?r=eyJrIjoiMzk4ZmRjNmEtYmZiNC00NGRiLWE2NDEtNWRjNjFhMDM4Nzk1IiwidCI6IjMxMGJhNTk1LTAxM2MtNDAyZC05ZWYyLWI1N2Q1ZjFkY2Q2MyIsImMiOjl9';
     const REPORT_BEGINNING = '2021-01-01';
 
     /** @var SluggerInterface */
@@ -30,22 +30,6 @@ class VaccinationsClient extends AbstractClient
             ->selectColumn('COVID-19 Vakciny', 'VAKC_POPIS')
             ->selectColumn('COVID-19 Vakciny', 'SIDZAR_KRAJ_KOD_ST', PowerBiQueryBuilder::AGGREGATION_COUNT),
             new DatePaginationHint('COVID-19 Vakciny', 'DATUM_VYPL', DateTimeImmutable::createFromFormat('Y-m-d', self::REPORT_BEGINNING), 60)
-        );
-    }
-
-    public function debug(): Generator
-    {
-        yield from $this->all($this->createQueryBuilder()
-            ->selectColumn('Umrtia', 'DATUM_ZAR')
-            ->selectColumn('Umrtia', 'POC_VYLIECENI', PowerBiQueryBuilder::AGGREGATION_SUM)
-            ->selectColumn('Umrtia', 'POC_NEAKTIVNI', PowerBiQueryBuilder::AGGREGATION_SUM)
-            ->selectColumn('Umrtia', 'POC_AKTIVNI', PowerBiQueryBuilder::AGGREGATION_SUM)
-//            ->selectColumn('COVID-19 Vakciny', 'ZASOBY_APLIKOVANE_1', PowerBiQueryBuilder::AGGREGATION_SUM)
-//            ->selectColumn('COVID-19 Vakciny', 'ZASOBY_APLIKOVANE_2', PowerBiQueryBuilder::AGGREGATION_SUM)
-//            ->selectColumn('COVID-19 Vakciny', 'VAKC_VYROBCA_POPIS')
-//            ->selectColumn('COVID-19 Vakciny', 'VAKC_POPIS')
-//            ->selectColumn('COVID-19 Vakciny', 'SIDZAR_KRAJ_KOD_ST', PowerBiQueryBuilder::AGGREGATION_COUNT),
-            , new DatePaginationHint('Umrtia', 'DATUM_ZAR', DateTimeImmutable::createFromFormat('Y-m-d', self::REPORT_BEGINNING), 60)
         );
     }
 
@@ -85,7 +69,7 @@ class VaccinationsClient extends AbstractClient
         return function (PowerBiVaccinations $vaccinations, Region $region, Vaccine $vaccine) use ($_) {
             $publishedOn = (new DateTimeImmutable())->setTimestamp($_[0] / 1000)->setTime(0, 0);
             return $vaccinations
-                ->setCode($this->vaccinationsByRegionAndVaccineCode($publishedOn, $region, $vaccine))
+                ->setCode($this->code($publishedOn, $region, $vaccine))
                 ->setPublishedOn($publishedOn)
                 ->setRegion($region)
                 ->setVaccine($vaccine)
@@ -103,7 +87,7 @@ class VaccinationsClient extends AbstractClient
             ->slice(0, 100);
     }
 
-    private function vaccinationsByRegionAndVaccineCode(DateTimeImmutable $publishedOn, Region $region, Vaccine $vaccine)
+    private function code(DateTimeImmutable $publishedOn, Region $region, Vaccine $vaccine)
     {
         return sprintf('%s-%s-%s',
             $publishedOn->format('Ymd'),

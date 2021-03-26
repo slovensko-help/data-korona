@@ -51,6 +51,7 @@ abstract class AbstractClient extends \App\Client\AbstractClient
         if ($paginationHint instanceof PaginationHintInterface) {
             $pagination = clone $paginationHint;
 
+            /** @var PowerBiQueryBuilder $pageQueryBuilder */
             foreach ($pagination->pageQueryBuilders($queryBuilder) as $pageQueryBuilder) {
                 foreach ($this->execute($pageQueryBuilder)->items() as $item) {
                     yield $item;

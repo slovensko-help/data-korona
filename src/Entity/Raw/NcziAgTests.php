@@ -2,7 +2,7 @@
 
 namespace App\Entity\Raw;
 
-use App\Entity\Region;
+use App\Entity\District;
 use App\Entity\Traits\Datetimeable;
 use App\Entity\Traits\Timestampable;
 use DateTimeImmutable;
@@ -15,17 +15,17 @@ use JMS\Serializer\Annotation as Serializer;
  * @ORM\HasLifecycleCallbacks()
  * @Auditable()
  */
-class IzaVaccinations
+class NcziAgTests
 {
     use Timestampable;
     use Datetimeable;
 
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", options={"charset"="ascii"})
-     * @var string|null
+     * @ORM\Column(type="integer")
+     * @var int|null
      */
-    private $code = null;
+    private $id = null;
 
     /**
      * @ORM\Column(type="date_immutable")
@@ -40,48 +40,23 @@ class IzaVaccinations
      *
      * @var integer
      */
-    private $dose1Count;
+    private $positivesSum;
 
     /**
      * @ORM\Column(type="integer")
      *
      * @var integer
      */
-    private $dose2Count;
+    private $negativesSum;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Region")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @Serializer\Exclude()
-     *
-     * @var Region
-     */
-    private $region;
-
-    public function getRegion(): Region
+    public static function calculateId(DateTimeImmutable $publishedOn): int
     {
-        return $this->region;
+        return (int)$publishedOn->format('Ymd');
     }
 
-    /**
-     * @Serializer\VirtualProperty()
-     * @Serializer\Type("int")
-     */
-    public function getRegionId(): int
+    public function getId(): ?int
     {
-        return $this->region->getId();
-    }
-
-    public function setRegion(Region $region): self
-    {
-        $this->region = $region;
-        return $this;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
+        return $this->id;
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -99,37 +74,25 @@ class IzaVaccinations
         return $this->publishedOn;
     }
 
-    public function getDose1Count(): int
+    public function getPositivesSum(): int
     {
-        return $this->dose1Count;
+        return $this->positivesSum;
     }
 
-    public function getDose2Count(): int
+    public function getNegativesSum(): int
     {
-        return $this->dose2Count;
+        return $this->negativesSum;
     }
 
-    public function setCode(string $code): self
+    public function setId(int $id): self
     {
-        $this->code = $code;
+        $this->id = $id;
         return $this;
     }
 
     public function setPublishedOn(DateTimeImmutable $publishedOn): self
     {
         return $this->updateDateTime($this->publishedOn, $publishedOn);
-    }
-
-    public function setDose1Count(int $dose1Count): self
-    {
-        $this->dose1Count = $dose1Count;
-        return $this;
-    }
-
-    public function setDose2Count(int $dose2Count): self
-    {
-        $this->dose2Count = $dose2Count;
-        return $this;
     }
 
     /**
@@ -147,6 +110,18 @@ class IzaVaccinations
     public function setUpdatedAt(DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function setPositivesSum(int $positivesSum): self
+    {
+        $this->positivesSum = $positivesSum;
+        return $this;
+    }
+
+    public function setNegativesSum(int $negativesSum): self
+    {
+        $this->negativesSum = $negativesSum;
         return $this;
     }
 }

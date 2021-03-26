@@ -25,7 +25,7 @@ class District
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true, length=70)
      *
      * @var string
      */
@@ -59,7 +59,7 @@ class District
         return $this;
     }
 
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }

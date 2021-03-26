@@ -28,6 +28,7 @@ class DatePaginationHint extends AbstractPaginationHint
     public function pageQueryBuilders(PowerBiQueryBuilder $queryBuilder): Generator
     {
         while (null !== $this->fromDate) {
+            // TODO: continue pagination when query returns more exactly MAX_PAGE_SIZE results (we don't know yet how to limit PowerBI Query to exact number of results)
             $toDate = $this->fromDate->add(new DateInterval('P' . min(static::MAX_PAGE_SIZE, $this->pageSizeInDays * $this->pageSizeMultiplier) . 'D'));
 
             // TODO: implement boundaries when $queryBuilder already has where condition with the same entityName.propertyName
@@ -37,7 +38,7 @@ class DatePaginationHint extends AbstractPaginationHint
                 ->orderBy($this->entityName, $this->propertyName, PowerBiQueryBuilder::ORDER_ASC);
 
             $this->fromDate = $this->newFromDate($toDate);
-            $this->pageSizeMultiplier = null !== $this->pageHasItems && $this->pageHasItems ? 1 : 3; // let's widen the page next for the next page to minimize request in case of large gaps
+            $this->pageSizeMultiplier = null !== $this->pageHasItems && $this->pageHasItems ? 1 : 3; // let's widen the page for the next page to minimize request in case of large gaps
             $this->pageHasItems = false; // a caller which iterates over this generator must call PaginationHintInterface#pageHasItems() if queryBuilder yields any result
         }
     }

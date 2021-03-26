@@ -17,19 +17,19 @@ trait Districtual
      */
     protected $district;
 
-    public function getDistrict(): District
+    public function getDistrict(): ?District
     {
         return $this->district;
     }
 
-    public function setDistrict(District $district): self
+    public function setDistrict(?District $district): self
     {
         $this->district = $district;
         return $this;
     }
 
     /**
-     * Interné id okresu z /api/districts
+     * Interné id okresu z /api/districts alebo null. Hodnota null znamená, že dáta nie sú priradené žiadnemu okresu.
      *
      * @Serializer\VirtualProperty()
      * @Serializer\Type("int")

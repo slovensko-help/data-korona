@@ -1,21 +1,22 @@
-{% import "Stats/_macro/field.html.twig" as macro %}
+{% import "_macro/field.html.twig" as macro %}
+
 <p class="mt-4">
-    Postup aktualizácie dát v API (<a href="{{ url('app_api_vaccinations_slovakiavaccinations') }}" target="_blank">{{ path('app_api_vaccinations_slovakiavaccinations') }}</a>):
+    Postup aktualizácie dát v API (<a href="{{ url('app_api_vaccinations_regionvaccinations') }}" target="_blank">{{ path('app_api_vaccinations_regionvaccinations') }}</a>):
 </p>
 <ol class="mb-4">
     <li>
         Údaje za dnes nie sú dostupné v API. NCZI (Power BI) a IZA (GitHub) zvyknú mať dostupné čiastkové údaje za dnes každý deň doobeda, ale neaktualizujú sa v priebehu dňa.
     </li>
     <li>
-        Údaje za včera sa berú z NCZI (API). Ak nie sú dostupné, tak údaje nie sú dostupné ani v API. Údaje bývajú v NCZI (API) dostupné každý deň okolo 10:00.
+        Údaje za včera sa berú z prvého dostupného zdroja v tomto poradí: NCZI (Power BI), IZA (GitHub) ale iba ak sú v API dostupné <a href="{{ path('app_front_stats_vaccinations', {'section': 'by-day'}) }}">údaje po dňoch</a> za včera.
     </li>
     <li>
-        Údaje za dni od predvčera a ďalej do minulosti sa berú z prvého dostupného zdroja v tomto poradí: NCZI (Power BI), IZA (GitHub), NCZI (API).
+        Údaje za dni od predvčera a ďalej do minulosti sa berú z prvého dostupného zdroja v tomto poradí: NCZI (Power BI), IZA (GitHub).
     </li>
 </ol>
-<hr>
+
 <p>
-    * Hodnota sa nenachádza v zdroji dát a je umelo vypočítaná ako rozdiel medzi sumou dávok za daný a predošlý deň.
+    ** Hodnota sa nenachádza v zdroji dát a je vypočítaná ako suma prírastkov v daný a všetky predošlé dni.
 </p>
 
 <table class="table table-striped table-hover table-sm mt-3">
@@ -26,59 +27,50 @@
                 <th rowspan="2">
                     Deň
                 </th>
+                <th rowspan="2">
+                    Kraj
+                </th>
                 <th colspan="4" class="table-cell-left-column">
                     NCZI (Power BI)
                 </th>
                 <th colspan="4" class="table-cell-left-column">
                     IZA (GitHub)
                 </th>
-                <th colspan="4" class="table-cell-left-column">
-                    NCZI (API)
-                </th>
             </tr>
             <tr>
-                <th class="table-cell-left-column">
+                <th>
                     Δ 1. dávka
                 </th>
                 <th>
                     Δ 2. dávka
                 </th>
                 <th>
-                    Σ 1. dávka
+                    Σ 1. dávka**
                 </th>
                 <th>
-                    Σ 2. dávka
+                    Σ 2. dávka**
                 </th>
                 <th class="table-cell-left-column">
                     Δ 1. dávka
                 </th>
                 <th>
-                    Δ 2. dávka
+                    Δ dose2
                 </th>
                 <th>
-                    Σ 1. dávka
+                    Σ 1. dávka**
                 </th>
                 <th>
-                    Σ 2. dávka
-                </th>
-                <th class="table-cell-left-column">
-                    Δ 1. dávka*
-                </th>
-                <th>
-                    Δ 2. dávka*
-                </th>
-                <th>
-                    Σ 1. dávka
-                </th>
-                <th>
-                    Σ 2. dávka
+                    Σ 2. dávka**
                 </th>
             </tr>
             </thead>
         {% endif %}
         <tr>
             <td>
-                {{ row.key }}
+                {{ row.published_on }}
+            </td>
+            <td>
+                {{ row.region_title }}
             </td>
             <!-- POWER BI -->
             {{ macro.fieldCell(row, 'power_bi', 'dose1_count', ['table-cell-left-column']) }}
@@ -90,11 +82,6 @@
             {{ macro.fieldCell(row, 'iza', 'dose2_count') }}
             {{ macro.fieldCell(row, 'iza', 'dose1_sum') }}
             {{ macro.fieldCell(row, 'iza', 'dose2_sum') }}
-            <!-- NCZI API -->
-            {{ macro.fieldCell(row, 'nczi', 'dose1_count', ['table-cell-left-column'], '*') }}
-            {{ macro.fieldCell(row, 'nczi', 'dose2_count', [], '*') }}
-            {{ macro.fieldCell(row, 'nczi', 'dose1_sum') }}
-            {{ macro.fieldCell(row, 'nczi', 'dose2_sum') }}
         </tr>
     {% endfor %}
 </table>

@@ -29,36 +29,9 @@ class VaccinationsImport extends AbstractImport
     /** @var IzaVaccinationsClient */
     protected $izaClient;
 
-    protected function configure()
-    {
-        parent::configure();
-
-        $this->addOption('dump-powerbi-schema');
-        $this->addOption('debug-powerbi');
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->disableDoctrineLogger();
-
-        if ($input->getOption('dump-powerbi-schema')) {
-            $this->dumpPowerBiSchema($this->powerBiClient, $output);
-            return self::SUCCESS;
-        }
-
-        if ($input->getOption('debug-powerbi')) {
-            $rows = [];
-
-            foreach ($this->powerBiClient->debug() as $row) {
-                $row[0] = date('Y-m-d', $row[0] / 1000);
-                $rows[] = $row;
-            }
-
-            (new Table($output))
-                ->setRows($rows)
-                ->render();
-            return self::SUCCESS;
-        }
 
         $output->writeln($this->log('Updating powerBi vaccinactions.'));
         $this->persist(

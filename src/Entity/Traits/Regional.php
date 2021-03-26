@@ -17,25 +17,25 @@ trait Regional
      */
     protected $region;
 
-    public function getRegion(): Region
+    public function getRegion(): ?Region
     {
         return $this->region;
     }
 
-    public function setRegion(Region $region): self
+    public function setRegion(?Region $region): self
     {
         $this->region = $region;
         return $this;
     }
 
     /**
-     * Interné id regiónu z regiónov z /api/regions
+     * Interné id regiónu z regiónov z /api/regions alebo null. Hodnota null znamená, že dáta nie sú priradené žiadnemu kraju.
      *
      * @Serializer\VirtualProperty()
      * @Serializer\Type("int")
      */
-    public function getRegionId(): int
+    public function getRegionId(): ?int
     {
-        return $this->region->getId();
+        return null === $this->region ? null : $this->region->getId();
     }
 }
