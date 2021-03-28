@@ -45,6 +45,7 @@ class EntityPersister
 
         $entitiesConfig = $this->initializeEntitiesConfig($entityUpdatersGenerator, $deletionConfig);
         $isFirstBatch = true;
+        $previousEntityKeys = [];
 
         foreach ($this->batches($rows, $batchSize) as $rows) {
             $this->trackedEntities = [];
@@ -63,6 +64,14 @@ class EntityPersister
                     }
 
                     $entityKey = $this->entityKey($rowIndex, $colIndex, $entityConfig);
+
+//                    if (!$entityConfig['isReadonlyMode'] && null !== $entityConfig['deletions'] && isset($previousEntityKeys[$colIndex]) && $previousEntityKeys[$colIndex] >= $entityKey) {
+//                        throw new Exception('Automatically deletable entities are not sorted by "' . $entityConfig['keyField'] . '" field. ' .
+//                            'Previous key was "' . $previousEntityKeys[$colIndex] . '", current key is "' . $entityKey . '". ' .
+//                            'Previous key must be always less than current key.');
+//                    }
+
+                    $previousEntityKeys[$colIndex] = $entityKey;
 
                     if (null !== $entityKey) {
                         if (!isset($this->maxKeys[$entityConfig['class']]) || $entityKey > $this->maxKeys[$entityConfig['class']]) {
@@ -85,13 +94,13 @@ class EntityPersister
                 $this->entityManager->flush();
             }
 
-            $this->deleteMissingEntities($entitiesConfig, $isFirstBatch ? static::FIRST_BATCH : 0);
+            //$this->deleteMissingEntities($entitiesConfig, $isFirstBatch ? static::FIRST_BATCH : 0);
             $isFirstBatch = false;
 
             $this->entityManager->clear();
         }
 
-        $this->deleteMissingEntities($entitiesConfig, static::LAST_BATCH | ($isFirstBatch ? static::FIRST_BATCH : 0));
+        //$this->deleteMissingEntities($entitiesConfig, static::LAST_BATCH | ($isFirstBatch ? static::FIRST_BATCH : 0));
         $this->entityManager->clear();
 
         $this->closed = true;
