@@ -28,9 +28,9 @@ class NcziMorningEmailClient extends \App\Client\AbstractClient
             'hospital_patients_ventilated_covid' => 'na pľúcnej ventilácii *(?<v1>\d+)',
             'hospital_patients_all_covid' => 'Celkový počet hospitalizovaných pacientov (?<v1>\d+)',
         ],
-        '2020-06-22' => [
-            'slovakia_tests_pcr_positive_delta_without_quarantine' => 'mimo karanténnych centier(|\/e\-Karantény) (?<v1>\d+)[^\d]',
-        ],
+//        '2020-06-22' => [
+//            'slovakia_tests_pcr_positive_delta_without_quarantine' => 'mimo karanténnych centier(|\/e\-Karantény) (?<v1>\d+)[^\d]',
+//        ],
         '2020-11-19' => [
             'slovakia_tests_ag_all_total' => [
                 'Ag testov poskytovateľmi zdravotnej starostlivosti [^sz].*?(?<v1>\d+)',
