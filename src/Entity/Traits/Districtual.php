@@ -34,8 +34,8 @@ trait Districtual
      * @Serializer\VirtualProperty()
      * @Serializer\Type("int")
      */
-    public function getDistrictId(): int
+    public function getDistrictId(): ?int
     {
-        return $this->district->getId();
+        return null === $this->district ? null : $this->district->getId();
     }
 }
