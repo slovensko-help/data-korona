@@ -6,10 +6,39 @@ use App\Entity\Raw\IzaVaccinations;
 use App\Entity\Region;
 use App\Tool\DateTime;
 use App\Tool\Id;
+use Generator;
+use League\Csv\Reader;
+use League\Csv\Statement;
 
 class VaccinationsClient extends AbstractClient
 {
     const CSV_FILE = 'Vaccination/OpenData_Slovakia_Vaccination_Regions.csv';
+
+    // QUICK FIX for vaccines
+    public function findAll(): Generator
+    {
+        $result = [];
+
+        foreach (parent::findAll() as $item) {
+            $key = $item['REGION_CODE'] . '-' . $item['DATE'];
+
+            if (!isset($result[$key])) {
+                $result[$key] = [
+                    'REGION_CODE' => $item['REGION_CODE'],
+                    'DATE' => $item['DATE'],
+                    'FIRST_DOSE' => 0,
+                    'SECOND_DOSE' => 0,
+                ];
+            }
+
+            $result[$key]['FIRST_DOSE'] += $item['FIRST_DOSE'];
+            $result[$key]['SECOND_DOSE'] += $item['SECOND_DOSE'];
+        }
+
+        foreach ($result as $item) {
+            yield $item;
+        }
+    }
 
     public function entities(): callable
     {
