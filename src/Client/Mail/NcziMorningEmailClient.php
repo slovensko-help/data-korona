@@ -31,18 +31,19 @@ class NcziMorningEmailClient extends \App\Client\AbstractClient
 //        '2020-06-22' => [
 //            'slovakia_tests_pcr_positive_delta_without_quarantine' => 'mimo karanténnych centier(|\/e\-Karantény) (?<v1>\d+)[^\d]',
 //        ],
-        '2020-11-19' => [
-            'slovakia_tests_ag_all_total' => [
-                'Ag testov poskytovateľmi zdravotnej starostlivosti [^sz].*?(?<v1>\d+)',
-                'Ag testov poskytovateľmi zdravotnej starostlivosti\|(?<v1>\d+)',
-            ],
-            'slovakia_tests_ag_all_delta' => 'Ag testov poskytovateľmi zdravotnej starostlivosti za.*?(?<v1>\d+)',
-            'slovakia_tests_ag_positive_total' => [
-                'Ag testov poskytovateľmi zdravotnej starostlivosti s pozitívnym výsledkom [^z].*?(?<v1>\d+)',
-                'Ag testov poskytovateľmi zdravotnej starostlivosti s pozitívnym výsledkom\|(?<v1>\d+)',
-            ],
-            'slovakia_tests_ag_positive_delta' => 'Ag testov poskytovateľmi zdravotnej starostlivosti s pozitívnym výsledkom za.*?(?<v1>\d+)',
-        ],
+// Ag tests removed from email on 2021-06-07
+//        '2020-11-19' => [
+//            'slovakia_tests_ag_all_total' => [
+//                'Ag testov poskytovateľmi zdravotnej starostlivosti [^sz].*?(?<v1>\d+)',
+//                'Ag testov poskytovateľmi zdravotnej starostlivosti\|(?<v1>\d+)',
+//            ],
+//            'slovakia_tests_ag_all_delta' => 'Ag testov poskytovateľmi zdravotnej starostlivosti za.*?(?<v1>\d+)',
+//            'slovakia_tests_ag_positive_total' => [
+//                'Ag testov poskytovateľmi zdravotnej starostlivosti s pozitívnym výsledkom [^z].*?(?<v1>\d+)',
+//                'Ag testov poskytovateľmi zdravotnej starostlivosti s pozitívnym výsledkom\|(?<v1>\d+)',
+//            ],
+//            'slovakia_tests_ag_positive_delta' => 'Ag testov poskytovateľmi zdravotnej starostlivosti s pozitívnym výsledkom za.*?(?<v1>\d+)',
+//        ],
         '2021-01-14:2021-02-07' => [
             'slovakia_vaccination_all_total' => 'zaočkovaných osôb poskytovateľmi zdravotnej starostlivosti (?<v1>\d+)',
             'slovakia_vaccination_all_delta' => [
