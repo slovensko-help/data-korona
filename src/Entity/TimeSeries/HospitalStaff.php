@@ -18,7 +18,6 @@ use OpenApi\Annotations\Property;
 /**
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
- * @Auditable()
  *
  * data source: https://raw.githubusercontent.com/Institut-Zdravotnych-Analyz/covid19-data/main/OpenData_Slovakia_Covid_Hospital_Details.csv
  */

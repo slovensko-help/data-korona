@@ -9,12 +9,17 @@ class PowerBiQueryBuilder
 {
     const SELECT_TYPE_COLUMN = 0;
     const SELECT_TYPE_MEASURE = 1;
+    const SELECT_TYPE_ARITHMETIC = 2;
 
     const AGGREGATION_SUM = 0;
     const AGGREGATION_AVG = 1;
     const AGGREGATION_COUNT = 2;
     const AGGREGATION_MIN = 3;
     const AGGREGATION_MAX = 4;
+    const AGGREGATION_COUNT_NOT_NULL = 5;
+    const AGGREGATION_MEDIAN = 6;
+    const AGGREGATION_STANDARD_DEVIATION = 7;
+    const AGGREGATION_VARIANCE = 8;
 
     const COMPARISON_EQUAL = 0;
     const COMPARISON_GREATER_THAN = 1;
@@ -51,6 +56,18 @@ class PowerBiQueryBuilder
     public function selectMeasure(string $entityName, string $propertyName): self
     {
         return $this->addSelect($entityName, $propertyName, self::SELECT_TYPE_MEASURE);
+    }
+
+    public function selectArithmetic(string $propertyName, array $arithmetic): self
+    {
+        $entityName = 'arithmetic';
+        $arithmetic['Name'] = 'N' . (count($this->selects) + 1);
+
+        $this->selects[] = $arithmetic;
+
+        $this->fieldIndices[$this->fieldKey($entityName, $propertyName)] = count($this->selects) - 1;
+
+        return $this;
     }
 
     public function setLimit(int $limit): self
@@ -143,7 +160,7 @@ class PowerBiQueryBuilder
         return $this->fieldIndices[$this->fieldKey($entityName, $propertyName)] ?? null;
     }
 
-    private function leftRight(array $left, array $right): array
+    public function leftRight(array $left, array $right): array
     {
         return [
             'Left' => $left,
@@ -192,7 +209,7 @@ class PowerBiQueryBuilder
         ];
     }
 
-    private function addSelect(string $entityName, string $propertyName, int $selectType = self::SELECT_TYPE_COLUMN, ?int $aggregationFunction = null): self
+    public function term(string $entityName, string $propertyName, int $selectType = self::SELECT_TYPE_COLUMN, ?int $aggregationFunction = null): array
     {
         $select = $this->columnReference($entityName, $propertyName, $selectType);
 
@@ -204,6 +221,13 @@ class PowerBiQueryBuilder
                 ]
             ];
         }
+
+        return $select;
+    }
+
+    private function addSelect(string $entityName, string $propertyName, int $selectType = self::SELECT_TYPE_COLUMN, ?int $aggregationFunction = null): self
+    {
+        $select = $this->term($entityName, $propertyName, $selectType, $aggregationFunction);
 
         $select['Name'] = 'N' . (count($this->selects) + 1);
 

@@ -26,14 +26,11 @@ DOCROOT=""
 
 13 * * * * $PHP $DOCROOT/bin/console app:import:hospitals --no-debug >/dev/null 2>&1
 
-* 9 * * * $PHP $DOCROOT/bin/console app:import:nczi-morning-email --no-debug >/dev/null 2>&1
-
 1-15 10 * * * $PHP $DOCROOT/bin/console app:import:vaccinations --no-debug >/dev/null 2>&1
 1-15 10 * * * $PHP $DOCROOT/bin/console app:import:ag-tests --no-debug >/dev/null 2>&1
 
 45-59 9 * * * $PHP $DOCROOT/bin/console app:import:vaccinations --no-debug >/dev/null 2>&1
 45-59 9 * * * $PHP $DOCROOT/bin/console app:import:ag-tests --no-debug >/dev/null 2>&1
 
-*/30 0-8,10-23 * * * $PHP $DOCROOT/bin/console app:import:nczi-morning-email --no-debug >/dev/null 2>&1
 */30 0-8,10-23 * * * $PHP $DOCROOT/bin/console app:import:vaccinations --no-debug >/dev/null 2>&1
 */30 0-8,10-23 * * * $PHP $DOCROOT/bin/console app:import:ag-tests --no-debug >/dev/null 2>&1

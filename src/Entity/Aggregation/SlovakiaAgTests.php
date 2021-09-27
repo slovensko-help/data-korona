@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TimeSeries\AgTestsRepository")
  * @ORM\HasLifecycleCallbacks()
- * @Auditable()
  */
 class SlovakiaAgTests
 {

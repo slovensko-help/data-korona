@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Entity\Aggregation;
+namespace App\Entity\Raw;
 
 use App\Entity\Traits\AgTestsData;
 use App\Entity\Traits\Datetimeable;
-use App\Entity\Traits\Districtual;
 use App\Entity\Traits\Publishable;
 use App\Entity\Traits\Timestampable;
 use DateTimeImmutable;
@@ -15,13 +14,79 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
  */
-class DistrictAgTests
+class PowerBiVaccinatedTests
 {
     use Timestampable;
     use Datetimeable;
     use Publishable;
-    use Districtual;
-    use AgTestsData;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string
+     */
+    private $vaccinationStatus;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string
+     */
+    private $testType;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string
+     */
+    private $testResult;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @var int
+     */
+    private $count;
+
+    public function getVaccinationStatus(): string
+    {
+        return $this->vaccinationStatus;
+    }
+
+    public function setVaccinationStatus(string $vaccinationStatus): self
+    {
+        $this->vaccinationStatus = $vaccinationStatus;
+        return $this;
+    }
+
+    public function getTestType(): string
+    {
+        return $this->testType;
+    }
+
+    public function setTestType(string $testType): self
+    {
+        $this->testType = $testType;
+        return $this;
+    }
+
+    public function getTestResult(): string
+    {
+        return $this->testResult;
+    }
+
+    public function setTestResult(string $testResult): self
+    {
+        $this->testResult = $testResult;
+        return $this;
+    }
+
+    public function getCount(): int
+    {
+        return $this->count;
+    }
+
+    public function setCount(int $count): self
+    {
+        $this->count = $count;
+        return $this;
+    }
 
     /**
      * Interné id záznamu

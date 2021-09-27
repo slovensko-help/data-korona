@@ -35,7 +35,9 @@ class PowerBiDebug extends AbstractImport
             $rows = [];
 
             foreach ($this->powerBiClient->debug() as $row) {
-                $row[0] = date('Y-m-d', $row[0] / 1000);
+                if (is_numeric($row[0]) && $row[0] > 100000) {
+                    $row[0] = date('Y-m-d', $row[0] / 1000);
+                }
                 $rows[] = $row;
             }
 

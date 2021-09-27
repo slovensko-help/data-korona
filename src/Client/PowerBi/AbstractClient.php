@@ -18,7 +18,7 @@ abstract class AbstractClient extends \App\Client\AbstractClient
 
     public function schema()
     {
-        return $this->cached('schema', function () {
+        return $this->cached('schema' . md5(static::REPORT_URL), function () {
             $response = $this->apiContent($this->apiBaseUrl() . '/public/reports/conceptualschema');
 
             $result[] = ['Entity', 'Property', 'Type'];
@@ -93,6 +93,52 @@ abstract class AbstractClient extends \App\Client\AbstractClient
 
     private function apiContent(string $url, ?array $formData = null, $secondAttempt = false)
     {
+//        $formData['queries'][0]['Query']['Commands'][0]['SemanticQueryDataShapeCommand']['Binding'] = json_decode('{
+//                "Primary": {
+//                  "Groupings": [
+//                    {
+//                      "Projections": [
+//                        0
+//                      ],
+//                      "ShowItemsWithNoData": [
+//                        0
+//                      ],
+//                      "Subtotal": 1
+//                    }
+//                  ]
+//                },
+//                "Secondary": {
+//                  "Groupings": [
+//                    {
+//                      "Projections": [
+//                        1,
+//                        2
+//                      ],
+//                      "ShowItemsWithNoData": [
+//                        1
+//                      ]
+//                    }
+//                  ]
+//                },
+//                "DataReduction": {
+//                  "DataVolume": 3,
+//                  "Primary": {
+//                    "Window": {
+//                      "Count": 100
+//                    }
+//                  },
+//                  "Secondary": {
+//                    "Top": {
+//                      "Count": 100
+//                    }
+//                  }
+//                },
+//                "Version": 1
+//              }', true);
+//        dump($formData);die;
+
+//        echo json_encode($formData);
+//        echo $this->resourceKey();die;
         try {
             return json_decode($this->content->load(
                 $url,

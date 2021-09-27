@@ -51,6 +51,10 @@ class AgTestsClient extends AbstractClient
     private function district(array $_): ?callable
     {
         return function (District $district) use ($_) {
+            if (null === $_[1]) {
+                return null;
+            }
+
             return $district
                 ->setCode($_[1]);
         };
@@ -59,13 +63,17 @@ class AgTestsClient extends AbstractClient
     private function agTests(array $_): ?callable
     {
         return function (PowerBiAgTests $agTests, ?District $district) use ($_) {
+            if (null === $district) {
+                return null;
+            }
+
             $publishedOn = (new DateTimeImmutable())->setTimestamp($_[0] / 1000)->setTime(0, 0);
 
             return $agTests
                 ->setDistrict($district)
                 ->setPublishedOn($publishedOn)
-                ->setNegativesCount((int) $_[2])
-                ->setPositivesCount((int) $_[3])
+                ->setNegativesCount((int)$_[2])
+                ->setPositivesCount((int)$_[3])
                 ->setCode($this->code($publishedOn, $district));
         };
     }

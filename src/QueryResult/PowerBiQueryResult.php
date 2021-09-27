@@ -125,7 +125,7 @@ class PowerBiQueryResult
                     $item[$index] = $previousItem[$index];
                     break;
                 case 'Ø':
-                    $item[$index] = 0;
+                    $item[$index] = null;
                     break;
                 default:
                     throw new Exception('Unsupported transformation character "' . $char . '".');
@@ -235,7 +235,7 @@ class PowerBiQueryResult
         $bitArray = array_map(function ($bit) {
             return (bool)$bit;
         }, array_reverse(str_split($bitMapString)));
-
+//        dump($number, $mapChar, $charMap, $bitMapString, $bitArray);die;
         foreach ($bitArray as $index => $isOne) {
             if ($isOne) {
                 $charMap[$index] = $mapChar;

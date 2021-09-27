@@ -1,27 +1,56 @@
 <?php
 
-namespace App\Entity\Aggregation;
+namespace App\Entity\Raw;
 
-use App\Entity\Traits\AgTestsData;
 use App\Entity\Traits\Datetimeable;
-use App\Entity\Traits\Districtual;
 use App\Entity\Traits\Publishable;
 use App\Entity\Traits\Timestampable;
 use DateTimeImmutable;
-use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
  */
-class DistrictAgTests
+class PowerBiVaccinatedPatients
 {
     use Timestampable;
     use Datetimeable;
     use Publishable;
-    use Districtual;
-    use AgTestsData;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string
+     */
+    private $vaccinationStatus;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @var int
+     */
+    private $count;
+
+    public function getVaccinationStatus(): string
+    {
+        return $this->vaccinationStatus;
+    }
+
+    public function setVaccinationStatus(string $vaccinationStatus): self
+    {
+        $this->vaccinationStatus = $vaccinationStatus;
+        return $this;
+    }
+
+    public function getCount(): int
+    {
+        return $this->count;
+    }
+
+    public function setCount(int $count): self
+    {
+        $this->count = $count;
+        return $this;
+    }
 
     /**
      * Interné id záznamu
@@ -53,20 +82,12 @@ class DistrictAgTests
         return $this;
     }
 
-    /**
-     * @param DateTimeImmutable $createdAt
-     * @return SlovakiaAgTests
-     */
     public function setCreatedAt(DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
     }
 
-    /**
-     * @param DateTimeImmutable $updatedAt
-     * @return SlovakiaAgTests
-     */
     public function setUpdatedAt(DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
