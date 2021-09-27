@@ -185,15 +185,198 @@ class SlovakiaVaccinatedPeople
         return $this->id;
     }
 
+    public function getUnvaccinatedAgPositivesRate(): int
+    {
+        return $this->unvaccinatedAgPositivesRate;
+    }
+
+    public function getFullyVaccinatedAgPositivesRate(): int
+    {
+        return $this->fullyVaccinatedAgPositivesRate;
+    }
+
+    public function getPartiallyVaccinatedAgPositivesRate(): int
+    {
+        return $this->partiallyVaccinatedAgPositivesRate;
+    }
+
+    public function getUnknownAgPositivesRate(): int
+    {
+        return $this->unknownAgPositivesRate;
+    }
+
+    public function getUnvaccinatedAgNegativesRate(): int
+    {
+        return $this->unvaccinatedAgNegativesRate;
+    }
+
+    public function getFullyVaccinatedAgNegativesRate(): int
+    {
+        return $this->fullyVaccinatedAgNegativesRate;
+    }
+
+    public function getPartiallyVaccinatedAgNegativesRate(): int
+    {
+        return $this->partiallyVaccinatedAgNegativesRate;
+    }
+
+    public function getUnknownAgNegativesRate(): int
+    {
+        return $this->unknownAgNegativesRate;
+    }
+
+    public function getUnvaccinatedPcrPositivesRate(): int
+    {
+        return $this->unvaccinatedPcrPositivesRate;
+    }
+
+    public function getFullyVaccinatedPcrPositivesRate(): int
+    {
+        return $this->fullyVaccinatedPcrPositivesRate;
+    }
+
+    public function getPartiallyVaccinatedPcrPositivesRate(): int
+    {
+        return $this->partiallyVaccinatedPcrPositivesRate;
+    }
+
+    public function getUnknownPcrPositivesRate(): int
+    {
+        return $this->unknownPcrPositivesRate;
+    }
+
+    public function getUnvaccinatedPcrNegativesRate(): int
+    {
+        return $this->unvaccinatedPcrNegativesRate;
+    }
+
+    public function getFullyVaccinatedPcrNegativesRate(): int
+    {
+        return $this->fullyVaccinatedPcrNegativesRate;
+    }
+
+    public function getPartiallyVaccinatedPcrNegativesRate(): int
+    {
+        return $this->partiallyVaccinatedPcrNegativesRate;
+    }
+
+    public function getUnknownPcrNegativesRate(): int
+    {
+        return $this->unknownPcrNegativesRate;
+    }
+
+    public function getVaccinatedPatientsRate(): int
+    {
+        return $this->vaccinatedPatientsRate;
+    }
+
+    public function getUnvaccinatedPatientsRate(): int
+    {
+        return $this->unvaccinatedPatientsRate;
+    }
+
+    public function getUnknownPatientsRate(): int
+    {
+        return $this->unknownPatientsRate;
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     */
+    public function hasHospitalizedPatients(): bool
+    {
+        return !(null === $this->vaccinatedPatientsRate &&
+            null === $this->unvaccinatedPatientsRate &&
+            null === $this->unknownPatientsRate);
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     */
+    public function hasTests(): bool
+    {
+        foreach ($this->getTests() as $group) {
+            foreach ($group as $item) {
+                if (null !== $item) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     */
+    public function getHospitalizedPatients(): array
+    {
+        $allNull = null === $this->vaccinatedPatientsRate &&
+            null === $this->unvaccinatedPatientsRate &&
+            null === $this->unknownPatientsRate;
+
+        return [
+            'vaccinated' => $this->percentage($this->vaccinatedPatientsRate),
+            'unvaccinated' => $this->percentage($this->unvaccinatedPatientsRate),
+            'unknown' => $this->percentage($this->unknownPatientsRate),
+        ];
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     */
+    public function getTests(): array
+    {
+        return [
+            'positive_ag' => [
+                'vaccinated' => $this->percentage($this->sum($this->fullyVaccinatedAgPositivesRate, $this->partiallyVaccinatedAgPositivesRate)),
+                'fully_vaccinated' => $this->percentage($this->fullyVaccinatedAgPositivesRate),
+                'partially_vaccinated' => $this->percentage($this->partiallyVaccinatedAgPositivesRate),
+                'unvaccinated' => $this->percentage($this->unvaccinatedAgPositivesRate),
+                'unknown' => $this->percentage($this->unknownAgPositivesRate),
+            ],
+            'negative_ag' => [
+                'vaccinated' => $this->percentage($this->sum($this->fullyVaccinatedAgNegativesRate, $this->partiallyVaccinatedAgNegativesRate)),
+                'fully_vaccinated' => $this->percentage($this->fullyVaccinatedAgNegativesRate),
+                'partially_vaccinated' => $this->percentage($this->partiallyVaccinatedAgNegativesRate),
+                'unvaccinated' => $this->percentage($this->unvaccinatedAgNegativesRate),
+                'unknown' => $this->percentage($this->unknownAgNegativesRate),
+            ],
+            'positive_pcr' => [
+                'vaccinated' => $this->percentage($this->sum($this->fullyVaccinatedPcrPositivesRate, $this->partiallyVaccinatedPcrPositivesRate)),
+                'fully_vaccinated' => $this->percentage($this->fullyVaccinatedPcrPositivesRate),
+                'partially_vaccinated' => $this->percentage($this->partiallyVaccinatedPcrPositivesRate),
+                'unvaccinated' => $this->percentage($this->unvaccinatedPcrPositivesRate),
+                'unknown' => $this->percentage($this->unknownPcrPositivesRate),
+            ],
+            'negative_pcr' => [
+                'vaccinated' => $this->percentage($this->sum($this->fullyVaccinatedPcrNegativesRate, $this->partiallyVaccinatedPcrNegativesRate)),
+                'fully_vaccinated' => $this->percentage($this->fullyVaccinatedPcrNegativesRate),
+                'partially_vaccinated' => $this->percentage($this->partiallyVaccinatedPcrNegativesRate),
+                'unvaccinated' => $this->percentage($this->unvaccinatedPcrNegativesRate),
+                'unknown' => $this->percentage($this->unknownPcrNegativesRate),
+            ],
+        ];
+    }
+
+    private function sum(?int $a, ?int $b): ?int
+    {
+        if (null === $a && null === $b) {
+            return null;
+        }
+
+        return ($a ?? 0) + ($b ?? 0);
+    }
+
+    private function percentage(?int $value): ?float
+    {
+        return null === $value ? $value : $value / 100;
+    }
+
     public function setId(string $id): self
     {
         $this->id = $id;
         return $this;
-    }
-
-    public function getUnvaccinatedAgPositivesRate(): int
-    {
-        return $this->unvaccinatedAgPositivesRate;
     }
 
     public function setUnvaccinatedAgPositivesRate(int $unvaccinatedAgPositivesRate): self
@@ -202,20 +385,10 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getFullyVaccinatedAgPositivesRate(): int
-    {
-        return $this->fullyVaccinatedAgPositivesRate;
-    }
-
     public function setFullyVaccinatedAgPositivesRate(int $fullyVaccinatedAgPositivesRate): self
     {
         $this->fullyVaccinatedAgPositivesRate = $fullyVaccinatedAgPositivesRate;
         return $this;
-    }
-
-    public function getPartiallyVaccinatedAgPositivesRate(): int
-    {
-        return $this->partiallyVaccinatedAgPositivesRate;
     }
 
     public function setPartiallyVaccinatedAgPositivesRate(int $partiallyVaccinatedAgPositivesRate): self
@@ -224,20 +397,10 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getUnknownAgPositivesRate(): int
-    {
-        return $this->unknownAgPositivesRate;
-    }
-
     public function setUnknownAgPositivesRate(int $unknownAgPositivesRate): self
     {
         $this->unknownAgPositivesRate = $unknownAgPositivesRate;
         return $this;
-    }
-
-    public function getUnvaccinatedAgNegativesRate(): int
-    {
-        return $this->unvaccinatedAgNegativesRate;
     }
 
     public function setUnvaccinatedAgNegativesRate(int $unvaccinatedAgNegativesRate): self
@@ -246,20 +409,10 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getFullyVaccinatedAgNegativesRate(): int
-    {
-        return $this->fullyVaccinatedAgNegativesRate;
-    }
-
     public function setFullyVaccinatedAgNegativesRate(int $fullyVaccinatedAgNegativesRate): self
     {
         $this->fullyVaccinatedAgNegativesRate = $fullyVaccinatedAgNegativesRate;
         return $this;
-    }
-
-    public function getPartiallyVaccinatedAgNegativesRate(): int
-    {
-        return $this->partiallyVaccinatedAgNegativesRate;
     }
 
     public function setPartiallyVaccinatedAgNegativesRate(int $partiallyVaccinatedAgNegativesRate): self
@@ -268,20 +421,10 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getUnknownAgNegativesRate(): int
-    {
-        return $this->unknownAgNegativesRate;
-    }
-
     public function setUnknownAgNegativesRate(int $unknownAgNegativesRate): self
     {
         $this->unknownAgNegativesRate = $unknownAgNegativesRate;
         return $this;
-    }
-
-    public function getUnvaccinatedPcrPositivesRate(): int
-    {
-        return $this->unvaccinatedPcrPositivesRate;
     }
 
     public function setUnvaccinatedPcrPositivesRate(int $unvaccinatedPcrPositivesRate): self
@@ -290,20 +433,10 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getFullyVaccinatedPcrPositivesRate(): int
-    {
-        return $this->fullyVaccinatedPcrPositivesRate;
-    }
-
     public function setFullyVaccinatedPcrPositivesRate(int $fullyVaccinatedPcrPositivesRate): self
     {
         $this->fullyVaccinatedPcrPositivesRate = $fullyVaccinatedPcrPositivesRate;
         return $this;
-    }
-
-    public function getPartiallyVaccinatedPcrPositivesRate(): int
-    {
-        return $this->partiallyVaccinatedPcrPositivesRate;
     }
 
     public function setPartiallyVaccinatedPcrPositivesRate(int $partiallyVaccinatedPcrPositivesRate): self
@@ -312,20 +445,10 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getUnknownPcrPositivesRate(): int
-    {
-        return $this->unknownPcrPositivesRate;
-    }
-
     public function setUnknownPcrPositivesRate(int $unknownPcrPositivesRate): self
     {
         $this->unknownPcrPositivesRate = $unknownPcrPositivesRate;
         return $this;
-    }
-
-    public function getUnvaccinatedPcrNegativesRate(): int
-    {
-        return $this->unvaccinatedPcrNegativesRate;
     }
 
     public function setUnvaccinatedPcrNegativesRate(int $unvaccinatedPcrNegativesRate): self
@@ -334,20 +457,10 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getFullyVaccinatedPcrNegativesRate(): int
-    {
-        return $this->fullyVaccinatedPcrNegativesRate;
-    }
-
     public function setFullyVaccinatedPcrNegativesRate(int $fullyVaccinatedPcrNegativesRate): self
     {
         $this->fullyVaccinatedPcrNegativesRate = $fullyVaccinatedPcrNegativesRate;
         return $this;
-    }
-
-    public function getPartiallyVaccinatedPcrNegativesRate(): int
-    {
-        return $this->partiallyVaccinatedPcrNegativesRate;
     }
 
     public function setPartiallyVaccinatedPcrNegativesRate(int $partiallyVaccinatedPcrNegativesRate): self
@@ -356,20 +469,10 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getUnknownPcrNegativesRate(): int
-    {
-        return $this->unknownPcrNegativesRate;
-    }
-
     public function setUnknownPcrNegativesRate(int $unknownPcrNegativesRate): self
     {
         $this->unknownPcrNegativesRate = $unknownPcrNegativesRate;
         return $this;
-    }
-
-    public function getVaccinatedPatientsRate(): int
-    {
-        return $this->vaccinatedPatientsRate;
     }
 
     public function setVaccinatedPatientsRate(int $vaccinatedPatientsRate): self
@@ -378,78 +481,15 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function getUnvaccinatedPatientsRate(): int
-    {
-        return $this->unvaccinatedPatientsRate;
-    }
-
     public function setUnvaccinatedPatientsRate(int $unvaccinatedPatientsRate): self
     {
         $this->unvaccinatedPatientsRate = $unvaccinatedPatientsRate;
         return $this;
     }
 
-    public function getUnknownPatientsRate(): int
-    {
-        return $this->unknownPatientsRate;
-    }
-
     public function setUnknownPatientsRate(int $unknownPatientsRate): self
     {
         $this->unknownPatientsRate = $unknownPatientsRate;
         return $this;
-    }
-
-    /**
-     * Interné id kraja z /api/regions
-     *
-     * @Serializer\VirtualProperty()
-     */
-    public function getHospitalizedPatients(): array
-    {
-        return [
-            'vaccinated' => $this->vaccinatedPatientsRate / 100,
-            'unvaccinated' => $this->unvaccinatedPatientsRate / 100,
-            'unknown' => $this->unknownPatientsRate / 100,
-        ];
-    }
-
-    /**
-     * Interné id kraja z /api/regions
-     *
-     * @Serializer\VirtualProperty()
-     */
-    public function getTests(): array
-    {
-        return [
-            'positive_ag' => [
-                'vaccinated' => ($this->fullyVaccinatedAgPositivesRate + $this->partiallyVaccinatedAgPositivesRate) / 100,
-                'fully_vaccinated' => $this->fullyVaccinatedAgPositivesRate / 100,
-                'partially_vaccinated' => $this->partiallyVaccinatedAgPositivesRate / 100,
-                'unvaccinated' => $this->unvaccinatedAgPositivesRate / 100,
-                'unknown' => $this->unknownAgPositivesRate / 100,
-            ],
-            'negative_ag' => [
-                'vaccinated' => ($this->fullyVaccinatedAgNegativesRate + $this->partiallyVaccinatedAgNegativesRate) / 100,
-                'fully_vaccinated' => $this->fullyVaccinatedAgNegativesRate / 100,
-                'partially_vaccinated' => $this->partiallyVaccinatedAgNegativesRate / 100,
-                'unvaccinated' => $this->unvaccinatedAgNegativesRate / 100,
-                'unknown' => $this->unknownAgNegativesRate / 100,
-            ],
-            'positive_pcr' => [
-                'vaccinated' => ($this->fullyVaccinatedPcrPositivesRate + $this->partiallyVaccinatedPcrPositivesRate) / 100,
-                'fully_vaccinated' => $this->fullyVaccinatedPcrPositivesRate / 100,
-                'partially_vaccinated' => $this->partiallyVaccinatedPcrPositivesRate / 100,
-                'unvaccinated' => $this->unvaccinatedPcrPositivesRate / 100,
-                'unknown' => $this->unknownPcrPositivesRate / 100,
-            ],
-            'negative_pcr' => [
-                'vaccinated' => ($this->fullyVaccinatedPcrNegativesRate + $this->partiallyVaccinatedPcrNegativesRate) / 100,
-                'fully_vaccinated' => $this->fullyVaccinatedPcrNegativesRate / 100,
-                'partially_vaccinated' => $this->partiallyVaccinatedPcrNegativesRate / 100,
-                'unvaccinated' => $this->unvaccinatedPcrNegativesRate / 100,
-                'unknown' => $this->unknownPcrNegativesRate / 100,
-            ],
-        ];
     }
 }
