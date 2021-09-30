@@ -30,7 +30,7 @@ class DebugClient extends AbstractClient
         ];
 
         yield from $this->all($builder
-            ->selectMeasure('DatumCasAktualizacie', 'Dátum poslednej aktualizácie')
+//            ->selectMeasure('DatumCasAktualizacie', 'Dátum poslednej aktualizácie')
 //            ->selectColumn('Ag testy', 'DATUM_VYPL_F')
 //            ->selectColumn('Ag testy', 'AGTEST_OKRES_KOD_ST')
 //            ->selectColumn('Ag testy', 'AGTEST_OKRES_POPIS')
@@ -62,8 +62,7 @@ class DebugClient extends AbstractClient
             // zaockovanost u hospitalizovanych - percenta a cisla
 //            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'OCKOVANI %')
 //            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'NEOCKOVANI %')
-//            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'NEVYPLNENE %')
-            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.VAKCINACIA_POPIS')
+//            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.VAKCINACIA_POPIS')
 //            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.VAKCINA_TYP')
 //            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.VEK_SKUP30')
 //            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.VEK_SKUP_PBI')
@@ -72,7 +71,7 @@ class DebugClient extends AbstractClient
 //            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.PACKRAJ_ST')
 //            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.VEK_SKUP28')
 //            ->selectArithmetic('percento', $arithmetic)
-            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'ID_PAC', PowerBiQueryBuilder::AGGREGATION_COUNT_NOT_NULL)
+//            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'ID_PAC', PowerBiQueryBuilder::AGGREGATION_COUNT_NOT_NULL)
 //            ->andWhere('PCOV_PP_M2V_DENNY_STAV', 'P.VEK_SKUP28', PowerBiQueryBuilder::COMPARISON_EQUAL, '\'65+\'')
 //            ->andWhere('PCOV_PP_M2V_DENNY_STAV', 'P.VAKCINACIA_POPIS', PowerBiQueryBuilder::COMPARISON_EQUAL, '\'nie\'')
 
@@ -82,9 +81,16 @@ class DebugClient extends AbstractClient
         // zaockovani hospitalizovani podla davky - percenta a cisla
 //            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'DAVKA_1 %')
 //            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'DAVKA_2 %')
+//            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'NEVYPLNENE %')
 //            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'DAVKA_1')
 //            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'DAVKA_2')
 
+            ->selectMeasure('DatumCasAktualizacie', 'Dátum poslednej aktualizácie')
+            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.VAKCINACIA_POPIS')
+            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'DAVKA_1')
+            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'DAVKA_2')
+            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'NEVYPLNENA_VAKCINA_OCK')
+            ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'ID_PAC', PowerBiQueryBuilder::AGGREGATION_COUNT_NOT_NULL)
 
 //            ->selectColumn('Ag testy', 'AGTEST_KRAJ_POPIS')
 

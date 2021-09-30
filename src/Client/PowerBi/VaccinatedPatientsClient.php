@@ -20,11 +20,30 @@ class VaccinatedPatientsClient extends AbstractClient
 
     public function findAll(): Generator
     {
-        yield from $this->all($this->createQueryBuilder()
+        foreach ($this->all($this->createQueryBuilder()
             ->selectMeasure('DatumCasAktualizacie', 'Dátum poslednej aktualizácie')
             ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'P.VAKCINACIA_POPIS')
             ->selectColumn('PCOV_PP_M2V_DENNY_STAV', 'ID_PAC', PowerBiQueryBuilder::AGGREGATION_COUNT_NOT_NULL)
-        );
+            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'DAVKA_1')
+            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'DAVKA_2')
+            ->selectMeasure('PCOV_PP_M2V_DENNY_STAV', 'NEVYPLNENA_VAKCINA_OCK')
+        ) as $item) {
+            yield $item;
+
+            if ('ano' === $this->slugger->slug($item[1])->lower()->toString()) {
+                $item[1] = 'partiallyVaccinated';
+                $item[2] = $item[3];
+                yield $item;
+
+                $item[1] = 'fullyVaccinated';
+                $item[2] = $item[4];
+                yield $item;
+
+                $item[1] = 'unknownDoseButVaccinated';
+                $item[2] = $item[5];
+                yield $item;
+            }
+        }
     }
 
     public function entities(): callable
@@ -48,10 +67,16 @@ class VaccinatedPatientsClient extends AbstractClient
         };
     }
 
-    private function vaccinationStatus(string $rawValue): string {
+    private function vaccinationStatus(string $rawValue): string
+    {
+        if (in_array($rawValue, ['fullyVaccinated', 'partiallyVaccinated', 'unknownDoseButVaccinated'])) {
+            return $rawValue;
+        }
+
         $value = $this->slugger
             ->slug($rawValue, '-')
-            ->lower();
+            ->lower()
+            ->toString();
 
         if (mb_strpos($value, 'ano') !== false) {
             return 'vaccinated';
@@ -64,7 +89,8 @@ class VaccinatedPatientsClient extends AbstractClient
         return 'unknown';
     }
 
-    private function id(DateTimeImmutable $publishedOn, string $vaccinationStatus, array $_): string {
+    private function id(DateTimeImmutable $publishedOn, string $vaccinationStatus, array $_): string
+    {
         return $publishedOn->format('Ymd') . '-' . $vaccinationStatus;
     }
 

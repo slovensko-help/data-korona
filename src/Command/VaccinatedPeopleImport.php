@@ -137,14 +137,18 @@ class VaccinatedPeopleImport extends AbstractImport
                 $result[$publishedOn] = [
                     'published_on' => $patient->getPublishedOn(),
                     'group' => [
-                        'vaccinated' => 0,
+                        'fullyVaccinated' => 0,
+                        'partiallyVaccinated' => 0,
+                        'unknownDoseButVaccinated' => 0,
                         'unvaccinated' => 0,
                         'unknown' => 0,
                     ]
                 ];
             }
 
-            $result[$publishedOn]['group'][$patient->getVaccinationStatus()] = $patient->getCount();
+            if (isset($result[$publishedOn]['group'][$patient->getVaccinationStatus()])) {
+                $result[$publishedOn]['group'][$patient->getVaccinationStatus()] = $patient->getCount();
+            }
         }
 
         return $result;

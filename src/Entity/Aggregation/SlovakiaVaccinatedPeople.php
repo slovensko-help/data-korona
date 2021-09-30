@@ -162,7 +162,23 @@ class SlovakiaVaccinatedPeople
      * @var int
      * @Serializer\Exclude()
      */
-    private $vaccinatedPatientsRate;
+    private $fullyVaccinatedPatientsRate;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     *
+     * @var int
+     * @Serializer\Exclude()
+     */
+    private $partiallyVaccinatedPatientsRate;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     *
+     * @var int
+     * @Serializer\Exclude()
+     */
+    private $unknownDoseButVaccinatedPatientsRate;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -265,11 +281,6 @@ class SlovakiaVaccinatedPeople
         return $this->unknownPcrNegativesRate;
     }
 
-    public function getVaccinatedPatientsRate(): int
-    {
-        return $this->vaccinatedPatientsRate;
-    }
-
     public function getUnvaccinatedPatientsRate(): int
     {
         return $this->unvaccinatedPatientsRate;
@@ -285,7 +296,8 @@ class SlovakiaVaccinatedPeople
      */
     public function hasHospitalizedPatients(): bool
     {
-        return !(null === $this->vaccinatedPatientsRate &&
+        return !(null === $this->fullyVaccinatedPatientsRate &&
+            null === $this->partiallyVaccinatedPatientsRate &&
             null === $this->unvaccinatedPatientsRate &&
             null === $this->unknownPatientsRate);
     }
@@ -311,12 +323,15 @@ class SlovakiaVaccinatedPeople
      */
     public function getHospitalizedPatients(): array
     {
-        $allNull = null === $this->vaccinatedPatientsRate &&
-            null === $this->unvaccinatedPatientsRate &&
-            null === $this->unknownPatientsRate;
+        $vaccinated = $this->sum(
+            $this->sum($this->fullyVaccinatedPatientsRate, $this->partiallyVaccinatedPatientsRate),
+            $this->unknownDoseButVaccinatedPatientsRate);
 
         return [
-            'vaccinated' => $this->percentage($this->vaccinatedPatientsRate),
+            'vaccinated' => $this->percentage($vaccinated),
+            'fully_vaccinated' => $this->percentage($this->fullyVaccinatedPatientsRate),
+            'partially_vaccinated' => $this->percentage($this->partiallyVaccinatedPatientsRate),
+            'unknown_dose_but_vaccinated' => $this->percentage($this->unknownDoseButVaccinatedPatientsRate),
             'unvaccinated' => $this->percentage($this->unvaccinatedPatientsRate),
             'unknown' => $this->percentage($this->unknownPatientsRate),
         ];
@@ -475,12 +490,6 @@ class SlovakiaVaccinatedPeople
         return $this;
     }
 
-    public function setVaccinatedPatientsRate(int $vaccinatedPatientsRate): self
-    {
-        $this->vaccinatedPatientsRate = $vaccinatedPatientsRate;
-        return $this;
-    }
-
     public function setUnvaccinatedPatientsRate(int $unvaccinatedPatientsRate): self
     {
         $this->unvaccinatedPatientsRate = $unvaccinatedPatientsRate;
@@ -490,6 +499,39 @@ class SlovakiaVaccinatedPeople
     public function setUnknownPatientsRate(int $unknownPatientsRate): self
     {
         $this->unknownPatientsRate = $unknownPatientsRate;
+        return $this;
+    }
+
+    public function getFullyVaccinatedPatientsRate(): int
+    {
+        return $this->fullyVaccinatedPatientsRate;
+    }
+
+    public function setFullyVaccinatedPatientsRate(int $fullyVaccinatedPatientsRate): self
+    {
+        $this->fullyVaccinatedPatientsRate = $fullyVaccinatedPatientsRate;
+        return $this;
+    }
+
+    public function getPartiallyVaccinatedPatientsRate(): int
+    {
+        return $this->partiallyVaccinatedPatientsRate;
+    }
+
+    public function setPartiallyVaccinatedPatientsRate(int $partiallyVaccinatedPatientsRate): self
+    {
+        $this->partiallyVaccinatedPatientsRate = $partiallyVaccinatedPatientsRate;
+        return $this;
+    }
+
+    public function getUnknownDoseButVaccinatedPatientsRate(): int
+    {
+        return $this->unknownDoseButVaccinatedPatientsRate;
+    }
+
+    public function setUnknownDoseButVaccinatedPatientsRate(int $unknownDoseButVaccinatedPatientsRate): self
+    {
+        $this->unknownDoseButVaccinatedPatientsRate = $unknownDoseButVaccinatedPatientsRate;
         return $this;
     }
 }
