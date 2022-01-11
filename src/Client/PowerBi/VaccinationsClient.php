@@ -57,9 +57,10 @@ class VaccinationsClient extends AbstractClient
     private function vaccine(array $_): callable
     {
         return function (Vaccine $vaccine) use ($_) {
+            $vaccineManufacturer = $_[4] ?? '-';
             return $vaccine
-                ->setCode($this->vaccineId($_[4], $_[5]))
-                ->setManufacturer($_[4])
+                ->setCode($this->vaccineId($vaccineManufacturer, $_[5]))
+                ->setManufacturer($vaccineManufacturer)
                 ->setTitle($_[5]);
         };
     }
